@@ -23,4 +23,11 @@ public class WareHouseController {
     public ResponseEntity<?> createWareHouse(@RequestBody WareHouseRequest wareHouseRequest){
        return new ResponseEntity<>(wareHouseService.createWareHouse(wareHouseRequest),HttpStatus.OK);
     }
+
+    @GetMapping("/{warehouseId}")
+    public ResponseEntity<?> getWareHouseById(@PathVariable("warehouseId") int warehouseId){
+        return new ResponseEntity<>(wareHouseService.getWareHouseById(warehouseId),HttpStatus.OK);
+    }
+
+
 }

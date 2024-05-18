@@ -22,4 +22,7 @@ public class WareHouseService {
         warehouse.setAddress(request.getAddress());
         return wareHouseRespository.save(warehouse);
     }
+    public Warehouse getWareHouseById(int id){
+        return wareHouseRespository.findById(id).orElseThrow(()->new RuntimeException("Not Found WareHouse"));
+    }
 }
