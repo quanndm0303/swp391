@@ -28,6 +28,15 @@ public class WareHouseController {
     public ResponseEntity<?> getWareHouseById(@PathVariable("warehouseId") int warehouseId){
         return new ResponseEntity<>(wareHouseService.getWareHouseById(warehouseId),HttpStatus.OK);
     }
+    @DeleteMapping("/{warehouseId}")
+    public void deleteWareHouseById(@PathVariable("warehouseId") int warehouseId){
+        wareHouseService.deleteWareHouseById(warehouseId);
+    }
+    @PutMapping("/{warehouseId}")
+    public ResponseEntity<?> updateWareHouse(@PathVariable int warehouseId, @RequestBody WareHouseRequest request){
+
+       return new ResponseEntity<>(wareHouseService.updateWareHouse(warehouseId,request),HttpStatus.OK);
+    }
 
 
 

@@ -1,5 +1,6 @@
 package com.app.zware.Util;
 
+import com.app.zware.Entities.User;
 import com.app.zware.Entities.Warehouse;
 import com.app.zware.Repositories.WareHouseRespository;
 import com.app.zware.RequestEntities.WareHouseRequest;
@@ -24,5 +25,15 @@ public class WareHouseService {
     }
     public Warehouse getWareHouseById(int id){
         return wareHouseRespository.findById(id).orElseThrow(()->new RuntimeException("Not Found WareHouse"));
+    }
+    public void deleteWareHouseById(int id){
+        wareHouseRespository.deleteById(id);
+    }
+    public Warehouse updateWareHouse(int id,WareHouseRequest request){
+        Warehouse warehouse = getWareHouseById(id);
+        warehouse.setName(request.getName());
+        warehouse.setAddress(request.getAddress());
+       return wareHouseRespository.save(warehouse);
+
     }
 }
