@@ -1,5 +1,6 @@
 package com.app.zware.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,19 +17,26 @@ import java.util.Date;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+    private int id;
     @Column(unique = true)
     private String email;
     private String password;
-
     private String name;
     private String role;
+    private Date dateofbirth;
     private String phone;
     private String gender;
     private String avatar;
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id")
+    @JsonBackReference
+    private Warehouse warehouse;
 
-    private Date dateOfBirth;
+
+
+
+
+
 
 }
 
