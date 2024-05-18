@@ -1,6 +1,7 @@
 package com.app.zware.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,9 +28,10 @@ public class User {
     private String phone;
     private String gender;
     private String avatar;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "warehouse_id")
     @JsonBackReference
+
     private Warehouse warehouse;
 
 

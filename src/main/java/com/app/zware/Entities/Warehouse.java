@@ -18,7 +18,7 @@ public class Warehouse {
     private int id;
     private String name;
     private String address;
-    @OneToMany(mappedBy = "warehouse")
+    @OneToMany(mappedBy = "warehouse" ,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<User> userList;
 
