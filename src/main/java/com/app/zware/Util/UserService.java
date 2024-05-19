@@ -26,16 +26,16 @@ public class UserService {
     }
 
     public User updateUserById(int id, UserRequest userRequest){
-            User user = getUserById(id);
-            user.setName(userRequest.getName());
-            user.setAvatar(userRequest.getAvatar());
-            user.setDateofbirth(userRequest.getDateofbirth());
-            user.setPhone(userRequest.getPhone());
-            user.setGender(userRequest.getGender());
-            user.setEmail(userRequest.getEmail());
-            user.setRole(userRequest.getRole());
-            user.setPassword(userRequest.getPassword());
+        User user = getUserById(id);
+        user.setName(userRequest.getName());
+        user.setAvatar(userRequest.getAvatar());
+        user.setDateofbirth(userRequest.getDateofbirth());
+        user.setPhone(userRequest.getPhone());
+        user.setGender(userRequest.getGender());
+        user.setEmail(userRequest.getEmail());
+        user.setRole(userRequest.getRole());
+        user.setPassword(userRequest.getPassword());
 
-            return userRepository.save(user);
+        return userRepository.save(user);
     }
 }

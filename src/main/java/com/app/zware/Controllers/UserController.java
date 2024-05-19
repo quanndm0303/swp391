@@ -1,6 +1,5 @@
 package com.app.zware.Controllers;
 
-import com.app.zware.Entities.User;
 import com.app.zware.RequestEntities.UserRequest;
 import com.app.zware.Util.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
