@@ -2,6 +2,7 @@ package com.app.zware.Util;
 
 import com.app.zware.Entities.User;
 import com.app.zware.Repositories.UserRepository;
+import com.app.zware.RequestEntities.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,19 @@ public class UserService {
 
     public void deleteUserById(int id){
          userRepository.deleteById(id);
+    }
 
+    public User updateUserById(int id, UserRequest userRequest){
+            User user = getUserById(id);
+            user.setName(userRequest.getName());
+            user.setAvatar(userRequest.getAvatar());
+            user.setDateofbirth(userRequest.getDateofbirth());
+            user.setPhone(userRequest.getPhone());
+            user.setGender(userRequest.getGender());
+            user.setEmail(userRequest.getEmail());
+            user.setRole(userRequest.getRole());
+            user.setPassword(userRequest.getPassword());
+
+            return userRepository.save(user);
     }
 }

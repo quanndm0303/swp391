@@ -1,6 +1,7 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.User;
+import com.app.zware.RequestEntities.UserRequest;
 import com.app.zware.Util.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,10 @@ public class UserController {
     @DeleteMapping("/{userid}")
     public void deleteUserById(@PathVariable("userid") int userId) {
         userService.deleteUserById(userId);
+    }
+
+    @PutMapping("/{userid}")
+    public ResponseEntity<?> updateUserById(@PathVariable("userid") int userId, @RequestBody UserRequest userRequest){
+        return new ResponseEntity<>(userService.updateUserById(userId, userRequest), HttpStatus.OK);
     }
 }
