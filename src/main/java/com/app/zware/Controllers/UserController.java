@@ -1,6 +1,6 @@
 package com.app.zware.Controllers;
 
-import com.app.zware.RequestEntities.UserRequest;
+import com.app.zware.Entities.User;
 import com.app.zware.Util.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/getUser")
+    @GetMapping("")
     public ResponseEntity<?> getAllUser(){
         return new ResponseEntity<>(userService.getUser(), HttpStatus.OK);
     }
@@ -28,7 +28,8 @@ public class UserController {
     }
 
     @PutMapping("/{userid}")
-    public ResponseEntity<?> updateUserById(@PathVariable("userid") int userId, @RequestBody UserRequest userRequest){
-        return new ResponseEntity<>(userService.updateUserById(userId, userRequest), HttpStatus.OK);
+    public String updateUserById(@PathVariable("userid") int userId, @RequestBody User userRequest){
+        userService.updateUserById(userId, userRequest);
+        return "Update Done !";
     }
 }
