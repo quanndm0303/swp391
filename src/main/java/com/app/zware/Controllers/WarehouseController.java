@@ -12,32 +12,32 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/warehouses")
 public class WarehouseController {
     @Autowired
-    WarehouseService wareHouseService;
+    WarehouseService warehouseService;
 
     @GetMapping("")
-    public ResponseEntity<?> getWareHouse(){
-        return new ResponseEntity<>(wareHouseService.getWarehouse(), HttpStatus.OK);
+    public ResponseEntity<?> index(){
+        return new ResponseEntity<>(warehouseService.getWarehouse(), HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createWareHouse(@RequestBody Warehouse wareHouseRequest){
-       return new ResponseEntity<>(wareHouseService.createWareHouse(wareHouseRequest),HttpStatus.OK);
+    public ResponseEntity<?> store(@RequestBody Warehouse wareHouseRequest){
+       return new ResponseEntity<>(warehouseService.createWareHouse(wareHouseRequest),HttpStatus.OK);
     }
 
     @GetMapping("/{warehouseId}")
-    public ResponseEntity<?> getWareHouseById(@PathVariable("warehouseId") int warehouseId){
-        return new ResponseEntity<>(wareHouseService.getWareHouseById(warehouseId),HttpStatus.OK);
+    public ResponseEntity<?> show(@PathVariable("warehouseId") int warehouseId){
+        return new ResponseEntity<>(warehouseService.getWareHouseById(warehouseId),HttpStatus.OK);
     }
+
     @DeleteMapping("/{warehouseId}")
-    public String deleteWareHouseById(@PathVariable("warehouseId") int warehouseId){
-        wareHouseService.deleteWareHouseById(warehouseId);
-        return "Delete Warehouse succesful";
+    public String destroy(@PathVariable("warehouseId") int warehouseId){
+        warehouseService.deleteWareHouseById(warehouseId);
+        return "Warehouse has been deleted successfully";
     }
     @PutMapping("/{warehouseId}")
-    public String updateWareHouse(@PathVariable int warehouseId, @RequestBody Warehouse request){
-      wareHouseService.updateWarehouse(warehouseId,request);
-      return "Update succesful";
-
+    public String update(@PathVariable int warehouseId, @RequestBody Warehouse request){
+        warehouseService.updateWarehouse(warehouseId,request);
+      return "Warehouse has been updated successfully";
     }
 
 
