@@ -26,14 +26,34 @@ public class UserService {
 
     public User updateUserById(int id, User userRequest){
         User user = getUserById(id);
-        user.setName(userRequest.getName());
-        user.setAvatar(userRequest.getAvatar());
-        user.setDateofbirth(userRequest.getDateofbirth());
-        user.setPhone(userRequest.getPhone());
-        user.setGender(userRequest.getGender());
-        user.setEmail(userRequest.getEmail());
-        user.setRole(userRequest.getRole());
-        user.setPassword(userRequest.getPassword());
+
+        if(userRequest.getName()!=null){
+            user.setName(userRequest.getName());
+        }
+        if(userRequest.getAvatar()!=null){
+            user.setAvatar(userRequest.getAvatar());
+        }
+        if(userRequest.getDateofbirth()!=null){
+            user.setDateofbirth(userRequest.getDateofbirth());
+        }
+        if(userRequest.getPhone()!=null){
+            user.setPhone(userRequest.getPhone());
+        }
+        if(userRequest.getGender()!=null){
+            user.setName(userRequest.getGender());
+        }
+        if(userRequest.getEmail()!=null){
+            user.setEmail(userRequest.getEmail());
+        }
+        if(userRequest.getRole()!=null){
+            user.setRole(userRequest.getRole());
+        }
+        if(userRequest.getPassword()!=null){
+            user.setPassword(userRequest.getPassword());
+        }
+        if(userRequest.getWarehouse()!=null){
+            user.setWarehouse(userRequest.getWarehouse());
+        }
 
         return userRepository.save(user);
     }
