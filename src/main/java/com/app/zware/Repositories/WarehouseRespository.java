@@ -3,6 +3,6 @@ package com.app.zware.Repositories;
 import com.app.zware.Entities.Warehouse;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface WareHouseRespository extends JpaRepository<Warehouse,Integer> {
+public interface WarehouseRespository extends JpaRepository<Warehouse,Integer> {
 
 }

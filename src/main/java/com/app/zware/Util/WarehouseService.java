@@ -1,23 +1,22 @@
 package com.app.zware.Util;
 
-import com.app.zware.Entities.User;
 import com.app.zware.Entities.Warehouse;
-import com.app.zware.Repositories.WareHouseRespository;
-import com.app.zware.RequestEntities.WareHouseRequest;
+import com.app.zware.Repositories.WarehouseRespository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class WareHouseService {
+public class WarehouseService {
     @Autowired
-    WareHouseRespository wareHouseRespository;
+    WarehouseRespository wareHouseRespository;
 
     public List<Warehouse> getWarehouse(){
         return wareHouseRespository.findAll();
     }
-    public Warehouse createWareHouse(WareHouseRequest request){
+    public Warehouse createWareHouse(Warehouse request){
         Warehouse warehouse = new Warehouse();
         warehouse.setName(request.getName());
         warehouse.setAddress(request.getAddress());
@@ -29,11 +28,23 @@ public class WareHouseService {
     public void deleteWareHouseById(int id){
         wareHouseRespository.deleteById(id);
     }
-    public Warehouse updateWareHouse(int id,WareHouseRequest request){
+//    public Warehouse updateWareHouse(int id, Warehouse request){
+//        Warehouse warehouse = getWareHouseById(id);
+//        warehouse.setName(request.getName());
+//        warehouse.setAddress(request.getAddress());
+//       return wareHouseRespository.save(warehouse);
+//
+//    }
+    public Warehouse updateWarehouse(int id, Warehouse request) {
         Warehouse warehouse = getWareHouseById(id);
-        warehouse.setName(request.getName());
-        warehouse.setAddress(request.getAddress());
-       return wareHouseRespository.save(warehouse);
+        if(request.getName()!=null){
+            warehouse.setName(request.getName());
+        }
+        if(request.getAddress()!=null){
+            warehouse.setAddress(request.getAddress());
+        }
+        return  wareHouseRespository.save(warehouse);
 
     }
+
 }

@@ -1,26 +1,26 @@
 package com.app.zware.Controllers;
 
+
 import com.app.zware.Entities.Warehouse;
-import com.app.zware.RequestEntities.WareHouseRequest;
-import com.app.zware.Util.WareHouseService;
+import com.app.zware.Util.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/warehouse")
-public class WareHouseController {
+@RequestMapping("/api/warehouses")
+public class WarehouseController {
     @Autowired
-    WareHouseService wareHouseService;
+    WarehouseService wareHouseService;
 
-    @GetMapping("/getwarehouse")
+    @GetMapping("")
     public ResponseEntity<?> getWareHouse(){
         return new ResponseEntity<>(wareHouseService.getWarehouse(), HttpStatus.OK);
     }
 
-    @PostMapping("/createuser")
-    public ResponseEntity<?> createWareHouse(@RequestBody WareHouseRequest wareHouseRequest){
+    @PostMapping("")
+    public ResponseEntity<?> createWareHouse(@RequestBody Warehouse wareHouseRequest){
        return new ResponseEntity<>(wareHouseService.createWareHouse(wareHouseRequest),HttpStatus.OK);
     }
 
@@ -29,13 +29,15 @@ public class WareHouseController {
         return new ResponseEntity<>(wareHouseService.getWareHouseById(warehouseId),HttpStatus.OK);
     }
     @DeleteMapping("/{warehouseId}")
-    public void deleteWareHouseById(@PathVariable("warehouseId") int warehouseId){
+    public String deleteWareHouseById(@PathVariable("warehouseId") int warehouseId){
         wareHouseService.deleteWareHouseById(warehouseId);
+        return "Delete Warehouse succesful";
     }
     @PutMapping("/{warehouseId}")
-    public ResponseEntity<?> updateWareHouse(@PathVariable int warehouseId, @RequestBody WareHouseRequest request){
+    public String updateWareHouse(@PathVariable int warehouseId, @RequestBody Warehouse request){
+      wareHouseService.updateWarehouse(warehouseId,request);
+      return "Update succesful";
 
-       return new ResponseEntity<>(wareHouseService.updateWareHouse(warehouseId,request),HttpStatus.OK);
     }
 
 
