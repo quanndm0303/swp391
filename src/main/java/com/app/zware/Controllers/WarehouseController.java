@@ -15,31 +15,46 @@ public class WarehouseController {
     WarehouseService warehouseService;
 
     @GetMapping("")
-    public ResponseEntity<?> index(){
+    public ResponseEntity<?> index() {
         return new ResponseEntity<>(warehouseService.getWarehouse(), HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> store(@RequestBody Warehouse wareHouseRequest){
-       return new ResponseEntity<>(warehouseService.createWareHouse(wareHouseRequest),HttpStatus.OK);
+    public ResponseEntity<?> store(@RequestBody Warehouse wareHouseRequest) {
+        return new ResponseEntity<>(warehouseService.createWareHouse(wareHouseRequest), HttpStatus.OK);
     }
 
     @GetMapping("/{warehouseId}")
-    public ResponseEntity<?> show(@PathVariable("warehouseId") int warehouseId){
-        return new ResponseEntity<>(warehouseService.getWareHouseById(warehouseId),HttpStatus.OK);
+    public ResponseEntity<?> show(@PathVariable("warehouseId") int warehouseId) {
+        try {
+            Warehouse warehouse = warehouseService.getWareHouseById(warehouseId);
+            return new ResponseEntity<>(warehouse, HttpStatus.OK);
+
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("Warehouse not found", HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{warehouseId}")
-    public String destroy(@PathVariable("warehouseId") int warehouseId){
-        warehouseService.deleteWareHouseById(warehouseId);
-        return "Warehouse has been deleted successfully";
+    public ResponseEntity<?> destroy(@PathVariable("warehouseId") int warehouseId) {
+        if (!warehouseService.checkIdExist(warehouseId)) {
+            return new ResponseEntity<>("Warehouse not found", HttpStatus.NOT_FOUND);
+        } else {
+            warehouseService.deleteWareHouseById(warehouseId);
+            return new ResponseEntity<>("Warehouse has been deleted successfully", HttpStatus.OK);
+        }
     }
+
     @PutMapping("/{warehouseId}")
-    public String update(@PathVariable int warehouseId, @RequestBody Warehouse request){
-        warehouseService.updateWarehouse(warehouseId,request);
-      return "Warehouse has been updated successfully";
+    public ResponseEntity<?> update(@PathVariable int warehouseId, @RequestBody Warehouse request) {
+        if (!warehouseService.checkIdExist(warehouseId)) {
+            return new ResponseEntity<>("Warehouse not found", HttpStatus.NOT_FOUND);
+        } else {
+            warehouseService.updateWarehouse(warehouseId, request);
+            return new ResponseEntity<>("Warehouse has been updated successfully", HttpStatus.OK);
+        }
+
     }
-
-
-
 }
+
+

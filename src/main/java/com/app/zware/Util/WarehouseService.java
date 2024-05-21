@@ -28,13 +28,9 @@ public class WarehouseService {
     public void deleteWareHouseById(int id){
         wareHouseRespository.deleteById(id);
     }
-//    public Warehouse updateWareHouse(int id, Warehouse request){
-//        Warehouse warehouse = getWareHouseById(id);
-//        warehouse.setName(request.getName());
-//        warehouse.setAddress(request.getAddress());
-//       return wareHouseRespository.save(warehouse);
-//
-//    }
+    public boolean checkIdExist(int id){
+        return wareHouseRespository.existsById(id);
+    }
     public Warehouse updateWarehouse(int id, Warehouse request) {
         Warehouse warehouse = getWareHouseById(id);
         if(request.getName()!=null){
