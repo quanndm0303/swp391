@@ -37,8 +37,8 @@ public class UserService {
         if(userRequest.getAvatar()!=null){
             user.setAvatar(userRequest.getAvatar());
         }
-        if(userRequest.getDateofbirth()!=null){
-            user.setDateofbirth(userRequest.getDateofbirth());
+        if(userRequest.getDate_of_birth()!=null){
+            user.setDate_of_birth(userRequest.getDate_of_birth());
         }
         if(userRequest.getPhone()!=null){
             user.setPhone(userRequest.getPhone());
