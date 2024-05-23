@@ -22,4 +22,7 @@ public class Warehouse {
     @JsonManagedReference
     private List<User> userList;
 
+    @OneToMany(mappedBy = "warehouse",fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<WarehouseZone> warehouseZones;
 }
