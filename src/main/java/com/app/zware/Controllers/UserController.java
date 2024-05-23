@@ -3,6 +3,7 @@ package com.app.zware.Controllers;
 import com.app.zware.Entities.User;
 import com.app.zware.Util.UserService;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,22 +18,40 @@ public class UserController {
 
     @GetMapping("")
     public ResponseEntity<?> index(){
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+        List<User> listAllUser = userService.getAllUsers();
+        if(!listAllUser.isEmpty()) {
+            return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("List Users are empty", HttpStatus.OK);
+        }
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> show(@PathVariable("userId") int userId)
-    { return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);}
+    public ResponseEntity<?> show(@PathVariable("userId") int userId){
+        if(userService.checkIdUserExist(userId)) {
+            return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
 
     @DeleteMapping("/{userId}")
-    public String destroy(@PathVariable("userId") int userId) {
-        userService.deleteUserById(userId);
-        return "User has been deleted successfully";
+    public ResponseEntity<?> destroy(@PathVariable("userId") int userId) {
+        if(userService.checkIdUserExist(userId)) {
+            userService.deleteUserById(userId);
+            return new ResponseEntity<>("User has been deleted successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{userId}")
-    public String update(@PathVariable("userId") int userId, @RequestBody User userRequest){
-        userService.updateUserById(userId, userRequest);
-        return "User has been updated successfully";
+    public ResponseEntity<?> update(@PathVariable("userId") int userId, @RequestBody User userRequest){
+        if(userService.checkIdUserExist(userId)) {
+            userService.updateUserById(userId, userRequest);
+            return new ResponseEntity<>("User has been Updated successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
     }
 }
