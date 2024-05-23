@@ -23,8 +23,13 @@ public class UserService {
          userRepository.deleteById(id);
     }
 
+    public boolean checkIdUserExist(int id){
+        return userRepository.existsById(id);
+    }
+
     public User updateUserById(int id, User userRequest){
         User user = getUserById(id);
+
 
         if(userRequest.getName()!=null){
             user.setName(userRequest.getName());
