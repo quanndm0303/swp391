@@ -4,17 +4,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.Date;
 import lombok.Data;
 
-@Entity(name = "products")
+@Entity(name = "inboundtransactions")
 @Data
-public class Product {
+public class InboundTransaction {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-  private String name;
-  private Integer category_id;
-  private String supplier;
-  private String measure_unit;
+
+  private Date date;
+
+  private Integer maker_id;
+
+  private String status;
+
+  private Integer source; //warehouse id
 }
