@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> show(@PathVariable("userId") int userId){
         if(userService.checkIdUserExist(userId)) {
-            return new ResponseEntity<>(userService.getById(userId), HttpStatus.OK);
+            return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
         } else {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
@@ -48,7 +48,7 @@ public class UserController {
     @PutMapping("/{userId}")
     public ResponseEntity<?> update(@PathVariable("userId") int userId, @RequestBody User userRequest){
         if(userService.checkIdUserExist(userId)) {
-            userService.update(userId, userRequest);
+            userService.updateUserById(userId, userRequest);
             return new ResponseEntity<>("User has been Updated successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);

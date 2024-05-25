@@ -1,31 +1,43 @@
 package com.app.zware.Entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import java.util.Date;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Entity(name = "users")
-@Data
+import java.util.Date;
+
+@Entity
+@Table(name = "users")
+@Setter
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @Column(unique = true)
+    private String email;
+    private String password;
+    private String name;
+    private String role;
+    private Date date_of_birth;
+    private String phone;
+    private String gender;
+    private String avatar;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "warehouse_id")
+    @JsonBackReference
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
-  @Column(unique = true)
-  private String email;
-  private String password;
-  private String name;
-  private String role;
-  private Date date_of_birth;
-  private String phone;
-  private String gender;
-  private String avatar;
-  private int warehouse_id;
+    private Warehouse warehouse;
+
+
+
+
+
 
 
 }
