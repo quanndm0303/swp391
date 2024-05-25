@@ -1,28 +1,18 @@
 package com.app.zware.Entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Data;
 
-import java.util.List;
-
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
 @Entity(name = "warehouses")
+@Data
 public class Warehouse {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-    private String address;
-    @OneToMany(mappedBy = "warehouse" ,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JsonManagedReference
-    private List<User> userList;
 
-    @OneToMany(mappedBy = "warehouse",fetch = FetchType.EAGER)
-    @JsonManagedReference
-    private List<WarehouseZone> warehouseZones;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
+  private String name;
+  private String address;
 }
