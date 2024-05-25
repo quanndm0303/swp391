@@ -15,7 +15,7 @@ import lombok.Setter;
 public class WarehouseZone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private int warehouse_id;
+    private Integer id;
+    private Integer warehouse_id;
     private String name;
 }
