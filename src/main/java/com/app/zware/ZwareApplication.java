@@ -14,13 +14,13 @@ public class ZwareApplication {
     SpringApplication.run(ZwareApplication.class, args);
   }
 
-  @Bean
-  public FilterRegistrationBean<JwtFilter> jwtFilter() {
-    FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
-    registrationBean.setFilter(new JwtFilter());
-    registrationBean.addUrlPatterns("/api/*");
-
-    return registrationBean;
-  }
+//  @Bean
+//  public FilterRegistrationBean<JwtFilter> jwtFilter() {
+//    FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
+//    registrationBean.setFilter(new JwtFilter());
+//    registrationBean.addUrlPatterns("/api/*");
+//
+//    return registrationBean;
+//  }
 
 }
