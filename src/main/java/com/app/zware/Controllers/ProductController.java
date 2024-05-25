@@ -23,7 +23,7 @@ public class ProductController {
         if(productList.isEmpty()){
             return new ResponseEntity<>("List Products are empty",HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+            return new ResponseEntity<>(productList, HttpStatus.OK);
         }
     }
 

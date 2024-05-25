@@ -20,15 +20,10 @@ public class ProductService {
     }
 
     public Product getById(int id) {
-        return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Not Found WareHouse"));
+        return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Not Found Product"));
     }
 
     public Product createProduct(Product request) {
-//        Product product = new Product();
-//        product.setName(request.getName());
-//        product.setSupplier(request.getSupplier());
-//        product.setCategory_id(request.getCategory_id());
-//        product.setMeasure_unit(request.getMeasure_unit());
         return productRepository.save(request);
     }
 
