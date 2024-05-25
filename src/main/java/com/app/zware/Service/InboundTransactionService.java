@@ -1,4 +1,4 @@
-package com.app.zware.Util;
+package com.app.zware.Service;
 
 import com.app.zware.Entities.InboundTransaction;
 import com.app.zware.Repositories.InboundTransactionRepository;

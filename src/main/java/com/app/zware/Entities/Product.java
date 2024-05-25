@@ -9,11 +9,12 @@ import lombok.Data;
 @Entity(name = "products")
 @Data
 public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String name;
-    private Integer category_id;
-    private String supplier;
-    private String measure_unit;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
+  private String name;
+  private Integer category_id;
+  private String supplier;
+  private String measure_unit;
 }

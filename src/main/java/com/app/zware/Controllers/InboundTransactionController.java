@@ -1,7 +1,7 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.InboundTransaction;
-import com.app.zware.Util.InboundTransactionService;
+import com.app.zware.Service.InboundTransactionService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

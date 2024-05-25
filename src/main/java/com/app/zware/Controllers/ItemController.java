@@ -1,7 +1,7 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.Item;
-import com.app.zware.Util.ItemService;
+import com.app.zware.Service.ItemService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
