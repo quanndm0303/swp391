@@ -16,6 +16,12 @@ public class WarehouseZone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int warehouse_id;
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id")
+    @JsonBackReference
+
+    private Warehouse warehouse;
+
 }

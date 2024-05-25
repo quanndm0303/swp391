@@ -1,9 +1,7 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.Product;
-import com.app.zware.Entities.Warehouse;
 import com.app.zware.Util.ProductService;
-import com.app.zware.Util.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,49 +16,46 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping("")
-    public ResponseEntity<?> index() {
-        List<Product> productList = productService.getAllProducts();
-        if(productList.isEmpty()){
-            return new ResponseEntity<>("List Products are empty",HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> index(){
+        List<Product> productList = productService.getAllProduct();
+        if(!productList.isEmpty()){
+            return new ResponseEntity<>(productList, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+            return new ResponseEntity<>("List Products are empty", HttpStatus.OK);
         }
     }
 
     @PostMapping("")
-    public ResponseEntity<?> store(@RequestBody Product product) {
-        return new ResponseEntity<>(productService.createProduct(product), HttpStatus.OK);
+    public ResponseEntity<?> store(@RequestBody Product productRequest) {
+        return new ResponseEntity<>(productService.createProduct(productRequest), HttpStatus.OK);
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<?> show(@PathVariable("productId") int productId) {
-        try {
-            Product product = productService.getById(productId);
-            return new ResponseEntity<>(product, HttpStatus.OK);
-
-        } catch (RuntimeException e) {
+    public ResponseEntity<?> show(@PathVariable("productId") int productId){
+        if(productService.checkIdUserExist(productId)) {
+            return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
+        } else {
             return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<?> destroy(@PathVariable("productId") int productId) {
-        if (!productService.checkIdProductExist(productId)) {
-            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
-        } else {
-            productService.deleteProductById(productId);
+        if(productService.checkIdUserExist(productId)) {
+            productService.deleteUserById(productId);
             return new ResponseEntity<>("Product has been deleted successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<?> update(@PathVariable int productId, @RequestBody Product request) {
-        if (!productService.checkIdProductExist(productId)) {
-            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> update(@PathVariable("productId") int productId, @RequestBody Product userRequest){
+        if(productService.checkIdUserExist(productId)) {
+            productService.updateProductById(productId, userRequest);
+            return new ResponseEntity<>("Product has been Updated successfully", HttpStatus.OK);
         } else {
-            productService.updateProductById(productId, request);
-            return new ResponseEntity<>("Product has been updated successfully", HttpStatus.OK);
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
         }
-
     }
 }
