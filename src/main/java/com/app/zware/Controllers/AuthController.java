@@ -18,16 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-  private final UserRepository userRepository;
-
   @Autowired
-  public AuthController(UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
+  UserRepository userRepository;
 
   @PostMapping("/register")
   public ResponseEntity<?> register(@RequestBody User user) {
-    if (userRepository.getByEmail(user.getEmail()) != null) {
+    if (userRepository.findByEmail(user.getEmail()) != null) {
       return new ResponseEntity<>("Email has been used", HttpStatus.FAILED_DEPENDENCY);
     }
 
@@ -40,7 +36,7 @@ public class AuthController {
   @PostMapping("/login")
   public String login(@RequestBody LoginRequest request) {
 
-    User user = userRepository.getByEmail(request.getEmail());
+    User user = userRepository.findByEmail(request.getEmail());
     if (user != null && PasswordUtil.checkPassword(request.getPassword(), user.getPassword())) {
       return JwtUtil.generateToken(request.getEmail());
     } else {

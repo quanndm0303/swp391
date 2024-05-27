@@ -41,10 +41,6 @@ public class UserService {
     Optional.ofNullable(userRequest.getRole()).ifPresent(user::setRole);
     Optional.ofNullable(userRequest.getPassword()).ifPresent(user::setPassword);
 
-//    if (userRequest.getWarehouse_id() != null) {
-//      user.setWarehouse_id(userRequest.getWarehouse_id());
-//    }
-
     return userRepository.save(user);
   }
 

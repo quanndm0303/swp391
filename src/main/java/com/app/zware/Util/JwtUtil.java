@@ -58,10 +58,14 @@ public class JwtUtil {
 
   public static boolean validateToken(String token) {
 
+    //CHECK expired
     if (isTokenExpired(token)) {
       return false;
     }
 
+    //CHECK valid email
+
+    //CHECK signature
     String[] parts = token.split("\\.");
     if (parts.length < 3) {
       throw new IllegalArgumentException("Invalid token");
