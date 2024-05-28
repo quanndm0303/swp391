@@ -64,6 +64,7 @@ public class JwtUtil {
     }
 
     //CHECK valid email
+    //CHECKED in JwtFilter
 
     //CHECK signature
     String[] parts = token.split("\\.");

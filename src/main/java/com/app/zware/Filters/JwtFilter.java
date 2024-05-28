@@ -1,5 +1,6 @@
 package com.app.zware.Filters;
 
+import com.app.zware.Service.UserService;
 import com.app.zware.Util.JwtUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
@@ -10,6 +11,13 @@ import java.io.IOException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtFilter extends OncePerRequestFilter {
+
+
+  private final UserService userService;
+
+  public JwtFilter(UserService userService) {
+    this.userService = userService;
+  }
 
   @Override
   protected void doFilterInternal(
@@ -24,12 +32,22 @@ public class JwtFilter extends OncePerRequestFilter {
       return;
     }
 
+    //GET Jwt token
     final String authHeader = request.getHeader("Authorization");
-
     String jwt = null;
-
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
       jwt = authHeader.substring(7);
+    }
+
+    if (jwt == null) {
+      return;
+    }
+
+    //CHECK Email in database
+    String jwtEmail = JwtUtil.extractEmail(jwt);
+    if (userService.getByEmail(jwtEmail) == null) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return;
     }
 
     if (!JwtUtil.validateToken(jwt)) {
