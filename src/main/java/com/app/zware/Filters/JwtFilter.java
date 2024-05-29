@@ -25,9 +25,15 @@ public class JwtFilter extends OncePerRequestFilter {
       @Nonnull HttpServletResponse response,
       @Nonnull FilterChain filterChain) throws ServletException, IOException {
 
+    //Allow Access-Control
+    response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, x-requested-with, Cache-Control");
+    response.setHeader("Access-Control-Allow-Credentials", "true");
+
+    // Bypass JWT authentication for /register and /login
     final String requestURI = request.getRequestURI();
     if (requestURI.equals("/api/auth/register") || requestURI.equals("/api/auth/login")) {
-      // Bypass JWT authentication for /api/register
       filterChain.doFilter(request, response);
       return;
     }
