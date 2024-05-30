@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RestController
+@RequestMapping("/api/users")
 public class UserAvatarController {
 
 
@@ -30,7 +31,7 @@ public class UserAvatarController {
     private UserRepository userRepository;
 
 
-    @PostMapping("/api/user/{userId}/avatars")
+    @PostMapping("/{userId}/avatars")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file, @PathVariable("userId") int userId) {
         if (file.isEmpty()) {
             return new ResponseEntity<>("Not found file!", HttpStatus.NOT_FOUND);
@@ -55,7 +56,7 @@ public class UserAvatarController {
 
             // Lưu đường dẫn avatar vào cơ sở dữ liệu
             User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-            user.setAvatar(filePath.toString());
+            user.setAvatar(newFileName);
             userRepository.save(user);
 
             return ResponseEntity.ok("You successfully uploaded " + newFileName);
@@ -64,7 +65,7 @@ public class UserAvatarController {
             return new ResponseEntity<>("Fail to upload",HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/api/users/{userId}/avatars")
+    @GetMapping("/{userId}/avatars")
     public ResponseEntity<?> getAvatar(@PathVariable Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
 
@@ -72,7 +73,7 @@ public class UserAvatarController {
             return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
         }
 
-        File file = new File(user.getAvatar());
+        File file = new File(UPLOAD_DIR+user.getAvatar());
 
         System.out.println();
 
