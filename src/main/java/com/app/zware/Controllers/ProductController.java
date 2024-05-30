@@ -86,8 +86,8 @@ public class ProductController {
 
   @GetMapping("/{productid}/image")
   public ResponseEntity<?> downloadImage(@PathVariable Integer productid) throws IOException {
-    Product product = productService.getById(productid);
-    if (product == null) {
+    boolean productId = productService.checkIdProductExist(productid);
+    if (!productId) {
       return new ResponseEntity<>("Not found Product", HttpStatus.NOT_FOUND);
     } else {
       byte[] imageData = productService.downloadImage(productid);
