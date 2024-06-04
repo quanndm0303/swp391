@@ -32,10 +32,6 @@ public class WarehouseService {
     wareHouseRespository.deleteById(id);
   }
 
-  public boolean checkIdExist(int id) {
-    return wareHouseRespository.existsById(id);
-  }
-
   public Warehouse updateWarehouse(int id, Warehouse request) {
     Warehouse warehouse = getWareHouseById(id);
     if (request.getName() != null) {
