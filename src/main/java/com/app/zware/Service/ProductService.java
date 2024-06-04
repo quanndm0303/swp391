@@ -40,13 +40,13 @@ public class ProductService {
     return productRepository.save(request);
   }
 
-  public void deleteProductById(int id) {
+  public void deleteProductById(Integer id) {
     productRepository.deleteById(id);
   }
 
-  public boolean checkIdProductExist(int id) {
-    return productRepository.existsById(id);
-  }
+//  public boolean checkIdProductExist(int id) {
+//    return productRepository.existsById(id);
+//  }
 
   public Product updateProductById(int id, Product productRequest) {
     Product product = getById(id);
@@ -99,6 +99,17 @@ public class ProductService {
      return null;
     }
 
+  public String deleteImage(Integer productid) throws IOException {
+    Product product = getById(productid);
+    if (product.getImage() != null) {
+      Path filePath = Paths.get(storageDirectory, product.getImage());
+      Files.deleteIfExists(filePath);
+      product.setImage(null);
+      productRepository.save(product);
+      return "Image deleted successfully";
+    }
+    return "Image not found";
+  }
 
   private String getFileExtension(String fileName) {
     if (fileName == null) {
