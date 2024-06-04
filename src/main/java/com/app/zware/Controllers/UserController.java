@@ -2,6 +2,8 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.User;
 import com.app.zware.Service.UserService;
+import com.app.zware.Util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,11 +53,19 @@ public class UserController {
   }
 
   @PutMapping("/{userId}")
-  public ResponseEntity<?> update(@PathVariable("userId") int userId,
-      @RequestBody User userRequest) {
+  public ResponseEntity<?> update(@PathVariable("userId") Integer userId,
+      @RequestBody User requestBody,
+      HttpServletRequest request) {
+
+    User requestMaker = userService.getRequestMaker(request);
+    if (!requestMaker.getRole().equals("admin") && !requestMaker.getId().equals(userId)){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
+
     if (userService.checkIdUserExist(userId)) {
-      userService.update(userId, userRequest);
-      return new ResponseEntity<>("User has been Updated successfully", HttpStatus.OK);
+      userService.update(userId, requestBody);
+      return new ResponseEntity<>("User has been Updated successfully\n"+requestMaker, HttpStatus.OK);
     } else {
       return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
     }

@@ -2,6 +2,8 @@ package com.app.zware.Service;
 
 import com.app.zware.Entities.User;
 import com.app.zware.Repositories.UserRepository;
+import com.app.zware.Util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +50,10 @@ public class UserService {
     return userRepository.save(user);
   }
 
-
+  // Get request maker from JWT
+  public User getRequestMaker(HttpServletRequest request){
+    String jwt = JwtUtil.getJwtToken(request);
+    String email = JwtUtil.extractEmail(jwt);
+    return userRepository.findByEmail(email);
+  }
 }
