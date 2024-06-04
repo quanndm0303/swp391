@@ -72,6 +72,11 @@ public class UserAvatarController {
         if (user == null){
             return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
         }
+        String avatarFileName = user.getAvatar();
+        if (avatarFileName == null || avatarFileName.isEmpty()) {
+            return new ResponseEntity<>("User does not have an avatar", HttpStatus.OK);
+        }
+
 
         File file = new File(UPLOAD_DIR+user.getAvatar());
 
@@ -88,6 +93,33 @@ public class UserAvatarController {
             return ResponseEntity.notFound().build();
         }
     }
+    @DeleteMapping("/{userId}/avatars")
+    public ResponseEntity<?> deleteAvatar(@PathVariable Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
 
+        if (user == null) {
+            return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
+        }
+
+        String avatarFileName = user.getAvatar();
+        if (avatarFileName != null && !avatarFileName.isEmpty()) {
+            File file = new File(UPLOAD_DIR + avatarFileName);
+            if (file.exists()) {
+                if (file.delete()) {
+                    user.setAvatar(null);
+                    userRepository.save(user);
+                    return new ResponseEntity<>("Avatar deleted successfully", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("Failed to delete avatar", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                return new ResponseEntity<>("Avatar file not found", HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>("User has no avatar", HttpStatus.BAD_REQUEST);
+        }
+    }
 }
+
+
 
