@@ -19,6 +19,7 @@ public class WarehouseZoneService {
   public WarehouseZone createWarehouseZone(WarehouseZone request) {
     WarehouseZone warehouseZone = new WarehouseZone();
     warehouseZone.setName(request.getName());
+    warehouseZone.setWarehouse_id(request.getWarehouse_id());
     return warehouseZoneRespository.save(warehouseZone);
   }
 
@@ -40,6 +41,9 @@ public class WarehouseZoneService {
     WarehouseZone warehouseZone = getWarehouseZoneById(id);
     if (request.getName() != null) {
       warehouseZone.setName(request.getName());
+    }
+    if (request.getWarehouse_id()!=null){
+      warehouseZone.setWarehouse_id(request.getWarehouse_id());
     }
     return warehouseZoneRespository.save(warehouseZone);
   }
