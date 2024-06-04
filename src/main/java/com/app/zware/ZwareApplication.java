@@ -25,3 +25,10 @@ public class ZwareApplication {
   }
 
 }
+
+/*
+* Quang: InboundTransaction , (auth, user)
+* Quan: OutboundTransaction, Category, Product, Item (nếu có)
+* Hai: Disposal, warehouse, zone,
+*
+* */

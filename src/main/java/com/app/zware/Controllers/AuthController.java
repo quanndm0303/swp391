@@ -5,6 +5,7 @@ import com.app.zware.Repositories.UserRepository;
 import com.app.zware.RequestEntities.LoginRequest;
 import com.app.zware.Util.JwtUtil;
 import com.app.zware.Util.PasswordUtil;
+import com.app.zware.Validation.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,15 @@ public class AuthController {
   @Autowired
   UserRepository userRepository;
 
+  @Autowired
+  UserValidator userValidator;
+
   @PostMapping("/register")
   public ResponseEntity<?> register(@RequestBody User user) {
-    if (userRepository.findByEmail(user.getEmail()) != null) {
-      return new ResponseEntity<>("Email has been used", HttpStatus.FAILED_DEPENDENCY);
+
+    String checkMessage = userValidator.checkPost(user);
+    if (!checkMessage.isEmpty()){
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
 
     String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
