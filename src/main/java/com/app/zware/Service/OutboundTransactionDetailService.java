@@ -32,7 +32,7 @@ public class OutboundTransactionDetailService {
         OutboundTransactionDetail outboundTransactionDetail = getById(id);
         Optional.ofNullable(request.getTransaction_id()).ifPresent(outboundTransactionDetail::setTransaction_id);
         Optional.ofNullable(request.getItem_id()).ifPresent(outboundTransactionDetail::setItem_id);
-        Optional.ofNullable(request.getQuantity()).ifPresent(outboundTransactionDetail::setQuantity);
+        Optional.of(request.getQuantity()).ifPresent(outboundTransactionDetail::setQuantity);
         Optional.ofNullable(request.getZone_id()).ifPresent(outboundTransactionDetail::setZone_id);
        return  outboundTransactionDetailRepository.save(outboundTransactionDetail);
     }

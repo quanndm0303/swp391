@@ -6,6 +6,7 @@ import com.app.zware.Service.ProductService;
 import java.io.IOException;
 import java.util.List;
 
+import com.app.zware.Validation.ProductValidator;
 import jakarta.servlet.MultipartConfigElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
@@ -24,11 +25,14 @@ public class ProductController {
   @Autowired
   ProductService productService;
 
+  @Autowired
+  ProductValidator productValidator;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
     List<Product> productList = productService.getAllProducts();
     if (productList.isEmpty()) {
-      return new ResponseEntity<>("List Products are empty", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("List Products are empty", HttpStatus.BAD_REQUEST);
     } else {
       return new ResponseEntity<>(productList, HttpStatus.OK);
     }
@@ -36,24 +40,35 @@ public class ProductController {
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody Product product) {
-    return new ResponseEntity<>(productService.createProduct(product), HttpStatus.OK);
-  }
-
-  @GetMapping("/{productId}")
-  public ResponseEntity<?> show(@PathVariable("productId") int productId) {
-    try {
-      Product product = productService.getById(productId);
-      return new ResponseEntity<>(product, HttpStatus.OK);
-
-    } catch (RuntimeException e) {
-      return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+    String messages = productValidator.checkPost(product);
+    product.setImage(null);
+    if(messages.isEmpty()) {
+      return new ResponseEntity<>(productService.createProduct(product), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(messages, HttpStatus.BAD_REQUEST);
     }
   }
 
+  @GetMapping("/{productId}")
+  public ResponseEntity<?> show(@PathVariable("productId") Integer productId) {
+//    try {
+      String messages = productValidator.checkGet(productId);
+      if(messages.isEmpty()){
+        Product product = productService.getById(productId);
+        return new ResponseEntity<>(product, HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(messages,HttpStatus.BAD_REQUEST);
+      }
+//    } catch (RuntimeException e) {
+//      return new ResponseEntity<>("Product not found", HttpStatus.);
+//    }
+  }
+
   @DeleteMapping("/{productId}")
-  public ResponseEntity<?> destroy(@PathVariable("productId") int productId) {
-    if (!productService.checkIdProductExist(productId)) {
-      return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+  public ResponseEntity<?> destroy(@PathVariable("productId") Integer productId) {
+    String msg = productValidator.checkDelete(productId);
+    if (!msg.isEmpty()) {
+      return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     } else {
       productService.deleteProductById(productId);
       return new ResponseEntity<>("Product has been deleted successfully", HttpStatus.OK);
@@ -61,34 +76,40 @@ public class ProductController {
   }
 
   @PutMapping("/{productId}")
-  public ResponseEntity<?> update(@PathVariable int productId, @RequestBody Product request) {
-    if (!productService.checkIdProductExist(productId)) {
-      return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+  public ResponseEntity<?> update(@PathVariable Integer productId, @RequestBody Product request) {
+    String msg = productValidator.checkGet(productId);
+    request.setImage(null);
+    if (!msg.isEmpty()) {
+      return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     } else {
-      productService.updateProductById(productId, request);
-      return new ResponseEntity<>("Product has been updated successfully", HttpStatus.OK);
+      String messages = productValidator.checkPut(request);
+      if(messages.isEmpty()){
+        productService.updateProductById(productId, request);
+        return new ResponseEntity<>("Product has been updated successfully", HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(messages, HttpStatus.BAD_REQUEST);
+      }
     }
-
   }
 
   @PostMapping("/{productid}/image")
-  public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file, @PathVariable("productid") Integer productid) throws IOException {
+  public ResponseEntity<?> putImage(@RequestParam("image") MultipartFile file, @PathVariable("productid") Integer productid) throws IOException {
+    String msg = productValidator.checkGet(productid);
     if(file.isEmpty()){
-      return new ResponseEntity<>("Not found file!", HttpStatus.NOT_FOUND);
-    } else if(!productService.checkIdProductExist(productid)) {
-      return new ResponseEntity<>("Not found Id",HttpStatus.OK);
+      return new ResponseEntity<>("Not found file!", HttpStatus.BAD_REQUEST);
+    } else if(!msg.isEmpty()) {
+      return new ResponseEntity<>(msg,HttpStatus.BAD_REQUEST);
     } else {
       String uploadImage = productService.uploadImage(file, productid);
       return ResponseEntity.status(HttpStatus.OK).body(uploadImage);
     }
-
   }
 
   @GetMapping("/{productid}/image")
-  public ResponseEntity<?> downloadImage(@PathVariable Integer productid) throws IOException {
-    boolean productId = productService.checkIdProductExist(productid);
-    if (!productId) {
-      return new ResponseEntity<>("Not found Product", HttpStatus.NOT_FOUND);
+  public ResponseEntity<?> showImage(@PathVariable Integer productid) throws IOException {
+    String msg = productValidator.checkGet(productid);
+    if (!msg.isEmpty()) {
+      return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     } else {
       byte[] imageData = productService.downloadImage(productid);
       if (imageData != null) {
@@ -96,18 +117,33 @@ public class ProductController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(imageData);
       } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Image not found");
       }
     }
   }
 
-  @Bean
-  public MultipartConfigElement multipartConfigElement() {
-    MultipartConfigFactory factory = new MultipartConfigFactory();
-    // Tăng giới hạn kích thước tệp lên 50MB
-    factory.setMaxFileSize(DataSize.parse("50MB"));
-    // Tăng giới hạn kích thước tổng cả các tệp lên 100MB
-    factory.setMaxRequestSize(DataSize.parse("100MB"));
-    return factory.createMultipartConfig();
+  @DeleteMapping("/{productid}/image")
+  public ResponseEntity<?> destroyImage(@PathVariable Integer productid) throws IOException {
+    String msg = productValidator.checkGet(productid);
+    if (!msg.isEmpty()) {
+      return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+    } else {
+      String result = productService.deleteImage(productid);
+      if (result.equals("Image deleted successfully")) {
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+      }
+    }
   }
+
+//  @Bean
+//  public MultipartConfigElement multipartConfigElement() {
+//    MultipartConfigFactory factory = new MultipartConfigFactory();
+//    // Tăng giới hạn kích thước tệp lên 50MB
+//    factory.setMaxFileSize(DataSize.parse("50MB"));
+//    // Tăng giới hạn kích thước tổng cả các tệp lên 100MB
+//    factory.setMaxRequestSize(DataSize.parse("100MB"));
+//    return factory.createMultipartConfig();
+//  }
 }
