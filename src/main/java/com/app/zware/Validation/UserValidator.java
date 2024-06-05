@@ -43,7 +43,7 @@ public class UserValidator {
 
     if (
         user.getWarehouse_id() != null &&
-        !checkWarehouseId(user.getWarehouse_id())
+            !warehouseRespository.existsById(user.getWarehouse_id())
     ) {
       return "Warehouse id is not valid";
     }
@@ -56,24 +56,11 @@ public class UserValidator {
   }
 
   public String checkGet(Integer userId) {
-    if (!checkUserId(userId)) {
-      return "User id is not valid";
-    } else {
-      return "";
-    }
+    return (userRepository.existsById(userId) ? "" : "User id s not valid");
   }
 
-  public String checkDelete(Integer userId){
+  public String checkDelete(Integer userId) {
     return checkGet(userId);
-  }
-
-  //#####
-  private boolean checkUserId(Integer userId) {
-    return userRepository.findById(userId).orElse(null) != null;
-  }
-
-  private boolean checkWarehouseId(Integer warehouseId) {
-    return warehouseRespository.findById(warehouseId).orElse(null) != null;
   }
 
 }

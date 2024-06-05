@@ -2,7 +2,6 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.User;
 import com.app.zware.Repositories.UserRepository;
-import com.app.zware.RequestEntities.LoginRequest;
 import com.app.zware.Util.JwtUtil;
 import com.app.zware.Util.PasswordUtil;
 import com.app.zware.Validation.UserValidator;
@@ -29,7 +28,7 @@ public class AuthController {
   public ResponseEntity<?> register(@RequestBody User user) {
 
     String checkMessage = userValidator.checkPost(user);
-    if (!checkMessage.isEmpty()){
+    if (!checkMessage.isEmpty()) {
       return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
 
@@ -40,15 +39,19 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public String login(@RequestBody LoginRequest request) {
+  public String login(@RequestBody User request) {
+    // request should contain only email and password
+    if (!request.getEmail().matches("^(.+)@(\\S+)$") || request.getPassword().length() < 6) {
+      return "Email or Password is not valid";
+    }
 
     User user = userRepository.findByEmail(request.getEmail());
     if (user != null && PasswordUtil.checkPassword(request.getPassword(), user.getPassword())) {
       return JwtUtil.generateToken(request.getEmail());
     } else {
-      throw new RuntimeException("Invalid credentials");
+      return "Invalid credentials";
+      //throw new RuntimeException("Invalid credentials");
     }
-
   }
 
   @GetMapping("/hello")
