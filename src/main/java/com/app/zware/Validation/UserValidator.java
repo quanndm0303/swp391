@@ -41,9 +41,8 @@ public class UserValidator {
       return "Role is not valid";
     }
 
-    if (
-        user.getWarehouse_id() != null &&
-            !warehouseRespository.existsById(user.getWarehouse_id())
+    Integer wId = user.getWarehouse_id(); //Warehouse ID
+    if ( wId != null && !warehouseRespository.existsById(wId)
     ) {
       return "Warehouse id is not valid";
     }
@@ -51,7 +50,10 @@ public class UserValidator {
     return "";
   }
 
-  public String checkPut(User user) {
+  public String checkPut(Integer userId, User user) {
+    if (!userRepository.existsById(userId)) {
+      return ("User id is not valid");
+    }
     return checkPost(user);
   }
 
