@@ -2,6 +2,7 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.GoodsDisposal;
 import com.app.zware.Service.GoodsDisposalService;
+import com.app.zware.Validation.GoodsDisposalValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,9 @@ public class GoodsDisposalController {
     @Autowired
     GoodsDisposalService goodsDisposalService;
 
+    @Autowired
+    GoodsDisposalValidator goodsDisposalValidator;
+
     @GetMapping("")
     public ResponseEntity<?> index() {
         List<GoodsDisposal> goodsDisposalList = goodsDisposalService.findAllGoods();
@@ -28,37 +32,47 @@ public class GoodsDisposalController {
 
     @PostMapping("")
     public ResponseEntity<?> store(@RequestBody GoodsDisposal goods) {
-        return new ResponseEntity<>(goodsDisposalService.createGoodsDisposed(goods), HttpStatus.OK);
+        String message = goodsDisposalValidator.checkPost(goods);
+        if(!message.isEmpty()){
+            return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+        }else {
+            goodsDisposalService.createGoodsDisposed(goods);
+            return new ResponseEntity<>("GoodsDisposal has been created successfully",HttpStatus.OK);
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> show(@PathVariable("id") Integer id) {
-        try {
-            GoodsDisposal goodsDisposal = goodsDisposalService.getGoodsById(id);
-            return new ResponseEntity<>(goodsDisposal, HttpStatus.OK);
-
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>("GoodsDisposal not found", HttpStatus.NOT_FOUND);
-        }
+       String message = goodsDisposalValidator.checkGet(id);
+       if(!message.isEmpty()){
+           return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+       }else {
+           return new ResponseEntity<>(goodsDisposalService.getGoodsById(id),HttpStatus.OK);
+       }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> destroy(@PathVariable("id") Integer id) {
-        if (!goodsDisposalService.checkIdExist(id)) {
-            return new ResponseEntity<>("Not Found GoodsDisposal", HttpStatus.NOT_FOUND);
-        } else {
+        String message = goodsDisposalValidator.checkDelete(id);
+        if(!message.isEmpty()){
+            return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+        }else {
             goodsDisposalService.deleteById(id);
-            return new ResponseEntity<>("GoodsDisposal has been deleted successfully", HttpStatus.OK);
+            return new ResponseEntity<>("GoodsDisposal has been deleted successfully",HttpStatus.OK);
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody GoodsDisposal request) {
-        if (!goodsDisposalService.checkIdExist(id)) {
-            return new ResponseEntity<>("Not Found GoodsDisposal", HttpStatus.NOT_FOUND);
-        } else {
-            GoodsDisposal goodsDisposal = goodsDisposalService.update(id, request);
-            return new ResponseEntity<>(goodsDisposal, HttpStatus.OK);
+        String messageGet = goodsDisposalValidator.checkGet(id);
+        String messagePut = goodsDisposalValidator.checkPut(request);
+        if(!messageGet.isEmpty()){
+            return new ResponseEntity<>(messageGet,HttpStatus.BAD_REQUEST);
+        } else if (!messagePut.isEmpty()) {
+            return new ResponseEntity<>(messagePut,HttpStatus.BAD_REQUEST);
+        }else {
+            goodsDisposalService.update(id, request);
+            return new ResponseEntity<>("GoodsDisposal has been created successfully",HttpStatus.OK);
         }
     }
 }
