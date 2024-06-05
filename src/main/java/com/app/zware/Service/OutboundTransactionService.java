@@ -18,15 +18,12 @@ public class OutboundTransactionService {
         return outboundTransactionRepository.findAll();
     }
     public OutboundTransaction getOutboundTransactionById(int id){
-        return outboundTransactionRepository.findById(id) .orElseThrow(() -> new RuntimeException("Not Found OutboundTransaction"));
+        return outboundTransactionRepository.findById(id) .orElse(null);
 
     }
     public OutboundTransaction createOutboundTransaction(OutboundTransaction request){
         return outboundTransactionRepository.save(request);
     }
-//    public boolean checkIdExist(Integer id){
-//        return outboundTransactionRepository.existsById(id);
-//    }
 
     public void deleteOutboundTransaction(Integer id){
         outboundTransactionRepository.deleteById(id);

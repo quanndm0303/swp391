@@ -19,21 +19,30 @@ public class OutboundTransactionDetailService {
     public OutboundTransactionDetail create(OutboundTransactionDetail request){
         return outboundTransactionDetailRepository.save(request);
     }
-    public boolean checkExistId(int id){
+    public boolean checkExistId(Integer id){
         return outboundTransactionDetailRepository.existsById(id);
     }
-    public void delete(int id){
+    public void delete(Integer id){
         outboundTransactionDetailRepository.deleteById(id);
     }
-    public OutboundTransactionDetail getById(int id){
-        return outboundTransactionDetailRepository.findById(id).orElseThrow(() -> new RuntimeException("Not Found "));
+    public OutboundTransactionDetail getById(Integer id){
+        return outboundTransactionDetailRepository.findById(id).orElse(null);
     }
-    public OutboundTransactionDetail update(int id,OutboundTransactionDetail request){
+
+    public OutboundTransactionDetail update(OutboundTransactionDetail outboundTransactionDetail){
+        return outboundTransactionDetailRepository.save(outboundTransactionDetail);
+    }
+
+    public OutboundTransactionDetail merge(Integer id,OutboundTransactionDetail request){
+        OutboundTransactionDetail oldOutboundTransactionDetail = getById(id);
+        if(oldOutboundTransactionDetail == null){
+            return null;
+        }
         OutboundTransactionDetail outboundTransactionDetail = getById(id);
         Optional.ofNullable(request.getTransaction_id()).ifPresent(outboundTransactionDetail::setTransaction_id);
         Optional.ofNullable(request.getItem_id()).ifPresent(outboundTransactionDetail::setItem_id);
         Optional.of(request.getQuantity()).ifPresent(outboundTransactionDetail::setQuantity);
         Optional.ofNullable(request.getZone_id()).ifPresent(outboundTransactionDetail::setZone_id);
-       return  outboundTransactionDetailRepository.save(outboundTransactionDetail);
+       return  oldOutboundTransactionDetail;
     }
 }
