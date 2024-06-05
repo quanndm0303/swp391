@@ -64,15 +64,14 @@ public class GoodsDisposalController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody GoodsDisposal request) {
-        String messageGet = goodsDisposalValidator.checkGet(id);
-        String messagePut = goodsDisposalValidator.checkPut(request);
-        if(!messageGet.isEmpty()){
-            return new ResponseEntity<>(messageGet,HttpStatus.BAD_REQUEST);
-        } else if (!messagePut.isEmpty()) {
-            return new ResponseEntity<>(messagePut,HttpStatus.BAD_REQUEST);
-        }else {
-            goodsDisposalService.update(id, request);
-            return new ResponseEntity<>("GoodsDisposal has been created successfully",HttpStatus.OK);
-        }
+       GoodsDisposal mergedGoodsDisposal = goodsDisposalService.merge(id,request);
+       String checkMessage = goodsDisposalValidator.checkPut(id,mergedGoodsDisposal);
+       if(!checkMessage.isEmpty()){
+           return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
+       }
+
+
+       GoodsDisposal update = goodsDisposalService.update(mergedGoodsDisposal);
+       return new ResponseEntity<>(update,HttpStatus.OK);
     }
 }

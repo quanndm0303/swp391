@@ -26,20 +26,19 @@ public class WarehouseZoneValidator {
             return "Warehouse ID is not empty";
         }
 
-        if(!checkWarehouseExist(warehouseZone.getWarehouse_id())){
+        if(!checkWarehouseExist(warehouseZone.getWarehouse_id())) {
             return "Warehouse ID is not valid ";
         }
 
-        Optional<WarehouseZone> existingWarehouseZone = warehouseZoneRespository.findByName(warehouseZone.getName());
-        if(existingWarehouseZone.isPresent()){
-            return "Warehouse Zone with the same name already ";
-        }
-        return "Validation successful";
+        return "";
     }
     private boolean checkWarehouseExist(Integer warehouse_id){
         return warehouseRespository.existsById(warehouse_id);
     }
-    public String checkPut(WarehouseZone warehouseZone){
+    public String checkPut(Integer warehouseZoneId,WarehouseZone warehouseZone){
+        if(warehouseZoneId==null||!warehouseRespository.existsById(warehouseZoneId)){
+            return "Id is not valid";
+        }
         return checkPost(warehouseZone);
     }
     private boolean checkIdExist(Integer id){

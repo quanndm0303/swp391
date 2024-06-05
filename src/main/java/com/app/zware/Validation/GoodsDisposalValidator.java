@@ -27,15 +27,17 @@ public class GoodsDisposalValidator {
       if (!checkWarehouseExist(goodsDisposal.getWarehouse_id())){
           return "Warehouse ID does not exist";
       }
-      if(goodsDisposal.getDate()==null){
+      if(goodsDisposal.getDate()==null) {
           return "Date is not empty";
       }
-      if(goodsDisposal.getDate().after(new Date())){
-          return "Date should not be in the future";
-      }
+
+
       return "";
     }
-    public String checkPut (GoodsDisposal goodsDisposal){
+    public String checkPut (Integer goodsDisposalId,GoodsDisposal goodsDisposal){
+        if(goodsDisposalId==null||!goodsDisposalRepository.existsById(goodsDisposalId)){
+            return "Id is not valid";
+        }
         return checkPost(goodsDisposal);
     }
 

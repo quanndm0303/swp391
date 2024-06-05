@@ -37,53 +37,60 @@ public class WarehouseZoneController {
     return new ResponseEntity<>(warehouseZoneService.getAll(), HttpStatus.OK);
   }
 
+
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody WarehouseZone warehouseZone) {
-    String validator = warehouseZoneValidator.checkPost(warehouseZone);
-    if(!validator.equals("Validation successful")){
-      return new ResponseEntity<>(validator,HttpStatus.BAD_REQUEST);
+    String checkMessage = warehouseZoneValidator.checkPost(warehouseZone);
+    if(!checkMessage.isEmpty()){
+      return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
     }else {
       warehouseZoneService.createWarehouseZone(warehouseZone);
       return new ResponseEntity<>("WarehouseZone has been created successful",HttpStatus.OK);
     }
   }
 
+
   @GetMapping("/{warehouseZoneId}")
   public ResponseEntity<?> show(@PathVariable("warehouseZoneId") int warehouseZoneId) {
-    String validator = warehouseZoneValidator.checkGet(warehouseZoneId);
-    if(!validator.isEmpty()){
-      return new ResponseEntity<>(validator,HttpStatus.BAD_REQUEST);
+    String checkMessage= warehouseZoneValidator.checkGet(warehouseZoneId);
+    if(!checkMessage.isEmpty()){
+      return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
     }else {
       return new ResponseEntity<>(warehouseZoneService.getWarehouseZoneById(warehouseZoneId),HttpStatus.OK);
     }
 
   }
 
+
+
   @DeleteMapping("/{warehouseZoneId}")
   public ResponseEntity<?> destroy(@PathVariable("warehouseZoneId") int warehouseZoneId) {
-    String validator = warehouseZoneValidator.checkDelete(warehouseZoneId);
-    if(!validator.isEmpty()){
-      return new ResponseEntity<>(validator,HttpStatus.BAD_REQUEST);
+    String checkMessage = warehouseZoneValidator.checkDelete(warehouseZoneId);
+    if(!checkMessage.isEmpty()){
+      return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
     }else {
       warehouseZoneService.deleteWarehouseZoneById(warehouseZoneId);
       return new ResponseEntity<>("WarehouseZone has been deleted successfully",HttpStatus.OK);
     }
+
 
   }
 
   @PutMapping("/{warehouseZoneId}")
   public ResponseEntity<?> update(@PathVariable int warehouseZoneId,
       @RequestBody WarehouseZone request) {
-    String validatorGet = warehouseZoneValidator.checkGet(warehouseZoneId);
-    String validatorPut = warehouseZoneValidator.checkPut(request);
-    if(!validatorGet.isEmpty()){
-      return new ResponseEntity<>(validatorGet,HttpStatus.BAD_REQUEST);
-    } else if (!validatorPut.equals("Validation successful")) {
-      return new ResponseEntity<>(validatorPut,HttpStatus.BAD_REQUEST);
-    }else {
-      warehouseZoneService.updateWarehouseZone(warehouseZoneId,request);
-      return new ResponseEntity<>("WarehouseZone has been updated successfully",HttpStatus.OK);
+    WarehouseZone mergedWarehouseZone = warehouseZoneService.merger(warehouseZoneId,request);
+
+    //Validate
+    String checkMessage = warehouseZoneValidator.checkPut(warehouseZoneId,mergedWarehouseZone);
+    if(!checkMessage.isEmpty()){
+      return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
     }
+
+
+    //Update
+    WarehouseZone updated = warehouseZoneService.update(mergedWarehouseZone);
+    return new ResponseEntity<>(updated,HttpStatus.OK);
   }
 
 }
