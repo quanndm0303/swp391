@@ -42,6 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
     String jwt = JwtUtil.getJwtToken(request);
 
     if (jwt == null) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       return;
     }
 

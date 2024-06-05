@@ -56,7 +56,6 @@ public class InboundTransactionController {
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody InboundTransaction transaction) {
-    System.out.println("before validation: POST");
 
     //Validate
     String checkMessage = validator.checkPost(transaction);
@@ -64,7 +63,6 @@ public class InboundTransactionController {
       return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
 
-    System.out.println("Passed validation: POST");
     //Save
     InboundTransaction storedTransaction = service.save(transaction);
     return new ResponseEntity<>(storedTransaction, HttpStatus.OK);
@@ -75,14 +73,17 @@ public class InboundTransactionController {
       @PathVariable Integer id,
       @RequestBody InboundTransaction transaction
   ) {
+    //Merge info
+    InboundTransaction mergedTransaction = service.merge(id, transaction);
+
     //Validate
-    String checkMessage = validator.checkPut(id, transaction);
+    String checkMessage = validator.checkPut(id, mergedTransaction);
     if (!checkMessage.isEmpty()) {
       return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
 
     //Update
-    InboundTransaction updatedTransaction = service.update(id, transaction);
+    InboundTransaction updatedTransaction = service.update(mergedTransaction);
     return new ResponseEntity<>(updatedTransaction, HttpStatus.OK);
 
   }

@@ -4,10 +4,8 @@ import com.app.zware.Entities.InboundTransaction;
 import com.app.zware.Repositories.InboundTransactionRepository;
 import com.app.zware.Repositories.OutboundTransactionRepository;
 import com.app.zware.Repositories.UserRepository;
-import com.app.zware.Repositories.WarehouseItemsRepository;
 import java.util.Arrays;
 import java.util.List;
-import javax.xml.transform.Source;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +29,6 @@ public class InboundTransactionValidator {
   }
 
   public String checkPost(InboundTransaction inboundTransaction) {
-    System.out.println("go to validator");
 
     if (inboundTransaction.getDate() == null) {
       return "Transaction date is not valid";
@@ -48,7 +45,7 @@ public class InboundTransactionValidator {
     }
 
     Integer source = inboundTransaction.getSource();
-    if (source != null && !outboundTransactionRepository.existsById(source)){
+    if (source != null && !outboundTransactionRepository.existsById(source)) {
       return "Source is not valid";
     }
 
@@ -56,8 +53,8 @@ public class InboundTransactionValidator {
   }
 
   public String checkPut(Integer transactionId, InboundTransaction transaction) {
-    if (!inboundTransactionRepository.existsById(transactionId)){
-      return "";
+    if (transactionId == null || !inboundTransactionRepository.existsById(transactionId)) {
+      return "Id is not valid";
     }
     return checkPost(transaction);
   }
