@@ -24,22 +24,30 @@ public class OutboundTransactionService {
     public OutboundTransaction createOutboundTransaction(OutboundTransaction request){
         return outboundTransactionRepository.save(request);
     }
-    public boolean checkIdExist(int id){
-        return outboundTransactionRepository.existsById(id);
-    }
-    public void deleteOutboundTransaction(int id){
+//    public boolean checkIdExist(Integer id){
+//        return outboundTransactionRepository.existsById(id);
+//    }
+
+    public void deleteOutboundTransaction(Integer id){
         outboundTransactionRepository.deleteById(id);
     }
-    public OutboundTransaction updateOutboundTransaction(int id,OutboundTransaction request){
 
-        OutboundTransaction outboundTransaction = getOutboundTransactionById(id);
-        Optional.ofNullable(request.getDate()).ifPresent((outboundTransaction::setDate));
-        Optional.ofNullable(request.getMaker_id()).ifPresent((outboundTransaction::setMaker_id));
-        Optional.ofNullable(request.getStatus()).ifPresent((outboundTransaction::setStatus));
-        Optional.ofNullable(request.getDestination()).ifPresent((outboundTransaction::setDestination));
-            return outboundTransactionRepository.save(outboundTransaction);
+    public OutboundTransaction update(OutboundTransaction outboundTransaction){
+        return outboundTransactionRepository.save(outboundTransaction);
+    }
 
+    public OutboundTransaction merge(Integer id,OutboundTransaction request){
 
+       OutboundTransaction outboundTransaction = getOutboundTransactionById(id);
+        if(outboundTransaction == null){
+            return null;
+        }
+            Optional.ofNullable(request.getDate()).ifPresent(outboundTransaction::setDate);
+            Optional.ofNullable(request.getMaker_id()).ifPresent(outboundTransaction::setMaker_id);
+            Optional.ofNullable(request.getStatus()).ifPresent(outboundTransaction::setStatus);
+            Optional.ofNullable(request.getDestination()).ifPresent(outboundTransaction::setDestination);
+
+            return outboundTransaction;
         }
 
 }
