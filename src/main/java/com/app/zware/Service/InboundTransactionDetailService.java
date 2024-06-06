@@ -26,18 +26,22 @@ public class InboundTransactionDetailService {
     return detail;
   }
 
-  public InboundTransactionDetail update(Integer id, InboundTransactionDetail request) {
-    InboundTransactionDetail detail = repository.findById(id).orElse(null);
-    if (detail == null) {
+  public InboundTransactionDetail update(Integer id, InboundTransactionDetail mergedDetail) {
+    return repository.save(mergedDetail);
+  }
+
+  public InboundTransactionDetail merge(Integer oldDetailId, InboundTransactionDetail newDetail) {
+    InboundTransactionDetail oldDetail = repository.findById(oldDetailId).orElse(null);
+    if (oldDetail == null) {
       return null;
     }
 
-    Optional.ofNullable(request.getTransaction_id()).ifPresent(detail::setTransaction_id);
-    Optional.of(request.getQuantity()).ifPresent(detail::setQuantity);
-    Optional.ofNullable(request.getItem_id()).ifPresent(detail::setItem_id);
-    Optional.ofNullable(request.getZone_id()).ifPresent(detail::setZone_id);
+    Optional.ofNullable(newDetail.getTransaction_id()).ifPresent(oldDetail::setTransaction_id);
+    Optional.of(newDetail.getQuantity()).ifPresent(oldDetail::setQuantity);
+    Optional.ofNullable(newDetail.getItem_id()).ifPresent(oldDetail::setItem_id);
+    Optional.ofNullable(newDetail.getZone_id()).ifPresent(oldDetail::setZone_id);
 
-    return repository.save(detail);
+    return oldDetail; //Has been UPDATED
   }
 
   public void delete(Integer id) {

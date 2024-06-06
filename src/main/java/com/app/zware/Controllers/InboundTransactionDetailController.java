@@ -72,8 +72,11 @@ public class InboundTransactionDetailController {
   public ResponseEntity<?> update(@PathVariable Integer id,
       @RequestBody InboundTransactionDetail detail) {
 
+    //Merge
+    InboundTransactionDetail mergedDetail = service.merge(id, detail);
+
     //VALIDATION
-    String checkMessage = validator.checkPut(id, detail);
+    String checkMessage = validator.checkPut(id, mergedDetail);
     if (!checkMessage.isEmpty()) {
       return new ResponseEntity<>(checkMessage, HttpStatus.OK);
     }

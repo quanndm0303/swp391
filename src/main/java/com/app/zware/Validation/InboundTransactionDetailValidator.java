@@ -56,11 +56,11 @@ public class InboundTransactionDetailValidator {
     return "";
   }
 
-  public String checkPut(Integer id, InboundTransactionDetail detail) {
+  public String checkPut(Integer id, InboundTransactionDetail mergedDetail) {
     if (id == null || !ITD_Repo.existsById(id)) {
       return "Id is not valid";
     }
-    return checkPost(detail);
+    return checkPost(mergedDetail);
   }
 
   public String checkDelete(Integer id) {
