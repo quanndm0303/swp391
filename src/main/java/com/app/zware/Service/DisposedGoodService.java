@@ -34,14 +34,24 @@ public class DisposedGoodService {
         return disposedGoodRespository.existsById(id);
     }
 
-    public DisposedGood updateDisposedGoodById(Integer id, DisposedGood request){
-        DisposedGood disposedGood = getDisposedGoodById(id);
+    public DisposedGood merge (Integer oldDisposedGoodId,DisposedGood newDisposedGood){
+        DisposedGood oldDisposedGood = disposedGoodRespository.findById(oldDisposedGoodId).orElse(null);
+        if(oldDisposedGood==null){
+            return null;
+        }
 
-        Optional.of(request.getDisposal_id()).ifPresent(disposedGood::setDisposal_id);
-        Optional.ofNullable(request.getReason()).ifPresent(disposedGood::setReason);
-        Optional.of(request.getQuantity()).ifPresent(disposedGood::setQuantity);
-        Optional.of(request.getItem_id()).ifPresent(disposedGood::setItem_id);
 
-        return disposedGoodRespository.save(disposedGood);
+        Optional.ofNullable(newDisposedGood.getDisposal_id()).ifPresent(oldDisposedGood::setDisposal_id);
+        Optional.ofNullable(newDisposedGood.getItem_id()).ifPresent(oldDisposedGood::setItem_id);
+        Optional.of(newDisposedGood.getQuantity()).ifPresent(oldDisposedGood::setQuantity);
+        Optional.ofNullable(newDisposedGood.getReason()).ifPresent(oldDisposedGood::setReason);
+
+        return oldDisposedGood;
     }
+
+    public DisposedGood update (DisposedGood mergeDisposalGood){
+       return disposedGoodRespository.save(mergeDisposalGood);
+    }
+
+
 }

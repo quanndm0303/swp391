@@ -3,6 +3,8 @@ package com.app.zware.Service;
 import com.app.zware.Entities.Warehouse;
 import com.app.zware.Repositories.WarehouseRespository;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,15 +34,21 @@ public class WarehouseService {
     wareHouseRespository.deleteById(id);
   }
 
-  public Warehouse updateWarehouse(int id, Warehouse request) {
-    Warehouse warehouse = getWareHouseById(id);
-    if (request.getName() != null) {
-      warehouse.setName(request.getName());
+  public Warehouse merge(Integer oldWarehouseId,Warehouse newWarehouse){
+    Warehouse oldWarehouse = wareHouseRespository.findById(oldWarehouseId).orElse(null);
+    if(oldWarehouse == null){
+      return null;
     }
-    if (request.getAddress() != null) {
-      warehouse.setAddress(request.getAddress());
-    }
-    return wareHouseRespository.save(warehouse);
+
+    Optional.ofNullable(newWarehouse.getName()).ifPresent(oldWarehouse::setName);
+    Optional.ofNullable(newWarehouse.getAddress()).ifPresent(oldWarehouse::setAddress);
+
+    return oldWarehouse;
+  }
+
+
+  public Warehouse updateWarehouse(Warehouse mergedWarehouse) {
+    return wareHouseRespository.save(mergedWarehouse);
 
   }
 

@@ -14,8 +14,9 @@ public class DisposedGood {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+
     private Integer disposal_id;
     private Integer item_id;
-    private int quantity;
+    private Integer quantity;
     private String reason;
 }

@@ -33,9 +33,9 @@ public class WarehouseController {
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody Warehouse wareHouseRequest) {
-    String validation = warehouseValidator.checkPost(wareHouseRequest);
-    if(!validation.equals("Validation successful")){
-      return new ResponseEntity<>(validation,HttpStatus.BAD_REQUEST);
+    String message = warehouseValidator.checkPost(wareHouseRequest);
+    if(!message.isEmpty()){
+      return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
     }
     warehouseService.createWareHouse(wareHouseRequest);
     return new ResponseEntity<>("Warehouse has been created successfully", HttpStatus.OK);
@@ -64,17 +64,16 @@ public class WarehouseController {
 
   @PutMapping("/{warehouseId}")
   public ResponseEntity<?> update(@PathVariable int warehouseId, @RequestBody Warehouse request) {
-    String validationPut = warehouseValidator.checkPut(request);
-    String validationGet = warehouseValidator.checkGet(warehouseId);
-      if(!validationGet.isEmpty()){
-        return new ResponseEntity<>(validationGet,HttpStatus.BAD_REQUEST);
-      }
-      if (!validationPut.equals("Validation successful")) {
-         return new ResponseEntity<>(validationPut,HttpStatus.BAD_REQUEST);
-    } else {
-      warehouseService.updateWarehouse(warehouseId, request);
-      return new ResponseEntity<>("Warehouse has been updated successfully", HttpStatus.OK);
-    }
+     Warehouse mergedWarehouse = warehouseService.merge(warehouseId,request);
+
+     String checkMessage = warehouseValidator.checkPut(warehouseId,mergedWarehouse);
+
+     if(!checkMessage.isEmpty()){
+       return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
+     }
+
+     Warehouse updateWarehouse = warehouseService.updateWarehouse(mergedWarehouse);
+     return new ResponseEntity<>(updateWarehouse,HttpStatus.OK);
 
   }
 }

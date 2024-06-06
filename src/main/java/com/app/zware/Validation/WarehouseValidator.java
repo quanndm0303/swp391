@@ -22,11 +22,16 @@ public class WarehouseValidator {
         if (existingWarehouse.isPresent()){
             return "Warehouse with the same name already exist";
         }
-        return "Validation successful";
+        return "";
     }
 
-    public String checkPut(Warehouse warehouse){
+    public String checkPut(Integer warehouseId,Warehouse warehouse){
+        if(warehouseId==null||!warehouseRespository.existsById(warehouseId)){
+            return "Id is not valid";
+        }
         return checkPost(warehouse);
+
+
     }
     public String checkGet(Integer id){
         if(!checkIdExist(id)){
@@ -35,6 +40,8 @@ public class WarehouseValidator {
             return "";
         }
     }
+
+
     public String checkDetete(Integer id){
         return checkGet(id);
     }

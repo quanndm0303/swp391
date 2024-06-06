@@ -34,13 +34,21 @@ public class GoodsDisposalService {
        return goodsDisposalRepository.existsById(id);
     }
 
-    public GoodsDisposal update(Integer id, GoodsDisposal request){
-        GoodsDisposal goodsDisposal = getGoodsById(id);
 
-        Optional.ofNullable(request.getDate()).ifPresent(goodsDisposal::setDate);
-        Optional.ofNullable(request.getStatus()).ifPresent(goodsDisposal::setStatus);
-        Optional.ofNullable(request.getWarehouse_id()).ifPresent(goodsDisposal::setWarehouse_id);
+    public GoodsDisposal merge(Integer oldGoodsDisposalId,GoodsDisposal newGoodsDisposal){
+        GoodsDisposal oldGoodsDisposal = goodsDisposalRepository.findById(oldGoodsDisposalId).orElse(null);
+        if(oldGoodsDisposal==null){
+            return null;
+        }
 
-        return goodsDisposalRepository.save(goodsDisposal);
+        Optional.ofNullable(newGoodsDisposal.getWarehouse_id()).ifPresent(oldGoodsDisposal::setWarehouse_id);
+        Optional.ofNullable(newGoodsDisposal.getDate()).ifPresent(oldGoodsDisposal::setDate);
+        Optional.ofNullable(newGoodsDisposal.getStatus()).ifPresent(oldGoodsDisposal::setStatus);
+
+        return oldGoodsDisposal;
+    }
+
+    public GoodsDisposal update(GoodsDisposal mergeGoodsDisposal){
+        return goodsDisposalRepository.save(mergeGoodsDisposal);
     }
 }
