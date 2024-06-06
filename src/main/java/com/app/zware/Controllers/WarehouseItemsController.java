@@ -2,8 +2,11 @@ package com.app.zware.Controllers;
 
 
 import com.app.zware.Entities.WarehouseItems;
+import com.app.zware.Repositories.WarehouseItemsRepository;
 import com.app.zware.Service.WarehouseItemsService;
 import java.util.List;
+
+import com.app.zware.Validation.WarehouseItemValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,12 @@ public class WarehouseItemsController {
   @Autowired
   WarehouseItemsService warehouseItemsService;
 
+  @Autowired
+  WarehouseItemValidator warehouseItemValidator;
+
+  @Autowired
+  WarehouseItemsRepository warehouseItemsRepository;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
     List<WarehouseItems> productList = warehouseItemsService.getAllWarehouseItems();
@@ -33,41 +42,64 @@ public class WarehouseItemsController {
     }
   }
 
+
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody WarehouseItems request) {
-    return new ResponseEntity<>(warehouseItemsService.createWarehouseItems(request), HttpStatus.OK);
+    String checkMessage = warehouseItemValidator.checkPost(request);
+    if(!checkMessage.isEmpty()){
+      return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
+    }
+    else {
+
+      warehouseItemsService.createWarehouseItems(request);
+      return new ResponseEntity<>("WarehouseItems has been created successfully",HttpStatus.OK);
+
+    }
+
   }
+
 
   @GetMapping("/{warehouseitemid}")
   public ResponseEntity<?> show(@PathVariable("warehouseitemid") int warehouseitemId) {
-    try {
-      WarehouseItems warehouseItems = warehouseItemsService.getById(warehouseitemId);
-      return new ResponseEntity<>(warehouseItems, HttpStatus.OK);
-
-    } catch (RuntimeException e) {
-      return new ResponseEntity<>("WarehouseItems not found", HttpStatus.NOT_FOUND);
+    String checkMessage = warehouseItemValidator.checkGet(warehouseitemId);
+    if(!checkMessage.isEmpty()){
+      return new ResponseEntity<>(checkMessage,HttpStatus.NOT_FOUND);
+    }else {
+      return new ResponseEntity<>(warehouseItemsService.getById(warehouseitemId),HttpStatus.OK);
     }
   }
 
+
   @DeleteMapping("/{warehouseitemid}")
   public ResponseEntity<?> destroy(@PathVariable("warehouseitemid") int warehouseitemId) {
-    if (!warehouseItemsService.checkWarehouseItemsId(warehouseitemId)) {
-      return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
-    } else {
-      warehouseItemsService.deleteWarehouseItemsById(warehouseitemId);
-      return new ResponseEntity<>("Product has been deleted successfully", HttpStatus.OK);
-    }
+   String checkMessage = warehouseItemValidator.checkDelete(warehouseitemId);
+   if(!checkMessage.isEmpty()){
+     return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
+   }
+   else {
+     warehouseItemsService.deleteWarehouseItemsById(warehouseitemId);
+     return new ResponseEntity<>("WarehouseItem has been deleted successfully",HttpStatus.OK);
+   }
   }
 
   @PutMapping("/{warehouseitemid}")
   public ResponseEntity<?> update(@PathVariable int warehouseitemid,
       @RequestBody WarehouseItems request) {
-    if (!warehouseItemsService.checkWarehouseItemsId(warehouseitemid)) {
-      return new ResponseEntity<>("WarehouseItems not found", HttpStatus.NOT_FOUND);
-    } else {
-      warehouseItemsService.updateWarehouseItemsById(warehouseitemid, request);
-      return new ResponseEntity<>("WarehouseItems has been updated successfully", HttpStatus.OK);
+   WarehouseItems mergedWarehouseItem = warehouseItemsService.merger(warehouseitemid,request);
+
+   //Validation
+    String checkMessage = warehouseItemValidator.checkPut(warehouseitemid,mergedWarehouseItem);
+    if(!checkMessage.isEmpty()){
+      return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
+    }else {
+      WarehouseItems updated = warehouseItemsService.update(mergedWarehouseItem);
+      return new ResponseEntity<>(updated,HttpStatus.OK);
     }
 
+
+
+
+
   }
+
 }

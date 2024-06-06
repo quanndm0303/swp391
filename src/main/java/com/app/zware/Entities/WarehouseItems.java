@@ -15,8 +15,8 @@ public class WarehouseItems {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
-  private int zone_id;
-  private int item_id;
-  private int quantity;
+  private Integer zone_id;
+  private Integer item_id;
+  private Integer quantity;
 
 }

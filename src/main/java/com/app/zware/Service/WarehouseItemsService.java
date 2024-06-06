@@ -34,14 +34,19 @@ public class WarehouseItemsService {
     return warehouseItemsRepository.existsById(id);
   }
 
-  public WarehouseItems updateWarehouseItemsById(int id, WarehouseItems request) {
-    WarehouseItems warehouseItems = getById(id);
+  public WarehouseItems merger(Integer oldWarehouseItemId,WarehouseItems newWarehouseItem){
+    WarehouseItems oldWarehouseItem =  warehouseItemsRepository.findById(oldWarehouseItemId).orElse(null);
+    if(oldWarehouseItem==null){
+      return null;
+    }
+    Optional.ofNullable(newWarehouseItem.getZone_id()).ifPresent(oldWarehouseItem::setZone_id);
+    Optional.ofNullable(newWarehouseItem.getItem_id()).ifPresent(oldWarehouseItem::setItem_id);
+    Optional.ofNullable(newWarehouseItem.getQuantity()).ifPresent(oldWarehouseItem::setQuantity);
 
-    Optional.of(request.getItem_id()).ifPresent(warehouseItems::setItem_id);
-    Optional.of(request.getQuantity()).ifPresent(warehouseItems::setQuantity);
-    Optional.of(request.getZone_id()).ifPresent(warehouseItems::setZone_id);
-
-    return warehouseItemsRepository.save(warehouseItems);
+  return oldWarehouseItem;
+  }
+  public WarehouseItems update (WarehouseItems mergeWarehouseItem){
+    return warehouseItemsRepository.save(mergeWarehouseItem);
   }
 
 }
