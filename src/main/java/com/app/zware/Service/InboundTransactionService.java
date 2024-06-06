@@ -26,18 +26,22 @@ public class InboundTransactionService {
     return transaction;
   }
 
-  public InboundTransaction update(Integer id, InboundTransaction request) {
-    InboundTransaction transaction = repository.findById(id).orElse(null);
-    if (transaction == null) {
+  public InboundTransaction update(InboundTransaction mergedTransaction) {
+    return repository.save(mergedTransaction);
+  }
+
+  public InboundTransaction merge(Integer oldTransactionId, InboundTransaction newTransaction){
+    InboundTransaction oldTransaction = repository.findById(oldTransactionId).orElse(null);
+    if (oldTransaction == null){
       return null;
     }
 
-    Optional.ofNullable(request.getDate()).ifPresent(transaction::setDate);
-    Optional.ofNullable(request.getMaker_id()).ifPresent(transaction::setMaker_id);
-    Optional.ofNullable(request.getStatus()).ifPresent(transaction::setStatus);
-    Optional.ofNullable(request.getSource()).ifPresent(transaction::setSource);
+    Optional.ofNullable(newTransaction.getDate()).ifPresent(oldTransaction::setDate);
+    Optional.ofNullable(newTransaction.getMaker_id()).ifPresent(oldTransaction::setMaker_id);
+    Optional.ofNullable(newTransaction.getStatus()).ifPresent(oldTransaction::setStatus);
+    Optional.ofNullable(newTransaction.getSource()).ifPresent(oldTransaction::setSource);
 
-    return repository.save(transaction);
+    return oldTransaction; //has been UPDATED
   }
 
   public void delete(Integer id) {

@@ -2,6 +2,7 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.InboundTransaction;
 import com.app.zware.Service.InboundTransactionService;
+import com.app.zware.Validation.InboundTransactionValidator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,9 @@ public class InboundTransactionController {
   @Autowired
   InboundTransactionService service;
 
+  @Autowired
+  InboundTransactionValidator validator;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
     List<InboundTransaction> transactions = service.getAll();
@@ -34,6 +38,14 @@ public class InboundTransactionController {
 
   @GetMapping("/{id}")
   public ResponseEntity<?> show(@PathVariable Integer id) {
+
+    //Validate
+    String checkMessage = validator.checkGet(id);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    //Get
     InboundTransaction transaction = service.getById(id);
     if (transaction == null) {
       return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
@@ -44,30 +56,48 @@ public class InboundTransactionController {
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody InboundTransaction transaction) {
+
+    //Validate
+    String checkMessage = validator.checkPost(transaction);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    //Save
     InboundTransaction storedTransaction = service.save(transaction);
     return new ResponseEntity<>(storedTransaction, HttpStatus.OK);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> update(@PathVariable Integer id,
-      @RequestBody InboundTransaction request) {
-    InboundTransaction transaction = service.getById(id);
-    if (transaction == null) {
-      return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
-    } else {
-      InboundTransaction updatedTransaction = service.update(id, request);
-      return new ResponseEntity<>(updatedTransaction, HttpStatus.OK);
+  public ResponseEntity<?> update(
+      @PathVariable Integer id,
+      @RequestBody InboundTransaction transaction
+  ) {
+    //Merge info
+    InboundTransaction mergedTransaction = service.merge(id, transaction);
+
+    //Validate
+    String checkMessage = validator.checkPut(id, mergedTransaction);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
+
+    //Update
+    InboundTransaction updatedTransaction = service.update(mergedTransaction);
+    return new ResponseEntity<>(updatedTransaction, HttpStatus.OK);
+
   }
 
   @DeleteMapping("{id}")
   public ResponseEntity<?> destroy(@PathVariable Integer id) {
-    InboundTransaction transaction = service.getById(id);
-    if (transaction == null) {
-      return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
-    } else {
-      service.delete(id);
-      return new ResponseEntity<>("Transaction deleted successfully", HttpStatus.OK);
+    //Validate
+    String checkMessage = validator.checkDelete(id);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
+
+    //Delete
+    service.delete(id);
+    return new ResponseEntity<>("Transaction deleted successfully", HttpStatus.OK);
   }
 }

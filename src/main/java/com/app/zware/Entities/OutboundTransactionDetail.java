@@ -14,6 +14,6 @@ public class OutboundTransactionDetail {
     private Integer id;
     private Integer transaction_id;
     private Integer item_id;
-    private int quantity;
+    private Integer quantity;
     private Integer zone_id;
 }
