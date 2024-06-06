@@ -2,6 +2,7 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.User;
 import com.app.zware.Service.UserService;
+import com.app.zware.Validation.UserValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class UserController {
   @Autowired
   UserService userService;
 
+  @Autowired
+  UserValidator userValidator;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
 
@@ -37,21 +41,23 @@ public class UserController {
   }
 
   @GetMapping("/{userId}")
-  public ResponseEntity<?> show(@PathVariable("userId") int userId) {
-
+  public ResponseEntity<?> show(@PathVariable("userId") Integer userId) {
     //Any Authenticated user can view
-    //GET User
-    if (userService.checkIdUserExist(userId)) {
-      return new ResponseEntity<>(userService.getById(userId), HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+
+    //Validate
+    String checkMessage = userValidator.checkGet(userId);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
+
+    //GET User
+    return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
 
   }
 
   @DeleteMapping("/{userId}")
   public ResponseEntity<?> destroy(
-      @PathVariable("userId") int userId,
+      @PathVariable("userId") Integer userId,
       HttpServletRequest request
   ) {
 
@@ -61,20 +67,21 @@ public class UserController {
       return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
-    //DELETE
-    if (userService.checkIdUserExist(userId)) {
-      userService.deleteUserById(userId);
-      return new ResponseEntity<>("User has been deleted successfully", HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+    //Validate
+    String checkMessage = userValidator.checkDelete(userId);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
 
+    //DELETE
+    userService.deleteUserById(userId);
+    return new ResponseEntity<>("User has been deleted successfully", HttpStatus.OK);
   }
 
   @PutMapping("/{userId}")
   public ResponseEntity<?> update(
       @PathVariable("userId") Integer userId,
-      @RequestBody User requestBody,
+      @RequestBody User newUser,
       HttpServletRequest request
   ) {
 
@@ -84,13 +91,16 @@ public class UserController {
       return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
-    //UPDATE
-    if (userService.checkIdUserExist(userId)) {
-      userService.update(userId, requestBody);
-      return new ResponseEntity<>("User has been Updated successfully\n", HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+    //validate
+    User mergedUser = userService.merge(userId, newUser);
+    String checkMessage = userValidator.checkPut(userId, mergedUser);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
     }
+
+    //UPDATE
+      userService.update(userId, mergedUser);
+      return new ResponseEntity<>("User has been Updated successfully", HttpStatus.OK);
 
   }
 

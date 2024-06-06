@@ -29,9 +29,7 @@ public class UserValidator {
       return "Email is not valid";
     }
 
-    if (userRepository.findByEmail(user.getEmail()) != null) {
-      return "Email has been used";
-    }
+
 
     if (user.getPassword().length() < 6) {
       return "Password is not valid";
@@ -47,14 +45,20 @@ public class UserValidator {
       return "Warehouse id is not valid";
     }
 
+    //If return this to checkPut, it is OK.
+    if (userRepository.findByEmail(user.getEmail()) != null) {
+      return "Email has been used";
+    }
+
     return "";
   }
 
-  public String checkPut(Integer userId, User user) {
-    if (!userRepository.existsById(userId)) {
+  public String checkPut(Integer userId, User mergedUser) {
+    if (userId == null || !userRepository.existsById(userId)) {
       return ("User id is not valid");
     }
-    return checkPost(user);
+    String checkPostMessage =  checkPost(mergedUser);
+    return (checkPostMessage.equals("Email has been used")) ? "" : checkPostMessage;
   }
 
   public String checkGet(Integer userId) {
