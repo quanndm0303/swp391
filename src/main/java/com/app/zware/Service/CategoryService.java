@@ -32,9 +32,6 @@ public class CategoryService {
 
   }
 
-  public boolean checkIdExist(int id) {
-    return categoryRepository.existsById(id);
-  }
 
   public Category updateCategoryById(int id, Category request) {
     Category category = getCategoryById(id);

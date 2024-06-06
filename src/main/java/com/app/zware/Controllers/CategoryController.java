@@ -3,6 +3,8 @@ package com.app.zware.Controllers;
 import com.app.zware.Entities.Category;
 import com.app.zware.Service.CategoryService;
 import java.util.List;
+
+import com.app.zware.Validation.CategoryValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class CategoryController {
   @Autowired
   CategoryService categoryService;
 
+  @Autowired
+  CategoryValidator categoryValidator;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
     List<Category> categoryList = categoryService.getCategory();
@@ -34,24 +39,30 @@ public class CategoryController {
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody Category category) {
-    return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.OK);
-  }
-
-  @GetMapping("/{categoryId}")
-  public ResponseEntity<?> show(@PathVariable("categoryId") int categoryId) {
-    try {
-      Category category = categoryService.getCategoryById(categoryId);
-      return new ResponseEntity<>(category, HttpStatus.OK);
-
-    } catch (RuntimeException e) {
-      return new ResponseEntity<>("Category not found", HttpStatus.NOT_FOUND);
+    String mess = categoryValidator.checkPost(category);
+    if(!mess.isEmpty()){
+      return new ResponseEntity<>(mess, HttpStatus.BAD_REQUEST);
+    } else {
+      return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.OK);
     }
   }
 
+  @GetMapping("/{categoryId}")
+  public ResponseEntity<?> show(@PathVariable("categoryId") Integer categoryId) {
+      String message = categoryValidator.checkGet(categoryId);
+      if(!message.isEmpty()){
+        return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+      } else {
+        Category category = categoryService.getCategoryById(categoryId);
+        return new ResponseEntity<>(category, HttpStatus.OK);
+      }
+  }
+
   @DeleteMapping("/{categoryId}")
-  public ResponseEntity<?> destroy(@PathVariable("categoryId") int categoryId) {
-    if (!categoryService.checkIdExist(categoryId)) {
-      return new ResponseEntity<>("Not Found Category", HttpStatus.NOT_FOUND);
+  public ResponseEntity<?> destroy(@PathVariable("categoryId") Integer categoryId) {
+    String message = categoryValidator.checkDelete(categoryId);
+    if (!message.isEmpty()) {
+      return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     } else {
       categoryService.deleteCategoryById(categoryId);
       return new ResponseEntity<>("Category has been deleted successfully", HttpStatus.OK);
@@ -59,12 +70,18 @@ public class CategoryController {
   }
 
   @PutMapping("/{categoryId}")
-  public ResponseEntity<?> update(@PathVariable int categoryId, @RequestBody Category request) {
-    if (!categoryService.checkIdExist(categoryId)) {
-      return new ResponseEntity<>("Not Found Category", HttpStatus.NOT_FOUND);
+  public ResponseEntity<?> update(@PathVariable Integer categoryId, @RequestBody Category request) {
+    String message = categoryValidator.checkGet(categoryId);
+    if (!message.isEmpty()) {
+      return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     } else {
-      categoryService.updateCategoryById(categoryId, request);
-      return new ResponseEntity<>("Category has been updated successfully", HttpStatus.OK);
+      String mess = categoryValidator.checkPut(request);
+      if(!mess.isEmpty()){
+        return new ResponseEntity<>(mess,HttpStatus.BAD_REQUEST);
+      } else {
+        categoryService.updateCategoryById(categoryId, request);
+        return new ResponseEntity<>("Category has been updated successfully", HttpStatus.OK);
+      }
     }
   }
 }
