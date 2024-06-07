@@ -77,18 +77,20 @@ public class ProductController {
 
   @PutMapping("/{productId}")
   public ResponseEntity<?> update(@PathVariable Integer productId, @RequestBody Product request) {
-    String msg = productValidator.checkGet(productId);
+    //set image of new update = null
     request.setImage(null);
-    if (!msg.isEmpty()) {
-      return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
-    } else {
-      String messages = productValidator.checkPut(request);
-      if(messages.isEmpty()){
-        productService.updateProductById(productId, request);
-        return new ResponseEntity<>("Product has been updated successfully", HttpStatus.OK);
-      } else {
+
+    //merge infor
+    Product updatedProduct = productService.merger(productId, request);
+
+    //check validate
+      String messages = productValidator.checkPut( productId,request);
+
+      if(!messages.isEmpty()) {
         return new ResponseEntity<>(messages, HttpStatus.BAD_REQUEST);
-      }
+      } else {
+        productService.update( updatedProduct);
+        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
   }
 

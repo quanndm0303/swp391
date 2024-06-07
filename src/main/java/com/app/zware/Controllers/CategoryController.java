@@ -71,17 +71,22 @@ public class CategoryController {
 
   @PutMapping("/{categoryId}")
   public ResponseEntity<?> update(@PathVariable Integer categoryId, @RequestBody Category request) {
-    String message = categoryValidator.checkGet(categoryId);
-    if (!message.isEmpty()) {
-      return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
-    } else {
-      String mess = categoryValidator.checkPut(request);
+//    String message = categoryValidator.checkGet(categoryId);
+//    if (!message.isEmpty()) {
+//      return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+//    } else {
+
+    //merge infor
+    Category updateCate = categoryService.merge(categoryId, request);
+
+    //check validate
+      String mess = categoryValidator.checkPut( categoryId,updateCate);
       if(!mess.isEmpty()){
         return new ResponseEntity<>(mess,HttpStatus.BAD_REQUEST);
       } else {
-        categoryService.updateCategoryById(categoryId, request);
-        return new ResponseEntity<>("Category has been updated successfully", HttpStatus.OK);
+        categoryService.update( updateCate);
+        return new ResponseEntity<>(updateCate, HttpStatus.OK);
       }
     }
   }
-}
+

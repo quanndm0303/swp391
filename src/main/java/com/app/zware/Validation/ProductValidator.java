@@ -26,7 +26,10 @@ public class ProductValidator {
         return "";
     }
 
-    public String checkPut(Product product){
+    public String checkPut(Integer id, Product product){
+        if(!checkProductId(id)){
+            return "Not found product ID";
+        }
         return checkPost(product);
     }
 

@@ -23,7 +23,10 @@ public class CategoryValidator {
         return "";
     }
 
-    public String checkPut(Category category) {
+    public String checkPut(Integer id, Category category) {
+        if(!checkCategoryId(id)){
+            return "Not found Category ID";
+        }
         return checkPost(category);
     }
 
