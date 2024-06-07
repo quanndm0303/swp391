@@ -42,13 +42,17 @@ public class WarehouseValidator {
 
     //check name : cannot same with other warehouse
     Warehouse existingWarehouse = warehouseRespository.findByName(mergedWarehouse.getName()).orElse(null);
-
-    assert existingWarehouse != null;
-    if (!existingWarehouse.getId().equals(warehouseId)) {
-      return "Warehouse with the same name already exist";
+    if (existingWarehouse == null){
+        return "";
     } else{
-      return "";
+      return (existingWarehouse.getId().equals(warehouseId)) ? "" : "Warehouse with the same name already exist";
     }
+//    assert existingWarehouse != null;
+//    if (!existingWarehouse.getId().equals(warehouseId)) {
+//      return "Warehouse with the same name already exist";
+//    } else{
+//      return "";
+//    }
   }
 
   public String checkGet(Integer id) {
