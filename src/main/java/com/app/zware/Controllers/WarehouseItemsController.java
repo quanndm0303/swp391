@@ -4,9 +4,8 @@ package com.app.zware.Controllers;
 import com.app.zware.Entities.WarehouseItems;
 import com.app.zware.Repositories.WarehouseItemsRepository;
 import com.app.zware.Service.WarehouseItemsService;
-import java.util.List;
-
 import com.app.zware.Validation.WarehouseItemValidator;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,13 +45,12 @@ public class WarehouseItemsController {
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody WarehouseItems request) {
     String checkMessage = warehouseItemValidator.checkPost(request);
-    if(!checkMessage.isEmpty()){
-      return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
-    }
-    else {
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
+    } else {
 
       warehouseItemsService.createWarehouseItems(request);
-      return new ResponseEntity<>("WarehouseItems has been created successfully",HttpStatus.OK);
+      return new ResponseEntity<>("WarehouseItems has been created successfully", HttpStatus.OK);
 
     }
 
@@ -62,42 +60,38 @@ public class WarehouseItemsController {
   @GetMapping("/{warehouseitemid}")
   public ResponseEntity<?> show(@PathVariable("warehouseitemid") int warehouseitemId) {
     String checkMessage = warehouseItemValidator.checkGet(warehouseitemId);
-    if(!checkMessage.isEmpty()){
-      return new ResponseEntity<>(checkMessage,HttpStatus.NOT_FOUND);
-    }else {
-      return new ResponseEntity<>(warehouseItemsService.getById(warehouseitemId),HttpStatus.OK);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.NOT_FOUND);
+    } else {
+      return new ResponseEntity<>(warehouseItemsService.getById(warehouseitemId), HttpStatus.OK);
     }
   }
 
 
   @DeleteMapping("/{warehouseitemid}")
   public ResponseEntity<?> destroy(@PathVariable("warehouseitemid") int warehouseitemId) {
-   String checkMessage = warehouseItemValidator.checkDelete(warehouseitemId);
-   if(!checkMessage.isEmpty()){
-     return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
-   }
-   else {
-     warehouseItemsService.deleteWarehouseItemsById(warehouseitemId);
-     return new ResponseEntity<>("WarehouseItem has been deleted successfully",HttpStatus.OK);
-   }
+    String checkMessage = warehouseItemValidator.checkDelete(warehouseitemId);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
+    } else {
+      warehouseItemsService.deleteWarehouseItemsById(warehouseitemId);
+      return new ResponseEntity<>("WarehouseItem has been deleted successfully", HttpStatus.OK);
+    }
   }
 
   @PutMapping("/{warehouseitemid}")
   public ResponseEntity<?> update(@PathVariable int warehouseitemid,
       @RequestBody WarehouseItems request) {
-   WarehouseItems mergedWarehouseItem = warehouseItemsService.merger(warehouseitemid,request);
+    WarehouseItems mergedWarehouseItem = warehouseItemsService.merge(warehouseitemid, request);
 
-   //Validation
-    String checkMessage = warehouseItemValidator.checkPut(warehouseitemid,mergedWarehouseItem);
-    if(!checkMessage.isEmpty()){
-      return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
-    }else {
+    //Validation
+    String checkMessage = warehouseItemValidator.checkPut(warehouseitemid, mergedWarehouseItem);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
+    } else {
       WarehouseItems updated = warehouseItemsService.update(mergedWarehouseItem);
-      return new ResponseEntity<>(updated,HttpStatus.OK);
+      return new ResponseEntity<>(updated, HttpStatus.OK);
     }
-
-
-
 
 
   }

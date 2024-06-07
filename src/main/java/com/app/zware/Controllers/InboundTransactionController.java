@@ -1,8 +1,11 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.InboundTransaction;
+import com.app.zware.Entities.User;
 import com.app.zware.Service.InboundTransactionService;
+import com.app.zware.Service.UserService;
 import com.app.zware.Validation.InboundTransactionValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,8 +29,14 @@ public class InboundTransactionController {
   @Autowired
   InboundTransactionValidator validator;
 
+  @Autowired
+  UserService userService;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
+    //Validation: All authenticated user
+
+    //GET
     List<InboundTransaction> transactions = service.getAll();
     if (transactions.isEmpty()) {
       return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
@@ -39,6 +48,7 @@ public class InboundTransactionController {
   @GetMapping("/{id}")
   public ResponseEntity<?> show(@PathVariable Integer id) {
 
+    //Authorization: any authenticated user
     //Validate
     String checkMessage = validator.checkGet(id);
     if (!checkMessage.isEmpty()) {
@@ -56,7 +66,7 @@ public class InboundTransactionController {
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody InboundTransaction transaction) {
-
+    //Authorization: any authenticated user
     //Validate
     String checkMessage = validator.checkPost(transaction);
     if (!checkMessage.isEmpty()) {
@@ -71,8 +81,15 @@ public class InboundTransactionController {
   @PutMapping("/{id}")
   public ResponseEntity<?> update(
       @PathVariable Integer id,
-      @RequestBody InboundTransaction transaction
+      @RequestBody InboundTransaction transaction,
+      HttpServletRequest request
   ) {
+    //Validation: Admin or Transaction's maker
+    User requestMaker = userService.getRequestMaker(request);
+    if (!requestMaker.getRole().equals("admin") && !requestMaker.getId().equals(transaction.getId())) {
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
     //Merge info
     InboundTransaction mergedTransaction = service.merge(id, transaction);
 
@@ -89,7 +106,16 @@ public class InboundTransactionController {
   }
 
   @DeleteMapping("{id}")
-  public ResponseEntity<?> destroy(@PathVariable Integer id) {
+  public ResponseEntity<?> destroy(
+      @PathVariable Integer id,
+      HttpServletRequest request
+  ) {
+    //Validation: Admin only
+    User requestMaker = userService.getRequestMaker(request);
+    if (!requestMaker.getRole().equals("admin")) {
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
     //Validate
     String checkMessage = validator.checkDelete(id);
     if (!checkMessage.isEmpty()) {
