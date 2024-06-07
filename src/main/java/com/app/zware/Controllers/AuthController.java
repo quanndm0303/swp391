@@ -32,8 +32,8 @@ public class AuthController {
   ) {
 
     //Authorization: ADMIN ONLY
-    User requestMake = userService.getRequestMaker(request);
-    if (!user.getRole().equals("admin")){
+    User requestMaker = userService.getRequestMaker(request);
+    if (!requestMaker.getRole().equals("admin")){
       return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
     }
 
