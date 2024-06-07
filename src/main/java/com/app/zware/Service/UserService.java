@@ -35,7 +35,15 @@ public class UserService {
     return userRepository.existsById(id);
   }
 
+  public User save(User user){
+    return userRepository.save(user);
+  }
+
   public User update(Integer id, User mergedUser) {
+    if (!mergedUser.getId().equals(id)){
+      return null;
+    }
+
     return userRepository.save(mergedUser);
   }
 

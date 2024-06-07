@@ -1,7 +1,9 @@
 package com.app.zware.Service;
 
+import com.app.zware.Entities.InboundTransaction;
 import com.app.zware.Entities.InboundTransactionDetail;
 import com.app.zware.Repositories.InboundTransactionDetailRepository;
+import com.app.zware.Repositories.InboundTransactionRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,27 +13,37 @@ import org.springframework.stereotype.Service;
 public class InboundTransactionDetailService {
 
   @Autowired
-  InboundTransactionDetailRepository repository;
+  InboundTransactionDetailRepository detailRepository;
+
+  @Autowired
+  InboundTransactionRepository transactionRepository;
 
   public List<InboundTransactionDetail> getAll() {
-    return repository.findAll();
+    return detailRepository.findAll();
   }
 
   public InboundTransactionDetail getById(int id) {
-    return repository.findById(id).orElse(null);
+    return detailRepository.findById(id).orElse(null);
+  }
+
+  public InboundTransaction getTransaction(InboundTransactionDetail detail){
+    return transactionRepository.findById(detail.getTransaction_id()).orElse(null);
   }
 
   public InboundTransactionDetail save(InboundTransactionDetail detail) {
-    repository.save(detail);
+    detailRepository.save(detail);
     return detail;
   }
 
   public InboundTransactionDetail update(Integer id, InboundTransactionDetail mergedDetail) {
-    return repository.save(mergedDetail);
+    if (id.equals(mergedDetail.getTransaction_id())){
+      return detailRepository.save(mergedDetail);
+    }
+    return null;
   }
 
   public InboundTransactionDetail merge(Integer oldDetailId, InboundTransactionDetail newDetail) {
-    InboundTransactionDetail oldDetail = repository.findById(oldDetailId).orElse(null);
+    InboundTransactionDetail oldDetail = detailRepository.findById(oldDetailId).orElse(null);
     if (oldDetail == null) {
       return null;
     }
@@ -45,6 +57,6 @@ public class InboundTransactionDetailService {
   }
 
   public void delete(Integer id) {
-    repository.deleteById(id);
+    detailRepository.deleteById(id);
   }
 }

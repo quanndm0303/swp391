@@ -29,7 +29,7 @@ public class UserController {
   @GetMapping("")
   public ResponseEntity<?> index() {
 
-    //Any Authenticated user can view
+    //Validation: Any Authenticated user
     //GET User
     List<User> listAllUser = userService.getAllUsers();
     if (!listAllUser.isEmpty()) {
@@ -42,8 +42,8 @@ public class UserController {
 
   @GetMapping("/{userId}")
   public ResponseEntity<?> show(@PathVariable("userId") Integer userId) {
-    //Any Authenticated user can view
 
+    //Validation: Any Authenticated user
     //Validate
     String checkMessage = userValidator.checkGet(userId);
     if (!checkMessage.isEmpty()) {
@@ -61,9 +61,9 @@ public class UserController {
       HttpServletRequest request
   ) {
 
-    //Only admin can delete
+    //Validation: Only admin can delete
     User requestMaker = userService.getRequestMaker(request);
-    if (!requestMaker.getRole().equals("admin") && !requestMaker.getId().equals(userId)) {
+    if (!requestMaker.getRole().equals("admin")) {
       return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 

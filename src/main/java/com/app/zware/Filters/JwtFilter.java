@@ -27,14 +27,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
     // Bypass JWT authentication for /register and /login
     final String requestURI = request.getRequestURI();
-    if (requestURI.equals("/api/auth/register") || requestURI.equals("/api/auth/login")) {
+    if (requestURI.equals("/api/auth/login")) {
       filterChain.doFilter(request, response);
       return;
     }
 
     //GET Jwt token
     String jwt = JwtUtil.getJwtToken(request);
-
     if (jwt == null) {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       return;
@@ -47,6 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
       return;
     }
 
+    //validate Token
     if (!JwtUtil.validateToken(jwt)) {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       return;
