@@ -34,7 +34,7 @@ public class WarehouseItemsService {
     return warehouseItemsRepository.existsById(id);
   }
 
-  public WarehouseItems merger(Integer oldWarehouseItemId,WarehouseItems newWarehouseItem){
+  public WarehouseItems merge(Integer oldWarehouseItemId,WarehouseItems newWarehouseItem){
     WarehouseItems oldWarehouseItem =  warehouseItemsRepository.findById(oldWarehouseItemId).orElse(null);
     if(oldWarehouseItem==null){
       return null;
