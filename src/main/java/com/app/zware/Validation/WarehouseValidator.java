@@ -27,18 +27,28 @@ public class WarehouseValidator {
   }
 
   public String checkPut(Integer warehouseId, Warehouse mergedWarehouse) {
+    //Check id
     if (warehouseId == null || !warehouseRespository.existsById(warehouseId)) {
       return "Id is not valid";
     }
 
-    String postMessage = checkPost(mergedWarehouse);
-    if (postMessage.equals("Warehouse with the same name already exist")) {
-      return "";
-    } else {
-      return postMessage;
+    //check info
+    if (mergedWarehouse.getName().isEmpty()) {
+      return "Warehouse name is not empty";
+    }
+    if (mergedWarehouse.getAddress().isEmpty()) {
+      return "Warehouse address is not empty";
     }
 
+    //check name : cannot same with other warehouse
+    Warehouse existingWarehouse = warehouseRespository.findByName(mergedWarehouse.getName()).orElse(null);
 
+    assert existingWarehouse != null;
+    if (!existingWarehouse.getId().equals(warehouseId)) {
+      return "Warehouse with the same name already exist";
+    } else{
+      return "";
+    }
   }
 
   public String checkGet(Integer id) {
