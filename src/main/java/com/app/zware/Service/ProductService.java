@@ -33,7 +33,7 @@ public class ProductService {
 
   public Product getById(int id) {
     return productRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not Found Product"));
+        .orElse(null);
   }
 
   public Product createProduct(Product request) {
@@ -48,14 +48,21 @@ public class ProductService {
 //    return productRepository.existsById(id);
 //  }
 
-  public Product updateProductById(int id, Product productRequest) {
-    Product product = getById(id);
+  public Product merger(Integer id, Product productRequest) {
+    Product oldProduct = getById(id);
+    if(oldProduct == null){
+      return null;
+    }
 
-    Optional.ofNullable(productRequest.getName()).ifPresent(product::setName);
-    Optional.of(productRequest.getCategory_id()).ifPresent(product::setCategory_id);
-    Optional.ofNullable(productRequest.getSupplier()).ifPresent(product::setSupplier);
-    Optional.ofNullable(productRequest.getMeasure_unit()).ifPresent(product::setMeasure_unit);
+    Optional.ofNullable(productRequest.getName()).ifPresent(oldProduct::setName);
+    Optional.of(productRequest.getCategory_id()).ifPresent(oldProduct::setCategory_id);
+    Optional.ofNullable(productRequest.getSupplier()).ifPresent(oldProduct::setSupplier);
+    Optional.ofNullable(productRequest.getMeasure_unit()).ifPresent(oldProduct::setMeasure_unit);
 
+    return oldProduct;
+  }
+
+  public Product update(Product product){
     return productRepository.save(product);
   }
 
