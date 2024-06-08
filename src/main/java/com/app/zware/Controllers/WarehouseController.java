@@ -1,9 +1,12 @@
 package com.app.zware.Controllers;
 
 
+import com.app.zware.Entities.User;
 import com.app.zware.Entities.Warehouse;
+import com.app.zware.Service.UserService;
 import com.app.zware.Service.WarehouseService;
 import com.app.zware.Validation.WarehouseValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +29,26 @@ public class WarehouseController {
   @Autowired
   WarehouseValidator warehouseValidator;
 
+  @Autowired
+  UserService userService;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
+    //Authorization : ALL
+
     return new ResponseEntity<>(warehouseService.getWarehouse(), HttpStatus.OK);
   }
 
   @PostMapping("")
-  public ResponseEntity<?> store(@RequestBody Warehouse wareHouseRequest) {
+  public ResponseEntity<?> store(@RequestBody Warehouse wareHouseRequest,HttpServletRequest request) {
+    // Authorization : Admin
+
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+    }
+
+    //Validation
     String message = warehouseValidator.checkPost(wareHouseRequest);
     if(!message.isEmpty()){
       return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
@@ -43,6 +59,9 @@ public class WarehouseController {
 
   @GetMapping("/{warehouseId}")
   public ResponseEntity<?> show(@PathVariable("warehouseId") Integer warehouseId) {
+    //Authorization : ALL
+
+    // Validation
     String checkMessage = warehouseValidator.checkGet(warehouseId);
     if(!checkMessage.isEmpty()){
       return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
@@ -52,7 +71,15 @@ public class WarehouseController {
   }
 
   @DeleteMapping("/{warehouseId}")
-  public ResponseEntity<?> destroy(@PathVariable("warehouseId") Integer warehouseId) {
+  public ResponseEntity<?> destroy(@PathVariable("warehouseId") Integer warehouseId, HttpServletRequest request) {
+    //Authorization : Admin
+
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+    }
+
+
     String checkMessage = warehouseValidator.checkDetete(warehouseId);
     if (!checkMessage.isEmpty()) {
       return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
@@ -63,8 +90,14 @@ public class WarehouseController {
   }
 
   @PutMapping("/{warehouseId}")
-  public ResponseEntity<?> update(@PathVariable int warehouseId, @RequestBody Warehouse request) {
-     Warehouse mergedWarehouse = warehouseService.merge(warehouseId,request);
+  public ResponseEntity<?> update(@PathVariable int warehouseId, @RequestBody Warehouse requestWarehouse,HttpServletRequest request) {
+     //Authorization : Admin
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+    }
+
+     Warehouse mergedWarehouse = warehouseService.merge(warehouseId,requestWarehouse);
 
      String checkMessage = warehouseValidator.checkPut(warehouseId,mergedWarehouse);
 
