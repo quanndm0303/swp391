@@ -1,6 +1,5 @@
 package com.app.zware.Validation;
 
-import com.app.zware.Entities.Warehouse;
 import com.app.zware.Entities.WarehouseZone;
 import com.app.zware.Repositories.WarehouseRespository;
 import com.app.zware.Repositories.WarehouseZoneRespository;
@@ -30,6 +29,12 @@ public class WarehouseZoneValidator {
             return "Warehouse ID is not valid ";
         }
 
+        Optional<WarehouseZone> existingWarehouseZone = warehouseZoneRespository.findByName(warehouseZone.getName());
+        if(existingWarehouseZone.isPresent()){
+            return "WarehouseZone with the same name already exist";
+        }
+
+
         return "";
     }
     private boolean checkWarehouseExist(Integer warehouse_id){
@@ -39,8 +44,19 @@ public class WarehouseZoneValidator {
         if(warehouseZoneId==null||!warehouseRespository.existsById(warehouseZoneId)){
             return "Id is not valid";
         }
-        return checkPost(warehouseZone);
+
+       WarehouseZone existWarehouseZone = warehouseZoneRespository.findByName(warehouseZone.getName()).orElse(null);
+        if(existWarehouseZone==null){
+            return "";
+        }else {
+            return (existWarehouseZone.getId().equals(warehouseZoneId))? "":"WarehouseZone with the same name already exist";
+        }
+
+
+
     }
+
+
     private boolean checkIdExist(Integer id){
       return  warehouseZoneRespository.existsById(id);
     }
@@ -55,4 +71,5 @@ public class WarehouseZoneValidator {
     public String checkDelete(Integer id){
         return checkGet(id);
     }
+
 }
