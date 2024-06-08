@@ -1,8 +1,13 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.GoodsDisposal;
+import com.app.zware.Entities.User;
+import com.app.zware.Entities.Warehouse;
 import com.app.zware.Service.GoodsDisposalService;
+import com.app.zware.Service.UserService;
+import com.app.zware.Service.WarehouseService;
 import com.app.zware.Validation.GoodsDisposalValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +25,16 @@ public class GoodsDisposalController {
     @Autowired
     GoodsDisposalValidator goodsDisposalValidator;
 
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    WarehouseService warehouseService;
+
     @GetMapping("")
     public ResponseEntity<?> index() {
+        //Authorization : ALL
+
         List<GoodsDisposal> goodsDisposalList = goodsDisposalService.findAllGoods();
         if (goodsDisposalList.isEmpty()) {
             return new ResponseEntity<>("Empty GoodsDisposal", HttpStatus.NOT_FOUND);
@@ -31,7 +44,15 @@ public class GoodsDisposalController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> store(@RequestBody GoodsDisposal goods) {
+    public ResponseEntity<?> store(@RequestBody GoodsDisposal goods, HttpServletRequest request) {
+        //Authorization : Admin and user quan li kho do
+        User user = userService.getRequestMaker(request);
+        if(!user.getRole().equals("admin")&& !user.getWarehouse_id().equals(goods.getWarehouse_id())){
+            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+        }
+
+
+        //Validation
         String message = goodsDisposalValidator.checkPost(goods);
         if(!message.isEmpty()){
             return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
@@ -43,6 +64,8 @@ public class GoodsDisposalController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> show(@PathVariable("id") Integer id) {
+        //Authorization : ALL
+
        String message = goodsDisposalValidator.checkGet(id);
        if(!message.isEmpty()){
            return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
@@ -52,7 +75,15 @@ public class GoodsDisposalController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> destroy(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> destroy(@PathVariable("id") Integer id,HttpServletRequest request) {
+        //Authorization : Admin and user quan ly kho do
+
+        User user = userService.getRequestMaker(request);
+        GoodsDisposal goods = goodsDisposalService.getGoodsById(id);
+        if(!user.getRole().equals("admin")&&!user.getWarehouse_id().equals(goods.getWarehouse_id())){
+            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+        }
+
         String message = goodsDisposalValidator.checkDelete(id);
         if(!message.isEmpty()){
             return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
@@ -63,8 +94,15 @@ public class GoodsDisposalController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody GoodsDisposal request) {
-       GoodsDisposal mergedGoodsDisposal = goodsDisposalService.merge(id,request);
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody GoodsDisposal requestGoods,HttpServletRequest request) {
+        //Authorization : Admin and user quan li kho do
+
+        User user = userService.getRequestMaker(request);
+        GoodsDisposal goods = goodsDisposalService.getGoodsById(id);
+        if(!user.getRole().equals("admin")&&!user.getWarehouse_id().equals(goods.getWarehouse_id())){
+            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+        }
+       GoodsDisposal mergedGoodsDisposal = goodsDisposalService.merge(id,requestGoods);
        String checkMessage = goodsDisposalValidator.checkPut(id,mergedGoodsDisposal);
        if(!checkMessage.isEmpty()){
            return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);

@@ -1,10 +1,13 @@
 package com.app.zware.Controllers;
 
+import com.app.zware.Entities.User;
 import com.app.zware.Entities.WarehouseZone;
+import com.app.zware.Service.UserService;
 import com.app.zware.Service.WarehouseZoneService;
 import java.util.List;
 
 import com.app.zware.Validation.WarehouseZoneValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +30,13 @@ public class WarehouseZoneController {
   @Autowired
   WarehouseZoneValidator warehouseZoneValidator;
 
+  @Autowired
+  UserService userService;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
+    //Authorization : ALL
+
     List<WarehouseZone> warehouseZones = warehouseZoneService.getAll();
 
     if (warehouseZones.isEmpty()) {
@@ -39,7 +47,14 @@ public class WarehouseZoneController {
 
 
   @PostMapping("")
-  public ResponseEntity<?> store(@RequestBody WarehouseZone warehouseZone) {
+  public ResponseEntity<?> store(@RequestBody WarehouseZone warehouseZone, HttpServletRequest request) {
+    //Authorization : Admin
+
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+    }
+
     String checkMessage = warehouseZoneValidator.checkPost(warehouseZone);
     if(!checkMessage.isEmpty()){
       return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
@@ -52,6 +67,8 @@ public class WarehouseZoneController {
 
   @GetMapping("/{warehouseZoneId}")
   public ResponseEntity<?> show(@PathVariable("warehouseZoneId") int warehouseZoneId) {
+    //Authorization : ALL
+
     String checkMessage= warehouseZoneValidator.checkGet(warehouseZoneId);
     if(!checkMessage.isEmpty()){
       return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
@@ -64,7 +81,14 @@ public class WarehouseZoneController {
 
 
   @DeleteMapping("/{warehouseZoneId}")
-  public ResponseEntity<?> destroy(@PathVariable("warehouseZoneId") int warehouseZoneId) {
+  public ResponseEntity<?> destroy(@PathVariable("warehouseZoneId") int warehouseZoneId,HttpServletRequest request) {
+    //Authorization : Admin
+
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+    }
+
     String checkMessage = warehouseZoneValidator.checkDelete(warehouseZoneId);
     if(!checkMessage.isEmpty()){
       return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
@@ -78,8 +102,16 @@ public class WarehouseZoneController {
 
   @PutMapping("/{warehouseZoneId}")
   public ResponseEntity<?> update(@PathVariable int warehouseZoneId,
-      @RequestBody WarehouseZone request) {
-    WarehouseZone mergedWarehouseZone = warehouseZoneService.merger(warehouseZoneId,request);
+      @RequestBody WarehouseZone requestWarehouseZone,HttpServletRequest request) {
+    //Authorization : Admin
+
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+    }
+    
+
+    WarehouseZone mergedWarehouseZone = warehouseZoneService.merger(warehouseZoneId,requestWarehouseZone);
 
     //Validate
     String checkMessage = warehouseZoneValidator.checkPut(warehouseZoneId,mergedWarehouseZone);
