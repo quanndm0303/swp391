@@ -1,10 +1,13 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.Item;
+import com.app.zware.Entities.User;
 import com.app.zware.Service.ItemService;
 import java.util.List;
 
+import com.app.zware.Service.UserService;
 import com.app.zware.Validation.ItemsValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +30,12 @@ public class ItemController {
   @Autowired
   ItemsValidator itemsValidator;
 
+  @Autowired
+  UserService userService;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
+    //Authorization: All
     List<Item> itemList = itemService.getAllItems();
     if (itemList.isEmpty()) {
       return new ResponseEntity<>("List Items are empty!", HttpStatus.NOT_FOUND);
@@ -39,6 +46,7 @@ public class ItemController {
 
   @GetMapping("/{itemId}")
   public ResponseEntity<?> show(@PathVariable("itemId") Integer itemId) {
+    //Authorization: All
     //check validate
     String message = itemsValidator.checkGet(itemId);
 
@@ -51,7 +59,12 @@ public class ItemController {
   }
 
   @PostMapping("")
-  public ResponseEntity<?> store(@RequestBody Item item) {
+  public ResponseEntity<?> store(@RequestBody Item item, HttpServletRequest request) {
+    //Authorization: Admin
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
     //check validate
     String message = itemsValidator.checkPost(item);
 
@@ -65,7 +78,13 @@ public class ItemController {
 
 
   @DeleteMapping("/{itemId}")
-  public ResponseEntity<?> destroy(@PathVariable("itemId") Integer itemId) {
+  public ResponseEntity<?> destroy(@PathVariable("itemId") Integer itemId, HttpServletRequest request) {
+    //Authorization: Admin
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
     //check validate
     String message = itemsValidator.checkDelete(itemId);
 
@@ -83,7 +102,13 @@ public class ItemController {
 
   @PutMapping("/{itemId}")
   public ResponseEntity<?> update(@PathVariable("itemId") Integer itemId,
-      @RequestBody Item request) {
+      @RequestBody Item request ,HttpServletRequest userRequest) {
+    //Authorization: Admin
+    User user = userService.getRequestMaker(userRequest);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
   //merge infor
     Item updatedItem = itemService.merge(itemId, request);
 

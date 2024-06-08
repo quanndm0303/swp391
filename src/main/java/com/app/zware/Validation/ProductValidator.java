@@ -11,13 +11,13 @@ public class ProductValidator {
     ProductRepository productRepository;
 
     public String checkPost(Product product) {
-        if(product.getName().isBlank()) {
+        if(product.getName() == null || product.getName().isEmpty()) {
             return "Name is not valid !";
         }
-        if(product.getSupplier().isBlank()) {
+        if(product.getSupplier()== null || product.getSupplier().isEmpty()) {
             return "Supplier is not valid";
         }
-        if(product.getMeasure_unit().isBlank()) {
+        if(product.getMeasure_unit()==null || product.getMeasure_unit().isEmpty()) {
             return "Measure unit is not valid";
         }
         if(!productRepository.existsById(product.getCategory_id())) {
@@ -27,7 +27,7 @@ public class ProductValidator {
     }
 
     public String checkPut(Integer id, Product product){
-        if(!checkProductId(id)){
+        if(id == null || !checkProductId(id)){
             return "Not found product ID";
         }
         return checkPost(product);

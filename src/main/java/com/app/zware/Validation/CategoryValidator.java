@@ -13,7 +13,7 @@ public class CategoryValidator {
     CategoryRepository categoryRepository;
 
     public String checkPost(Category category) {
-        if (category.getName().isBlank()) {
+        if (category.getName() == null || category.getName().isBlank() ) {
             return "Category name is invalid";
         }
         Optional<Category> checkNameExist = categoryRepository.findByName(category.getName());
@@ -24,7 +24,7 @@ public class CategoryValidator {
     }
 
     public String checkPut(Integer id, Category category) {
-        if(!checkCategoryId(id)){
+        if( id == null || !checkCategoryId(id)){
             return "Not found Category ID";
         }
         return checkPost(category);

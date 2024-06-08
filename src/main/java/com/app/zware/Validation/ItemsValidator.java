@@ -17,8 +17,13 @@ public class ItemsValidator {
     ProductRepository productRepository;
 
     public String checkPost(Item item){
-        if(!productRepository.existsById(item.getProduct_id())){
+        Integer id = item.getProduct_id();
+        if(id == null || !productRepository.existsById(item.getProduct_id())){
             return "Not found ProductID to add";
+        }
+
+        if(item.getExpire_date() == null){
+            return "Date not null";
         }
 
         Date currentDate = new Date();
@@ -32,7 +37,7 @@ public class ItemsValidator {
     }
 
     public String checkPut(Integer id, Item item){
-        if(!itemRepository.existsById(id)){
+        if( id == null || !itemRepository.existsById(id)){
             return "Not found ID";
         }
         return checkPost(item);
