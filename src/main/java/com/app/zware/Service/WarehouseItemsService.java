@@ -17,9 +17,10 @@ public class WarehouseItemsService {
     return warehouseItemsRepository.findAll();
   }
 
+
   public WarehouseItems getById(int id) {
     return warehouseItemsRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not Found WareHouseItems"));
+            .orElse(null); // Return null if item is not found
   }
 
   public WarehouseItems createWarehouseItems(WarehouseItems request) {

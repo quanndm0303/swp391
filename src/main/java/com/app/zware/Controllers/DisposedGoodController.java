@@ -22,6 +22,8 @@ public class DisposedGoodController {
 
     @GetMapping("")
     public ResponseEntity<?> index() {
+        //Authorization : ALL
+
         List<DisposedGood> disposedGoodList = disposedGoodService.getAllDisposedGood();
         if (disposedGoodList.isEmpty()) {
             return new ResponseEntity<>("Empty DisposedGood", HttpStatus.NOT_FOUND);
