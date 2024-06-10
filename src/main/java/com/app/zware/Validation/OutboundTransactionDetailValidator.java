@@ -23,23 +23,27 @@ public class OutboundTransactionDetailValidator {
     WarehouseZoneRespository warehouseZoneRespository;
 
     public String checkPost(OutboundTransactionDetail outboundTransactionDetail){
-        if(!outboundTransactionRepository.existsById(outboundTransactionDetail.getTransaction_id())){
+        Integer id = outboundTransactionDetail.getTransaction_id();
+        if( id== null || !outboundTransactionRepository.existsById(outboundTransactionDetail.getTransaction_id())){
             return "Not found ID for Outbound Transactions";
         }
-        if(!itemRepository.existsById(outboundTransactionDetail.getItem_id())){
+        Integer itemId = outboundTransactionDetail.getItem_id();
+        if( itemId == null || !itemRepository.existsById(outboundTransactionDetail.getItem_id())){
             return "Not found itemID";
         }
+
         if(outboundTransactionDetail.getQuantity() <= 0 || String.valueOf(outboundTransactionDetail.getQuantity()).isBlank()){
             return "Quantity is invalid";
         }
-        if(!warehouseZoneRespository.existsById(outboundTransactionDetail.getZone_id())){
+        Integer zoneId = outboundTransactionDetail.getZone_id();
+        if(zoneId == null || !warehouseZoneRespository.existsById(outboundTransactionDetail.getZone_id())){
             return "Not found ZoneID";
         }
         return "";
     }
 
     public String checkPut(Integer id, OutboundTransactionDetail outboundTransactionDetail){
-        if(!outboundTransactionDetailRepository.existsById(id)){
+        if( id == null || !outboundTransactionDetailRepository.existsById(id)){
             return "Not found ID";
         } else {
             return checkPost(outboundTransactionDetail);

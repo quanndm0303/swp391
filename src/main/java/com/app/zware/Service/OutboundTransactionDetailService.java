@@ -1,7 +1,9 @@
 package com.app.zware.Service;
 
+import com.app.zware.Entities.OutboundTransaction;
 import com.app.zware.Entities.OutboundTransactionDetail;
 import com.app.zware.Repositories.OutboundTransactionDetailRepository;
+import com.app.zware.Repositories.OutboundTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,9 @@ import java.util.Optional;
 public class OutboundTransactionDetailService {
     @Autowired
     OutboundTransactionDetailRepository outboundTransactionDetailRepository;
+
+    @Autowired
+    OutboundTransactionRepository outboundTransactionRepository;
 
     public List<OutboundTransactionDetail> getAll(){
        return outboundTransactionDetailRepository.findAll();
@@ -27,6 +32,10 @@ public class OutboundTransactionDetailService {
     }
     public OutboundTransactionDetail getById(Integer id){
         return outboundTransactionDetailRepository.findById(id).orElse(null);
+    }
+
+    public OutboundTransaction getTransaction(OutboundTransactionDetail detail){
+        return outboundTransactionRepository.findById(detail.getTransaction_id()).orElse(null);
     }
 
     public OutboundTransactionDetail update(OutboundTransactionDetail outboundTransactionDetail){

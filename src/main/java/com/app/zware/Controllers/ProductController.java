@@ -1,13 +1,16 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.Product;
+import com.app.zware.Entities.User;
 import com.app.zware.Service.ProductService;
 
 import java.io.IOException;
 import java.util.List;
 
+import com.app.zware.Service.UserService;
 import com.app.zware.Validation.ProductValidator;
 import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +31,12 @@ public class ProductController {
   @Autowired
   ProductValidator productValidator;
 
+  @Autowired
+  UserService userService;
+
   @GetMapping("")
   public ResponseEntity<?> index() {
+    //Authorization: All
     List<Product> productList = productService.getAllProducts();
     if (productList.isEmpty()) {
       return new ResponseEntity<>("List Products are empty", HttpStatus.BAD_REQUEST);
@@ -39,19 +46,29 @@ public class ProductController {
   }
 
   @PostMapping("")
-  public ResponseEntity<?> store(@RequestBody Product product) {
+  public ResponseEntity<?> store(@RequestBody Product product, HttpServletRequest request) {
+    //Authorization: Only Admin can create products
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")) {
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
+    //validation
     String messages = productValidator.checkPost(product);
     product.setImage(null);
     if(messages.isEmpty()) {
+      //error
       return new ResponseEntity<>(productService.createProduct(product), HttpStatus.OK);
     } else {
+      //approve
       return new ResponseEntity<>(messages, HttpStatus.BAD_REQUEST);
     }
   }
 
   @GetMapping("/{productId}")
   public ResponseEntity<?> show(@PathVariable("productId") Integer productId) {
-//    try {
+
+    //Authorization: All
       String messages = productValidator.checkGet(productId);
       if(messages.isEmpty()){
         Product product = productService.getById(productId);
@@ -59,24 +76,37 @@ public class ProductController {
       } else {
         return new ResponseEntity<>(messages,HttpStatus.BAD_REQUEST);
       }
-//    } catch (RuntimeException e) {
-//      return new ResponseEntity<>("Product not found", HttpStatus.);
-//    }
+
   }
 
   @DeleteMapping("/{productId}")
-  public ResponseEntity<?> destroy(@PathVariable("productId") Integer productId) {
+  public ResponseEntity<?> destroy(@PathVariable("productId") Integer productId, HttpServletRequest request) {
+    //Authorization : Only Admin
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
+    //validation
     String msg = productValidator.checkDelete(productId);
     if (!msg.isEmpty()) {
+      //error
       return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     } else {
+      //approve
       productService.deleteProductById(productId);
       return new ResponseEntity<>("Product has been deleted successfully", HttpStatus.OK);
     }
   }
 
   @PutMapping("/{productId}")
-  public ResponseEntity<?> update(@PathVariable Integer productId, @RequestBody Product request) {
+  public ResponseEntity<?> update(@PathVariable Integer productId, @RequestBody Product request, HttpServletRequest userRequest) {
+    //Authorization: Only Admin
+    User user = userService.getRequestMaker(userRequest);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
     //set image of new update = null
     request.setImage(null);
 
@@ -95,7 +125,14 @@ public class ProductController {
   }
 
   @PostMapping("/{productid}/image")
-  public ResponseEntity<?> putImage(@RequestParam("image") MultipartFile file, @PathVariable("productid") Integer productid) throws IOException {
+  public ResponseEntity<?> putImage(@RequestParam("image") MultipartFile file, @PathVariable("productid") Integer productid ,
+                                    HttpServletRequest request) throws IOException {
+    //Authorization: Only admin
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+    //validation
     String msg = productValidator.checkGet(productid);
     if(file.isEmpty()){
       return new ResponseEntity<>("Not found file!", HttpStatus.BAD_REQUEST);
@@ -108,7 +145,14 @@ public class ProductController {
   }
 
   @GetMapping("/{productid}/image")
-  public ResponseEntity<?> showImage(@PathVariable Integer productid) throws IOException {
+  public ResponseEntity<?> showImage(@PathVariable Integer productid, HttpServletRequest request) throws IOException {
+    //Authorization: Only admin
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
+    //validation
     String msg = productValidator.checkGet(productid);
     if (!msg.isEmpty()) {
       return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
@@ -125,7 +169,13 @@ public class ProductController {
   }
 
   @DeleteMapping("/{productid}/image")
-  public ResponseEntity<?> destroyImage(@PathVariable Integer productid) throws IOException {
+  public ResponseEntity<?> destroyImage(@PathVariable Integer productid, HttpServletRequest request) throws IOException {
+    //Authorization: Only admin
+    User user = userService.getRequestMaker(request);
+    if(!user.getRole().equals("admin")){
+      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+    //validation
     String msg = productValidator.checkGet(productid);
     if (!msg.isEmpty()) {
       return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
