@@ -2,6 +2,7 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.User;
 import com.app.zware.Service.UserService;
+import com.app.zware.Util.PasswordUtil;
 import com.app.zware.Validation.UserValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +55,31 @@ public class UserController {
     //GET User
     return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
 
+  }
+
+  @PostMapping("")
+  public ResponseEntity<?> register(
+      @RequestBody User user,
+      HttpServletRequest request
+  ) {
+
+    //Authorization: ADMIN ONLY
+    User requestMaker = userService.getRequestMaker(request);
+    if (!requestMaker.getRole().equals("admin")){
+      return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+    }
+
+    //Validation
+    String checkMessage = userValidator.checkPost(user);
+    if (!checkMessage.isEmpty()) {
+      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    //SAVE
+    String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
+    user.setPassword(hashedPassword);
+    userService.save(user);
+    return new ResponseEntity<>(user, HttpStatus.CREATED);
   }
 
   @DeleteMapping("/{userId}")

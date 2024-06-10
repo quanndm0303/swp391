@@ -25,31 +25,6 @@ public class AuthController {
   @Autowired
   UserValidator userValidator;
 
-  @PostMapping("/register")
-  public ResponseEntity<?> register(
-      @RequestBody User user,
-      HttpServletRequest request
-  ) {
-
-    //Authorization: ADMIN ONLY
-    User requestMaker = userService.getRequestMaker(request);
-    if (!requestMaker.getRole().equals("admin")){
-      return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-    }
-
-    //Validation
-    String checkMessage = userValidator.checkPost(user);
-    if (!checkMessage.isEmpty()) {
-      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
-    }
-
-    //SAVE
-    String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
-    user.setPassword(hashedPassword);
-    userService.save(user);
-    return new ResponseEntity<>(user, HttpStatus.CREATED);
-  }
-
   @PostMapping("/login")
   public String login(@RequestBody User request) {
     
