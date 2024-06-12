@@ -19,7 +19,7 @@ public class DisposedGoodService {
     }
 
     public DisposedGood getDisposedGoodById(Integer id){
-        return disposedGoodRespository.findById(id).orElseThrow(() -> new RuntimeException("Not Found DisposedGood"));
+        return disposedGoodRespository.findById(id).orElse(null);
     }
 
     public DisposedGood createDisposedGood(DisposedGood request){

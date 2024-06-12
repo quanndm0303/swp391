@@ -2,6 +2,8 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.User;
 import com.app.zware.Repositories.UserRepository;
+import com.app.zware.Service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -30,14 +32,24 @@ public class UserAvatarController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    UserService userService;
+
 
     @PostMapping("/{userId}/avatars")
-    public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file, @PathVariable("userId") int userId) {
+    public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file, @PathVariable("userId") int userId, HttpServletRequest request) {
+        //Authorization : Admin && user avatar do
+
+        User userRequestMaker = userService.getRequestMaker(request);
+        if (!userRequestMaker.getRole().equals("admin") && !userRequestMaker.getId().equals(userId)) {
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+
         if (file.isEmpty()) {
             return new ResponseEntity<>("Not found file!", HttpStatus.NOT_FOUND);
         }
-        if(!userRepository.existsById(userId)){
-            return new ResponseEntity<>("Not found Id",HttpStatus.OK);
+        if (!userRepository.existsById(userId)) {
+            return new ResponseEntity<>("Not found Id", HttpStatus.OK);
         }
 
         try {
@@ -62,14 +74,15 @@ public class UserAvatarController {
             return ResponseEntity.ok("You successfully uploaded " + newFileName);
         } catch (IOException e) {
             e.printStackTrace();
-            return new ResponseEntity<>("Fail to upload",HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Fail to upload", HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping("/{userId}/avatars")
     public ResponseEntity<?> getAvatar(@PathVariable Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
 
-        if (user == null){
+        if (user == null) {
             return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
         }
         String avatarFileName = user.getAvatar();
@@ -78,7 +91,7 @@ public class UserAvatarController {
         }
 
 
-        File file = new File(UPLOAD_DIR+user.getAvatar());
+        File file = new File(UPLOAD_DIR + user.getAvatar());
 
         System.out.println();
 
@@ -93,8 +106,18 @@ public class UserAvatarController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @DeleteMapping("/{userId}/avatars")
-    public ResponseEntity<?> deleteAvatar(@PathVariable Integer userId) {
+    public ResponseEntity<?> deleteAvatar(@PathVariable Integer userId,HttpServletRequest request) {
+        //Authorization : Admin && user avatar do
+
+
+        User userRequestMaker = userService.getRequestMaker(request);
+        if (!userRequestMaker.getRole().equals("admin") && !userRequestMaker.getId().equals(userId)) {
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+
+
         User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
