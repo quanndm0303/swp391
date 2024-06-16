@@ -49,6 +49,10 @@ public class InboundTransactionValidator {
       return "Source is not valid";
     }
 
+    if(inboundTransaction.getExternal_source() == null){
+      return "Extenral source is invalid";
+    }
+
     return "";
   }
 

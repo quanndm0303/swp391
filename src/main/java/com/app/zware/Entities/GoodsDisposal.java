@@ -16,6 +16,7 @@ public class GoodsDisposal {
     private Integer id;
 
     private Integer warehouse_id;
+    private Integer maker_id;
     private Date date;
     private String status;
 }

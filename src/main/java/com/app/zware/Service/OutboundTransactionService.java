@@ -22,6 +22,7 @@ public class OutboundTransactionService {
 
     }
     public OutboundTransaction createOutboundTransaction(OutboundTransaction request){
+        request.setStatus("pending");
         return outboundTransactionRepository.save(request);
     }
 
@@ -43,6 +44,7 @@ public class OutboundTransactionService {
             Optional.ofNullable(request.getMaker_id()).ifPresent(outboundTransaction::setMaker_id);
             Optional.ofNullable(request.getStatus()).ifPresent(outboundTransaction::setStatus);
             Optional.ofNullable(request.getDestination()).ifPresent(outboundTransaction::setDestination);
+            Optional.ofNullable(request.getExternal_destination()).ifPresent(outboundTransaction::setExternal_destination);
 
             return outboundTransaction;
         }

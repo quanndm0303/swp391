@@ -2,6 +2,7 @@ package com.app.zware.Validation;
 
 import com.app.zware.Entities.GoodsDisposal;
 import com.app.zware.Repositories.GoodsDisposalRepository;
+import com.app.zware.Repositories.UserRepository;
 import com.app.zware.Repositories.WarehouseRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ public class GoodsDisposalValidator {
     @Autowired
     WarehouseRespository warehouseRespository;
 
+    @Autowired
+    UserRepository userRepository;
+
 
     public String checkPost(GoodsDisposal goodsDisposal){
       if(goodsDisposal.getStatus().isEmpty()){
@@ -29,6 +33,11 @@ public class GoodsDisposalValidator {
       }
       if(goodsDisposal.getDate()==null) {
           return "Date is not empty";
+      }
+
+      Integer makerID = goodsDisposal.getMaker_id();
+      if( makerID == null || !userRepository.existsById(makerID)){
+          return "Not Found makerID";
       }
 
 

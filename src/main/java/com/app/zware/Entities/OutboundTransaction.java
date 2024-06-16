@@ -19,4 +19,5 @@ public class OutboundTransaction {
     private Integer maker_id;
     private String status;
     private Integer destination;
+    private String external_destination;
 }
