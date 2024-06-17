@@ -44,6 +44,7 @@ public class GoodsDisposalService {
         Optional.ofNullable(newGoodsDisposal.getWarehouse_id()).ifPresent(oldGoodsDisposal::setWarehouse_id);
         Optional.ofNullable(newGoodsDisposal.getDate()).ifPresent(oldGoodsDisposal::setDate);
         Optional.ofNullable(newGoodsDisposal.getStatus()).ifPresent(oldGoodsDisposal::setStatus);
+        Optional.ofNullable(newGoodsDisposal.getMaker_id()).ifPresent(oldGoodsDisposal::setMaker_id);
 
         return oldGoodsDisposal;
     }

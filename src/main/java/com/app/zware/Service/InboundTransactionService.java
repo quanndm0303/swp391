@@ -40,6 +40,7 @@ public class InboundTransactionService {
     Optional.ofNullable(newTransaction.getMaker_id()).ifPresent(oldTransaction::setMaker_id);
     Optional.ofNullable(newTransaction.getStatus()).ifPresent(oldTransaction::setStatus);
     Optional.ofNullable(newTransaction.getSource()).ifPresent(oldTransaction::setSource);
+    Optional.ofNullable(newTransaction.getExternal_source()).ifPresent(oldTransaction::setExternal_source);
 
     return oldTransaction; //has been UPDATED
   }

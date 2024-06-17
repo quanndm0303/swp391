@@ -1,12 +1,12 @@
 package com.app.zware.Validation;
 
 import com.app.zware.Entities.OutboundTransactionDetail;
-import com.app.zware.Repositories.ItemRepository;
-import com.app.zware.Repositories.OutboundTransactionDetailRepository;
-import com.app.zware.Repositories.OutboundTransactionRepository;
-import com.app.zware.Repositories.WarehouseZoneRespository;
+import com.app.zware.Entities.WarehouseItems;
+import com.app.zware.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class OutboundTransactionDetailValidator {
@@ -22,23 +22,34 @@ public class OutboundTransactionDetailValidator {
     @Autowired
     WarehouseZoneRespository warehouseZoneRespository;
 
+    @Autowired
+    WarehouseItemsRepository warehouseItemsRepository;
+
     public String checkPost(OutboundTransactionDetail outboundTransactionDetail){
         Integer id = outboundTransactionDetail.getTransaction_id();
         if( id== null || !outboundTransactionRepository.existsById(outboundTransactionDetail.getTransaction_id())){
             return "Not found ID for Outbound Transactions";
         }
-        Integer itemId = outboundTransactionDetail.getItem_id();
-        if( itemId == null || !itemRepository.existsById(outboundTransactionDetail.getItem_id())){
+        Integer item_id = outboundTransactionDetail.getItem_id();
+        if( item_id == null || !itemRepository.existsById(outboundTransactionDetail.getItem_id())){
             return "Not found itemID";
         }
 
         if(outboundTransactionDetail.getQuantity() <= 0 || String.valueOf(outboundTransactionDetail.getQuantity()).isBlank()){
             return "Quantity is invalid";
         }
-        Integer zoneId = outboundTransactionDetail.getZone_id();
-        if(zoneId == null || !warehouseZoneRespository.existsById(outboundTransactionDetail.getZone_id())){
+        Integer zone_id = outboundTransactionDetail.getZone_id();
+        if(zone_id == null || !warehouseZoneRespository.existsById(outboundTransactionDetail.getZone_id())){
             return "Not found ZoneID";
         }
+
+        WarehouseItems warehouseItem = warehouseItemsRepository.findByZoneIdAndItemId(zone_id, item_id);
+        int availableQuantity = warehouseItem.getQuantity();
+        if(outboundTransactionDetail.getQuantity() > availableQuantity){
+            return "Quantity is not enough";
+        }
+
+
         return "";
     }
 

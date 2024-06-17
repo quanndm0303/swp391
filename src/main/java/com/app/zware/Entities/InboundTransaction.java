@@ -22,4 +22,6 @@ public class InboundTransaction {
   private String status;
 
   private Integer source; //warehouse id
+
+  private String external_source;
 }
