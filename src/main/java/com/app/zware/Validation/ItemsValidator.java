@@ -35,7 +35,6 @@ public class ItemsValidator {
 
         return "";
     }
-
     public String checkPut(Integer id, Item item){
         if( id == null || !itemRepository.existsById(id)){
             return "Not found ID";

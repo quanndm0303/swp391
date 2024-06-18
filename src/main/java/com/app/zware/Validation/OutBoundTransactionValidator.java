@@ -60,9 +60,13 @@ public class OutBoundTransactionValidator {
     public String checkPut(Integer id, OutboundTransaction outboundTransaction){
         if(id == null || !outboundTransactionRepository.existsById(id)) {
             return "Not found OutboundTransactionID";
-        } else {
-            return checkPost(outboundTransaction);
         }
+        List<String> statusList = Arrays.asList("pending", "processing", "done", "cancel");
+        if (!statusList.contains(outboundTransaction.getStatus())) {
+            return "Status is not valid";
+        }
+            return checkPost(outboundTransaction);
+
     }
 
     public String checkGet(Integer id){

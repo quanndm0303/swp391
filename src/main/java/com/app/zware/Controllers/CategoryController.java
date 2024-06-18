@@ -2,6 +2,7 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.Category;
 import com.app.zware.Entities.User;
+import com.app.zware.HttpEntities.CustomResponse;
 import com.app.zware.Service.CategoryService;
 import java.util.List;
 
@@ -37,29 +38,40 @@ public class CategoryController {
   public ResponseEntity<?> index() {
     //Authorization: All
     List<Category> categoryList = categoryService.getCategory();
+    //response
+    CustomResponse customResponse = new CustomResponse();
     if (categoryList.isEmpty()) {
-      return new ResponseEntity<>("Empty categoryList", HttpStatus.NOT_FOUND);
+      //Not found
+      customResponse.setAll(false, "Empty categoryList", null);
+      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(categoryService.getCategory(), HttpStatus.OK);
+      customResponse.setAll(true, "Get data of all Category success",categoryService.getCategory() );
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody Category category, HttpServletRequest request) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
+
     //Authorization: Only Admin
     User user = userService.getRequestMaker(request);
     if(!user.getRole().equals("admin")){
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false, "You are not allowed", null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //validation
     String mess = categoryValidator.checkPost(category);
     if(!mess.isEmpty()){
       //error
-      return new ResponseEntity<>(mess, HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false,mess,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //approve
-      return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.OK);
+      customResponse.setAll(true,"Category has been created",categoryService.createCategory(category) );
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
@@ -67,43 +79,57 @@ public class CategoryController {
   public ResponseEntity<?> show(@PathVariable("categoryId") Integer categoryId) {
     //Authorization: all
 
+    //response
+    CustomResponse customResponse = new CustomResponse();
+
     //validation
       String message = categoryValidator.checkGet(categoryId);
       if(!message.isEmpty()){
         //error
-        return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+        customResponse.setAll(false,message,null);
+        return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
       } else {
         //approve
-        Category category = categoryService.getCategoryById(categoryId);
-        return new ResponseEntity<>(category, HttpStatus.OK);
+        customResponse.setAll(true,"Get data of Category by id: " + categoryId +"success",categoryService.getCategoryById(categoryId));
+        return new ResponseEntity<>(customResponse, HttpStatus.OK);
       }
   }
 
   @DeleteMapping("/{categoryId}")
   public ResponseEntity<?> destroy(@PathVariable("categoryId") Integer categoryId, HttpServletRequest request) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
+
     //Authorization: Only Admin
     User user = userService.getRequestMaker(request);
     if(!user.getRole().equals("admin")){
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
     //validation
     String message = categoryValidator.checkDelete(categoryId);
     if (!message.isEmpty()) {
       //error
-      return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+      customResponse.setAll(false,message,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
     } else {
       //approve
       categoryService.deleteCategoryById(categoryId);
-      return new ResponseEntity<>("Category has been deleted successfully", HttpStatus.OK);
+      customResponse.setAll(true,"Category with id: " + categoryId+"has been deleted",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
   @PutMapping("/{categoryId}")
   public ResponseEntity<?> update(@PathVariable Integer categoryId, @RequestBody Category request, HttpServletRequest userRequest) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
+
     //Authorization: Only Admin
     User user = userService.getRequestMaker(userRequest);
     if(!user.getRole().equals("admin")){
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //merge infor
@@ -113,11 +139,13 @@ public class CategoryController {
       String mess = categoryValidator.checkPut( categoryId,updateCate);
       if(!mess.isEmpty()){
         //error
-        return new ResponseEntity<>(mess,HttpStatus.BAD_REQUEST);
+        customResponse.setAll(false,mess,null);
+        return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
       } else {
         //approve
         categoryService.update( updateCate);
-        return new ResponseEntity<>(updateCate, HttpStatus.OK);
+        customResponse.setAll(true,"Category has been updated",updateCate);
+        return new ResponseEntity<>(customResponse, HttpStatus.OK);
       }
     }
   }
