@@ -1,4 +1,4 @@
-package com.app.zware.RequestEntities;
+package com.app.zware.HttpEntities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
