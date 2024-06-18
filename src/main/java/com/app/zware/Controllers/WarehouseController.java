@@ -39,6 +39,8 @@ public class WarehouseController {
 
     //response
     CustomResponse customResponse = new CustomResponse();
+
+    //Finally
     customResponse.setAll(true, "Get data of all warehouses success",
         warehouseService.getWarehouse());
 
@@ -85,6 +87,7 @@ public class WarehouseController {
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
+    //finally
     customResponse.setAll(
         true,
         "get data of warehouse with id " + warehouseId + " success",
@@ -95,7 +98,30 @@ public class WarehouseController {
 
   }
 
-//  @GetMapping("/{warehouseId}/zones")
+  @GetMapping("/{warehouseId}/zones")
+  public ResponseEntity<?> getZones(
+      @PathVariable("warehouseId") Integer warehouseId
+  ){
+    //Response
+    CustomResponse customResponse = new CustomResponse();
+
+    //Authorization: All
+
+    //Validation
+    String checkMessage = warehouseValidator.checkGet(warehouseId);
+    if (!checkMessage.isEmpty()) {
+      customResponse.setAll(false, checkMessage, null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    //finally
+    customResponse.setAll(
+        true,
+        "Get zones by warehouse success",
+        warehouseService.getZonesByWarehouseId(warehouseId));
+
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
+  }
 
   @DeleteMapping("/{warehouseId}")
   public ResponseEntity<?> destroy(@PathVariable("warehouseId") Integer warehouseId,
