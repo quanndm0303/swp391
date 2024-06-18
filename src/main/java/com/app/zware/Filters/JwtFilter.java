@@ -25,7 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
       @Nonnull HttpServletResponse response,
       @Nonnull FilterChain filterChain) throws ServletException, IOException {
 
-    // Bypass JWT authentication for /register and /login
+    // Bypass JWT authentication for /login
     final String requestURI = request.getRequestURI();
     if (requestURI.equals("/api/auth/login")) {
       filterChain.doFilter(request, response);

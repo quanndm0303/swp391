@@ -82,6 +82,7 @@ public class UserController {
     return new ResponseEntity<>(user, HttpStatus.CREATED);
   }
 
+  //ko xoa vat li
   @DeleteMapping("/{userId}")
   public ResponseEntity<?> destroy(
       @PathVariable("userId") Integer userId,

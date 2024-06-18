@@ -53,6 +53,8 @@ public class UserValidator {
     return "";
   }
 
+
+  //fix trung email nguoi khac
   public String checkPut(Integer userId, User mergedUser) {
     if (userId == null || !userRepository.existsById(userId)) {
       return ("User id is not valid");
