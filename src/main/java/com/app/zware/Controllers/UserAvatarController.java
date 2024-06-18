@@ -1,6 +1,7 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.User;
+import com.app.zware.HttpEntities.CustomResponse;
 import com.app.zware.Repositories.UserRepository;
 import com.app.zware.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,18 +39,24 @@ public class UserAvatarController {
 
     @PostMapping("/{userId}/avatars")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file, @PathVariable("userId") int userId, HttpServletRequest request) {
+
+        //response
+        CustomResponse customResponse = new CustomResponse();
         //Authorization : Admin && user avatar do
 
         User userRequestMaker = userService.getRequestMaker(request);
         if (!userRequestMaker.getRole().equals("admin") && !userRequestMaker.getId().equals(userId)) {
-            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+            customResponse.setAll(true,"You are not allowed",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
         }
 
         if (file.isEmpty()) {
-            return new ResponseEntity<>("Not found file!", HttpStatus.NOT_FOUND);
+            customResponse.setAll(false,"Not found file",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
         }
         if (!userRepository.existsById(userId)) {
-            return new ResponseEntity<>("Not found Id", HttpStatus.OK);
+            customResponse.setAll(false,"Not found Id",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
         }
 
         try {
