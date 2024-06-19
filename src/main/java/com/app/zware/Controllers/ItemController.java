@@ -2,6 +2,7 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.Item;
 import com.app.zware.Entities.User;
+import com.app.zware.HttpEntities.CustomResponse;
 import com.app.zware.Service.ItemService;
 import java.util.List;
 
@@ -35,54 +36,70 @@ public class ItemController {
 
   @GetMapping("")
   public ResponseEntity<?> index() {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: All
     List<Item> itemList = itemService.getAllItems();
     if (itemList.isEmpty()) {
-      return new ResponseEntity<>("List Items are empty!", HttpStatus.NOT_FOUND);
+      customResponse.setAll(false,"List Items are empty!",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(itemList, HttpStatus.OK);
+      customResponse.setAll(true,"Get data of all Items success", itemList);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
   @GetMapping("/{itemId}")
   public ResponseEntity<?> show(@PathVariable("itemId") Integer itemId) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: All
     //check validate
     String message = itemsValidator.checkGet(itemId);
 
     if (!message.isEmpty()) {
       //error
-      return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false,message,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
     //approve get item
-    return new ResponseEntity<>(itemService.getItemById(itemId), HttpStatus.OK);
+    customResponse.setAll(true,"Get data of Item with id: " + itemId+"success",itemService.getItemById(itemId));
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody Item item, HttpServletRequest request) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: Admin
     User user = userService.getRequestMaker(request);
     if(!user.getRole().equals("admin")){
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
     //check validate
     String message = itemsValidator.checkPost(item);
 
     if (!message.isEmpty()) {
       //error
-      return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false,message,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
     //approve create new item
-    return new ResponseEntity<>(itemService.createItem(item), HttpStatus.OK);
+    customResponse.setAll(true,"Item has been created",itemService.createItem(item));
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
 
   @DeleteMapping("/{itemId}")
   public ResponseEntity<?> destroy(@PathVariable("itemId") Integer itemId, HttpServletRequest request) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: Admin
     User user = userService.getRequestMaker(request);
     if(!user.getRole().equals("admin")){
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //check validate
@@ -91,11 +108,13 @@ public class ItemController {
 
     if (!message.isEmpty()) {
       //error
-      return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false,message,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
     //approve delete item
     itemService.deleteItemById(itemId);
-    return new ResponseEntity<>("Item has been deleted successfully", HttpStatus.OK);
+    customResponse.setAll(true,"Item with id:" + itemId +"has been deleted",null);
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
 
   }
@@ -103,10 +122,13 @@ public class ItemController {
   @PutMapping("/{itemId}")
   public ResponseEntity<?> update(@PathVariable("itemId") Integer itemId,
       @RequestBody Item request ,HttpServletRequest userRequest) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: Admin
     User user = userService.getRequestMaker(userRequest);
     if(!user.getRole().equals("admin")){
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
   //merge infor
@@ -115,12 +137,14 @@ public class ItemController {
     // check validate
     String message = itemsValidator.checkPut(itemId,updatedItem);
     if (!message.isEmpty()) {
+      customResponse.setAll(false,message,null);
       //error
-      return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //approve update infor
       itemService.update(updatedItem);
-      return new ResponseEntity<>(updatedItem, HttpStatus.OK);
+      customResponse.setAll(true,"Item has been updated",updatedItem);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
 
   }

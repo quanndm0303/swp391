@@ -2,6 +2,7 @@ package com.app.zware.Controllers;
 
 import com.app.zware.Entities.Product;
 import com.app.zware.Entities.User;
+import com.app.zware.HttpEntities.CustomResponse;
 import com.app.zware.Service.ProductService;
 
 import java.io.IOException;
@@ -36,75 +37,97 @@ public class ProductController {
 
   @GetMapping("")
   public ResponseEntity<?> index() {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: All
     List<Product> productList = productService.getAllProducts();
     if (productList.isEmpty()) {
-      return new ResponseEntity<>("List Products are empty", HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false,"List Products are empty", null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
-      return new ResponseEntity<>(productList, HttpStatus.OK);
+      customResponse.setAll(true,"Get data all of Product success",productList);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
   @PostMapping("")
   public ResponseEntity<?> store(@RequestBody Product product, HttpServletRequest request) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: Only Admin can create products
     User user = userService.getRequestMaker(request);
     if(!user.getRole().equals("admin")) {
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed", null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //validation
     String messages = productValidator.checkPost(product);
     product.setImage(null);
-    if(messages.isEmpty()) {
+    if(!messages.isEmpty()) {
       //error
-      return new ResponseEntity<>(productService.createProduct(product), HttpStatus.OK);
+      customResponse.setAll(false,messages,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     } else {
       //approve
-      return new ResponseEntity<>(messages, HttpStatus.BAD_REQUEST);
+      customResponse.setAll(true,"Product has been created", productService.createProduct(product));
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
   }
 
   @GetMapping("/{productId}")
   public ResponseEntity<?> show(@PathVariable("productId") Integer productId) {
-
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: All
       String messages = productValidator.checkGet(productId);
       if(messages.isEmpty()){
+        //approve
         Product product = productService.getById(productId);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        customResponse.setAll(true,"Get data of Product with id:" + productId + "success",product);
+        return new ResponseEntity<>(customResponse, HttpStatus.OK);
       } else {
-        return new ResponseEntity<>(messages,HttpStatus.BAD_REQUEST);
+        //error
+        customResponse.setAll(false,messages,null);
+        return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
       }
 
   }
 
   @DeleteMapping("/{productId}")
   public ResponseEntity<?> destroy(@PathVariable("productId") Integer productId, HttpServletRequest request) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization : Only Admin
     User user = userService.getRequestMaker(request);
     if(!user.getRole().equals("admin")){
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //validation
     String msg = productValidator.checkDelete(productId);
     if (!msg.isEmpty()) {
       //error
-      return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false,msg,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //approve
       productService.deleteProductById(productId);
-      return new ResponseEntity<>("Product has been deleted successfully", HttpStatus.OK);
+      customResponse.setAll(true,"Product with id:"+ productId+ "has been deleted",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
   @PutMapping("/{productId}")
   public ResponseEntity<?> update(@PathVariable Integer productId, @RequestBody Product request, HttpServletRequest userRequest) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
     //Authorization: Only Admin
     User user = userService.getRequestMaker(userRequest);
     if(!user.getRole().equals("admin")){
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //set image of new update = null
@@ -117,10 +140,14 @@ public class ProductController {
       String messages = productValidator.checkPut( productId,request);
 
       if(!messages.isEmpty()) {
-        return new ResponseEntity<>(messages, HttpStatus.BAD_REQUEST);
+        //error
+        customResponse.setAll(false,messages,null);
+        return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
       } else {
+        //approve
         productService.update( updatedProduct);
-        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        customResponse.setAll(true,"Product has been updated",updatedProduct);
+        return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
