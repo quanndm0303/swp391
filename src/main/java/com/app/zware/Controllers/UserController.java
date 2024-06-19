@@ -165,4 +165,16 @@ public class UserController {
 
     }
 
+    // return me
+    @GetMapping("/me")
+    public ResponseEntity<?> me(HttpServletRequest request){
+        // response
+        CustomResponse customResponse = new CustomResponse();
+
+        User currentUser = userService.getRequestMaker(request);
+
+        customResponse.setAll(true,"get current user data success",currentUser);
+        return new ResponseEntity<>(customResponse,HttpStatus.OK);
+    }
+
 }

@@ -46,7 +46,7 @@ public class UserAvatarController {
 
         User userRequestMaker = userService.getRequestMaker(request);
         if (!userRequestMaker.getRole().equals("admin") && !userRequestMaker.getId().equals(userId)) {
-            customResponse.setAll(true,"You are not allowed",null);
+            customResponse.setAll(false,"You are not allowed",null);
             return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
         }
 
@@ -78,23 +78,30 @@ public class UserAvatarController {
             user.setAvatar(newFileName);
             userRepository.save(user);
 
-            return ResponseEntity.ok("You successfully uploaded " + newFileName);
+            customResponse.setAll(true,"You successfully uploaded "+newFileName,null);
+            return new ResponseEntity<>(customResponse,HttpStatus.OK);
         } catch (IOException e) {
             e.printStackTrace();
-            return new ResponseEntity<>("Fail to upload", HttpStatus.NOT_FOUND);
+            customResponse.setAll(false,"Failed to upload",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/{userId}/avatars")
     public ResponseEntity<?> getAvatar(@PathVariable Integer userId) {
+        //response
+        CustomResponse customResponse = new CustomResponse();
+
         User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
-            return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
+            customResponse.setAll(false,"User not found",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
         }
         String avatarFileName = user.getAvatar();
         if (avatarFileName == null || avatarFileName.isEmpty()) {
-            return new ResponseEntity<>("User does not have an avatar", HttpStatus.OK);
+            customResponse.setAll(false,"User does not have an avatar",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.OK);
         }
 
 
@@ -110,7 +117,9 @@ public class UserAvatarController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getName() + "\"")
                     .body(resource);
         } else {
-            return ResponseEntity.notFound().build();
+            customResponse.setAll(false,"Avatar file not found",null);
+            return new ResponseEntity<>(customResponse,HttpStatus.NOT_FOUND);
+
         }
     }
 
@@ -118,17 +127,21 @@ public class UserAvatarController {
     public ResponseEntity<?> deleteAvatar(@PathVariable Integer userId,HttpServletRequest request) {
         //Authorization : Admin && user avatar do
 
+        //response
+        CustomResponse customResponse = new CustomResponse();
 
         User userRequestMaker = userService.getRequestMaker(request);
         if (!userRequestMaker.getRole().equals("admin") && !userRequestMaker.getId().equals(userId)) {
-            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+            customResponse.setAll(false,"You are not allowed",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
         }
 
 
         User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
-            return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
+            customResponse.setAll(false,"User not found",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
         }
 
         String avatarFileName = user.getAvatar();
@@ -138,15 +151,19 @@ public class UserAvatarController {
                 if (file.delete()) {
                     user.setAvatar(null);
                     userRepository.save(user);
-                    return new ResponseEntity<>("Avatar deleted successfully", HttpStatus.OK);
+                    customResponse.setAll(true,"Avatar deleted successfully",null);
+                    return new ResponseEntity<>(customResponse, HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("Failed to delete avatar", HttpStatus.INTERNAL_SERVER_ERROR);
+                    customResponse.setAll(false,"Failed to delete avatar",null);
+                    return new ResponseEntity<>(customResponse, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else {
-                return new ResponseEntity<>("Avatar file not found", HttpStatus.NOT_FOUND);
+                customResponse.setAll(false,"Avatar file not found",null);
+                return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
             }
         } else {
-            return new ResponseEntity<>("User has no avatar", HttpStatus.BAD_REQUEST);
+            customResponse.setAll(false,"User has no avatar",null);
+            return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
         }
     }
 }
