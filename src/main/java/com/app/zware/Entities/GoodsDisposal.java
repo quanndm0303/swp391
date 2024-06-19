@@ -19,4 +19,6 @@ public class GoodsDisposal {
     private Integer maker_id;
     private Date date;
     private String status;
+    private boolean isdeleted = false;
+
 }

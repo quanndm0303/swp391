@@ -144,4 +144,24 @@ public class InboundTransactionController {
     customResponse.setAll(true,"Inbound Transaction with id "+id+" has been deleted",null);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
+  @GetMapping("/{id}/details")
+  public ResponseEntity<?> getInboundTransactionDetails(@PathVariable("id") Integer id){
+
+    //Response
+    CustomResponse customResponse = new CustomResponse();
+
+    //Authorization : ALL
+
+    //Validation
+    String checkMessage = validator.checkGet(id);
+    if(!checkMessage.isEmpty()){
+      customResponse.setAll(false,checkMessage,null);
+      return new ResponseEntity<>(customResponse,HttpStatus.OK);
+    }
+
+    //finally
+    customResponse.setAll(true,"Get Inbound Transaction Details success",service.getInboundDetailsByTransactionId(id));
+    return new ResponseEntity<>(customResponse,HttpStatus.OK);
+
+  }
 }
