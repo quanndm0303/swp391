@@ -6,6 +6,9 @@ import com.app.zware.Repositories.WarehouseRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Component
 public class UserValidator {
 
@@ -29,6 +32,10 @@ public class UserValidator {
       return "Email is not valid";
     }
 
+    if (!isValidPhoneNumber(user.getPhone())) {
+      return "Phone is not valid";
+
+    }
 
 
     if (user.getPassword().length() < 6) {
@@ -64,11 +71,21 @@ public class UserValidator {
   }
 
   public String checkGet(Integer userId) {
-    return (userRepository.existsById(userId) ? "" : "User id s not valid");
+    return (userRepository.existsById(userId) ? "" : "User id not valid");
   }
 
   public String checkDelete(Integer userId) {
     return checkGet(userId);
+  }
+  public boolean isValidPhoneNumber(String phoneNumber) {
+    // Define a regex for phone number validation,exactly 10 digits
+
+    String phoneRegex = "^\\d{10}$";
+
+    Pattern pattern = Pattern.compile(phoneRegex);
+    Matcher matcher = pattern.matcher(phoneNumber);
+
+    return matcher.matches();
   }
 
 }

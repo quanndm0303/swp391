@@ -22,8 +22,14 @@ public class InboundTransactionService {
   }
 
   public InboundTransaction save(InboundTransaction transaction) {
-    repository.save(transaction);
-    return transaction;
+    InboundTransaction inboundTransaction = new InboundTransaction();
+    inboundTransaction.setDate(transaction.getDate());
+    inboundTransaction.setMaker_id(transaction.getMaker_id());
+    inboundTransaction.setStatus(transaction.getStatus());
+    inboundTransaction.setSource(transaction.getSource());
+    inboundTransaction.setExternal_source(transaction.getExternal_source());
+    return repository.save(inboundTransaction);
+
   }
 
   public InboundTransaction update(InboundTransaction mergedTransaction) {

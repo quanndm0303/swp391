@@ -3,6 +3,7 @@ package com.app.zware.Controllers;
 import com.app.zware.Entities.InboundTransaction;
 import com.app.zware.Entities.InboundTransactionDetail;
 import com.app.zware.Entities.User;
+import com.app.zware.HttpEntities.CustomResponse;
 import com.app.zware.Service.InboundTransactionDetailService;
 import com.app.zware.Service.UserService;
 import com.app.zware.Validation.InboundTransactionDetailValidator;
@@ -36,34 +37,33 @@ public class InboundTransactionDetailController {
   @GetMapping("")
   public ResponseEntity<?> index() {
     //Validation: All
+    //response
+    CustomResponse customResponse = new CustomResponse();
 
     //Get
-    List<InboundTransactionDetail> details = service.getAll();
-    if (details.isEmpty()) {
-      return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
-    } else {
-      return new ResponseEntity<>(details, HttpStatus.OK);
-    }
+    customResponse.setAll(true,"Get data of all inbound transaction details success",service.getAll());
+    return new ResponseEntity<>(customResponse,HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<?> show(@PathVariable Integer id) {
+    // response
+    CustomResponse customResponse = new CustomResponse();
 
     //Validation: All
 
     //VALIDATION
     String checkMessage = validator.checkGet(id);
     if (!checkMessage.isEmpty()) {
-      return new ResponseEntity<>(checkMessage, HttpStatus.OK);
+      customResponse.setAll(false,checkMessage,null);
+      return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
     }
 
     //GET
-    InboundTransactionDetail detail = service.getById(id);
-    if (detail == null) {
-      return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
-    } else {
-      return new ResponseEntity<>(detail, HttpStatus.OK);
-    }
+
+      customResponse.setAll(true,"get data of inbound transaction details with id "+id+" success",service.getById(id));
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
+
   }
 
   @PostMapping("")
@@ -72,23 +72,29 @@ public class InboundTransactionDetailController {
       @RequestBody InboundTransactionDetail detail,
       HttpServletRequest request
   ) {
+    //response
+    CustomResponse customResponse = new CustomResponse();
 
     //Authorization: Admin or transaction maker
     User user = userService.getRequestMaker(request);
     InboundTransaction transaction = service.getTransaction(detail);
     if (!user.getRole().equals("admin") && !user.getId().equals(transaction.getMaker_id())) {
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are nor allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //VALIDATION
     String checkMessage = validator.checkPost(detail);
     if (!checkMessage.isEmpty()) {
-      return new ResponseEntity<>(checkMessage, HttpStatus.OK);
+      customResponse.setAll(false,checkMessage,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //Create
+    //finally
     InboundTransactionDetail storedDetail = service.save(detail);
-    return new ResponseEntity<>(storedDetail, HttpStatus.OK);
+    customResponse.setAll(true,"Inbound transaction details created",storedDetail);
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
   @PutMapping("/{id}")
@@ -97,6 +103,10 @@ public class InboundTransactionDetailController {
       @RequestBody InboundTransactionDetail detail,
       HttpServletRequest request
   ) {
+
+    //response
+    CustomResponse customResponse = new CustomResponse();
+
     //Merge
     InboundTransactionDetail mergedDetail = service.merge(id, detail);
     System.out.println(mergedDetail);
@@ -105,18 +115,22 @@ public class InboundTransactionDetailController {
     User user = userService.getRequestMaker(request);
     InboundTransaction transaction = service.getTransaction(mergedDetail);
     if (!user.getRole().equals("admin") && !user.getId().equals(transaction.getMaker_id())) {
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //VALIDATION
     String checkMessage = validator.checkPut(id, mergedDetail);
     if (!checkMessage.isEmpty()) {
-      return new ResponseEntity<>(checkMessage, HttpStatus.OK);
+      customResponse.setAll(false,checkMessage,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
 
     //Update
+    // finally
     InboundTransactionDetail updatedDetail = service.update(id, mergedDetail);
-    return new ResponseEntity<>(updatedDetail, HttpStatus.OK);
+    customResponse.setAll(true,"Inbound transaction update success",updatedDetail);
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
   @DeleteMapping("{id}")
@@ -124,22 +138,28 @@ public class InboundTransactionDetailController {
       @PathVariable Integer id,
       HttpServletRequest request
   ) {
+     //response
+    CustomResponse customResponse = new CustomResponse();
 
     //Authorization: Admin
     User user = userService.getRequestMaker(request);
     if (!user.getRole().equals("admin")) {
-      return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+      customResponse.setAll(false,"You are not allowed",null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //VALIDATION
     String checkMessage = validator.checkDelete(id);
     if (!checkMessage.isEmpty()) {
-      return new ResponseEntity<>(checkMessage, HttpStatus.OK);
+      customResponse.setAll(false,checkMessage,null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //DELETE
+    // finally
     service.delete(id);
-    return new ResponseEntity<>("Transaction deleted successfully", HttpStatus.OK);
+    customResponse.setAll(true,"Inbound transcation detail "+id+" has been deleted",null);
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
 }

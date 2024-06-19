@@ -3,6 +3,7 @@ package com.app.zware.Controllers;
 import com.app.zware.Entities.DisposedGood;
 import com.app.zware.Entities.GoodsDisposal;
 import com.app.zware.Entities.User;
+import com.app.zware.HttpEntities.CustomResponse;
 import com.app.zware.Service.DisposedGoodService;
 import com.app.zware.Service.GoodsDisposalService;
 import com.app.zware.Service.UserService;
@@ -35,16 +36,17 @@ public class DisposedGoodController {
     public ResponseEntity<?> index() {
         //Authorization : ALL
 
-        List<DisposedGood> disposedGoodList = disposedGoodService.getAllDisposedGood();
-        if (disposedGoodList.isEmpty()) {
-            return new ResponseEntity<>("Empty DisposedGood", HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(disposedGoodList, HttpStatus.OK);
-        }
+        //response
+        CustomResponse customResponse = new CustomResponse();
+        customResponse.setAll(true,"Get data all of disposed good success",disposedGoodService.getAllDisposedGood());
+        return new ResponseEntity<>(customResponse,HttpStatus.OK);
     }
 
     @PostMapping("")
     public ResponseEntity<?> store(@RequestBody DisposedGood newDisposedGood, HttpServletRequest request) {
+        //response
+        CustomResponse customResponse = new CustomResponse();
+
         //Authorization : Admin and manager warehouse
         User userRequestMaker = userService.getRequestMaker(request);
 
@@ -52,17 +54,23 @@ public class DisposedGoodController {
         GoodsDisposal goodsDisposal = goodsDisposalService.getGoodsById(newDisposedGood.getDisposal_id());
         //Authorization
         if(!userRequestMaker.getRole().equals("admin")&& !userRequestMaker.getWarehouse_id().equals(goodsDisposal.getWarehouse_id())){
-            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+            customResponse.setAll(false,"You are not allowed",null);
+            return new ResponseEntity<>(customResponse,HttpStatus.UNAUTHORIZED);
         }
 
 
         // validation
        String checkMessage = disposedGoodValidator.checkPost(newDisposedGood);
        if(!checkMessage.isEmpty()){
-           return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
+           customResponse.setAll(false,checkMessage,null);
+           return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
        }
-       disposedGoodService.createDisposedGood(newDisposedGood);
-       return new ResponseEntity<>("Disposed has been created successfully",HttpStatus.OK);
+
+       //finally
+
+       DisposedGood createdDisposedGood = disposedGoodService.createDisposedGood(newDisposedGood);
+       customResponse.setAll(true,"Disposed good created",createdDisposedGood);
+       return new ResponseEntity<>(customResponse,HttpStatus.OK);
     }
 
 
@@ -70,54 +78,73 @@ public class DisposedGoodController {
     public ResponseEntity<?> show(@PathVariable("id") Integer id) {
         //Authorization : ALL
 
+        //response
+        CustomResponse customResponse = new CustomResponse();
+
+
       String checkMessage = disposedGoodValidator.checkGet(id);
       if(!checkMessage.isEmpty()){
-          return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
+          customResponse.setAll(false,checkMessage,null);
+          return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
       }
 
-      return new ResponseEntity<>(disposedGoodService.getDisposedGoodById(id),HttpStatus.OK);
+      customResponse.setAll(true,"get data of disposed good with id "+id+" success",disposedGoodService.getDisposedGoodById(id));
+      return new ResponseEntity<>(customResponse,HttpStatus.OK);
     }
 
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> destroy(@PathVariable("id") Integer id,HttpServletRequest request) {
+        //Response
+        CustomResponse customResponse = new CustomResponse();
+
         //Authorization : Admin and manager
 
         DisposedGood disposedGood = disposedGoodService.getDisposedGoodById(id);
         if(disposedGood==null){
-            return new ResponseEntity<>("Disposed Good is null",HttpStatus.NOT_FOUND);
+            customResponse.setAll(false,"Disposed Good is null",null);
+            return new ResponseEntity<>(customResponse,HttpStatus.NOT_FOUND);
         }
         GoodsDisposal goodsDisposal = goodsDisposalService.getGoodsById(disposedGood.getDisposal_id());
 
         User userRequestMaker = userService.getRequestMaker(request);
         if(!userRequestMaker.getRole().equals("admin")&&!userRequestMaker.getWarehouse_id().equals(goodsDisposal.getWarehouse_id())){
-            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+            customResponse.setAll(false,"You are not allowed",null);
+            return new ResponseEntity<>(customResponse,HttpStatus.UNAUTHORIZED);
         }
 
 
        String checkMessgae = disposedGoodValidator.checkDelete(id);
            if(!checkMessgae.isEmpty()){
-               return new ResponseEntity<>(checkMessgae,HttpStatus.BAD_REQUEST);
+               customResponse.setAll(false,checkMessgae,null);
+               return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
            }
+
+           //finally
            disposedGoodService.deleteDisposedGood(id);
-           return new ResponseEntity<>("Disposal has been deleted successfully",HttpStatus.OK);
+           customResponse.setAll(true,"Disposed Good with id "+id+" has been deleted",null);
+           return new ResponseEntity<>(customResponse,HttpStatus.OK);
         }
 
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody DisposedGood requestDisposedGood,HttpServletRequest request) {
         //Authorization : Admin and manager
+        // response
+        CustomResponse customResponse = new CustomResponse();
 
         DisposedGood disposedGood = disposedGoodService.getDisposedGoodById(id);
         if(disposedGood==null){
-            return new ResponseEntity<>("Disposed Good is null",HttpStatus.NOT_FOUND);
+            customResponse.setAll(false,"Disposed Good is null",null);
+            return new ResponseEntity<>(customResponse,HttpStatus.NOT_FOUND);
         }
         GoodsDisposal goodsDisposal = goodsDisposalService.getGoodsById(disposedGood.getDisposal_id());
 
         User userRequestMaker = userService.getRequestMaker(request);
         if(!userRequestMaker.getRole().equals("admin")&&!userRequestMaker.getWarehouse_id().equals(goodsDisposal.getWarehouse_id())){
-            return new ResponseEntity<>("Unauthorized",HttpStatus.UNAUTHORIZED);
+            customResponse.setAll(false,"You are not allowed",null);
+            return new ResponseEntity<>(customResponse,HttpStatus.UNAUTHORIZED);
         }
 
 
@@ -126,13 +153,14 @@ public class DisposedGoodController {
 
           String checkMessage = disposedGoodValidator.checkPut(id,mergeDisposedGood);
             if(!checkMessage.isEmpty()){
-                return new ResponseEntity<>(checkMessage,HttpStatus.BAD_REQUEST);
+                customResponse.setAll(false,checkMessage,null);
+                return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
             }
 
           //update
         DisposedGood updated = disposedGoodService.update(mergeDisposedGood);
-
-            return new ResponseEntity<>(updated,HttpStatus.OK);
+          customResponse.setAll(true,"Disposed update success",updated);
+            return new ResponseEntity<>(customResponse,HttpStatus.OK);
 
     }
 }

@@ -35,7 +35,19 @@ public class UserService {
     return userRepository.existsById(id);
   }
 
-  public User save(User user){
+  public User save(User request){
+
+    User user = new User();
+    user.setEmail(request.getEmail());
+    user.setPassword(request.getPassword());
+    user.setName(request.getName());
+    user.setRole(request.getRole());
+    user.setDate_of_birth(request.getDate_of_birth());
+    user.setPhone(request.getPhone());
+    user.setGender(request.getGender());
+    user.setAvatar(request.getAvatar());
+    user.setWarehouse_id(request.getWarehouse_id());
+
     return userRepository.save(user);
   }
 
@@ -60,6 +72,7 @@ public class UserService {
     Optional.ofNullable(newUser.getPhone()).ifPresent(oldUser::setPhone);
     Optional.ofNullable(newUser.getGender()).ifPresent(oldUser::setGender);
     Optional.ofNullable(newUser.getEmail()).ifPresent(oldUser::setEmail);
+    Optional.ofNullable(newUser.getWarehouse_id()).ifPresent(oldUser::setWarehouse_id);
     Optional.ofNullable(newUser.getRole()).ifPresent(oldUser::setRole);
     Optional.ofNullable(newUser.getPassword()).ifPresent(oldUser::setPassword);
 
