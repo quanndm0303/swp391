@@ -20,7 +20,7 @@ public class ProductValidator {
         if(product.getMeasure_unit()==null || product.getMeasure_unit().isEmpty()) {
             return "Measure unit is not valid";
         }
-        if(!productRepository.existsById(product.getCategory_id())) {
+        if(product.getCategory_id() == null|| !productRepository.existsByIdAndIsDeletedFalse(product.getCategory_id())) {
             return "Not found Category ID";
         }
         return "";
@@ -30,6 +30,9 @@ public class ProductValidator {
         if(id == null || !checkProductId(id)){
             return "Not found product ID";
         }
+//        if(product.getCategory_id() == null|| !productRepository.existsByIdAndIsDeletedFalse(product.getCategory_id())) {
+//            return "Not found Category ID";
+//        }
         return checkPost(product);
     }
 
@@ -45,7 +48,7 @@ public class ProductValidator {
     }
 
     public boolean checkProductId(Integer id){
-        return productRepository.findById(id).orElse(null) != null;
+        return productRepository.existsByIdAndIsDeletedFalse(id);
     }
 
 

@@ -16,4 +16,5 @@ public class Item {
   private Integer id;
   private Integer product_id;
   private Date expire_date;
+  private Boolean isdeleted = false;// Default to false for new item
 }

@@ -18,7 +18,7 @@ public class ItemsValidator {
 
     public String checkPost(Item item){
         Integer id = item.getProduct_id();
-        if(id == null || !productRepository.existsById(item.getProduct_id())){
+        if(id == null || !productRepository.existsByIdAndIsDeletedFalse(item.getProduct_id())){
             return "Not found ProductID to add";
         }
 

@@ -18,6 +18,7 @@ public class ItemService {
   }
 
   public Item createItem(Item request) {
+    request.setIsdeleted(false);
     return itemRepository.save(request);
   }
 

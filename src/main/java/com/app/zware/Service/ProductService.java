@@ -37,11 +37,16 @@ public class ProductService {
   }
 
   public Product createProduct(Product request) {
+    request.setIsdeleted(false);
+    request.setImage(null);
     return productRepository.save(request);
   }
 
   public void deleteProductById(Integer id) {
-    productRepository.deleteById(id);
+    Product product = getById(id);
+
+      product.setIsdeleted(true);
+      productRepository.save(product);
   }
 
 //  public boolean checkIdProductExist(int id) {
@@ -59,6 +64,7 @@ public class ProductService {
     Optional.ofNullable(productRequest.getSupplier()).ifPresent(oldProduct::setSupplier);
     Optional.ofNullable(productRequest.getMeasure_unit()).ifPresent(oldProduct::setMeasure_unit);
 
+    oldProduct.setIsdeleted(false);
     return oldProduct;
   }
 

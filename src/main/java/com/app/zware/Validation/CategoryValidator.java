@@ -23,15 +23,20 @@ public class CategoryValidator {
         return "";
     }
 
-    public String checkPut(Integer id, Category category) {
+    public String checkPut(Integer id, Category categoryUpdated) {
         if( id == null || !checkCategoryId(id)){
             return "Not found Category ID";
         }
-        return checkPost(category);
+        Category existCategory = categoryRepository.findByName(categoryUpdated.getName()).orElse(null);
+        if(existCategory == null) {
+            return "";
+        } else {
+            return existCategory.getId().equals(id) ? "" : "Category name is exist";
+        }
     }
 
     public boolean checkCategoryId(Integer id){
-        return categoryRepository.existsById(id);
+        return categoryRepository.existsByIdAndIsDeletedFalse(id);
     }
 
     public String checkGet(Integer categoryId){
