@@ -1,7 +1,9 @@
 package com.app.zware.Service;
 
 import com.app.zware.Entities.Warehouse;
+import com.app.zware.Entities.WarehouseZone;
 import com.app.zware.Repositories.WarehouseRespository;
+import com.app.zware.Repositories.WarehouseZoneRespository;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +15,9 @@ public class WarehouseService {
 
   @Autowired
   WarehouseRespository wareHouseRespository;
+
+  @Autowired
+  WarehouseZoneRespository zoneRespository;
 
   public List<Warehouse> getWarehouse() {
     return wareHouseRespository.findAll();
@@ -50,6 +55,10 @@ public class WarehouseService {
   public Warehouse updateWarehouse(Warehouse mergedWarehouse) {
     return wareHouseRespository.save(mergedWarehouse);
 
+  }
+
+  public List<WarehouseZone> getZonesByWarehouseId(Integer warehouseId){
+    return zoneRespository.findByWarehouseId(warehouseId);
   }
 
 }
