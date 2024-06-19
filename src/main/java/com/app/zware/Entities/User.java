@@ -26,6 +26,7 @@ public class User {
   private String gender;
   private String avatar;
   private Integer warehouse_id;
+  private boolean isdeleted = false;
 
 
 }
