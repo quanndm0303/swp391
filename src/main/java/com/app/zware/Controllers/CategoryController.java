@@ -90,7 +90,7 @@ public class CategoryController {
         return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
       } else {
         //approve
-        customResponse.setAll(true,"Get data of Category by id: " + categoryId +"success",categoryService.getCategoryById(categoryId));
+        customResponse.setAll(true,"Get data of Category by id: " + categoryId +" success",categoryService.getCategoryById(categoryId));
         return new ResponseEntity<>(customResponse, HttpStatus.OK);
       }
   }
@@ -115,7 +115,7 @@ public class CategoryController {
     } else {
       //approve
       categoryService.deleteCategoryById(categoryId);
-      customResponse.setAll(true,"Category with id: " + categoryId+"has been deleted",null);
+      customResponse.setAll(true,"Category with id: " + categoryId+" has been deleted",null);
       return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }

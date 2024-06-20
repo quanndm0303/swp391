@@ -18,6 +18,7 @@ public class ItemService {
   }
 
   public Item createItem(Item request) {
+    request.setIsdeleted(false);
     return itemRepository.save(request);
   }
 
@@ -26,11 +27,14 @@ public class ItemService {
   }
 
   public boolean checkIdItemExist(Integer id) {
-    return itemRepository.existsById(id);
+    return itemRepository.existsByIdAndIsDeletedFalse(id);
   }
 
   public void deleteItemById(Integer id) {
-    itemRepository.deleteById(id);
+    Item item = getItemById(id);
+    item.setIsdeleted(true);
+    itemRepository.save(item);
+//    itemRepository.deleteById(id);
   }
 
   public Item merge(Integer id, Item request) {
@@ -40,6 +44,7 @@ public class ItemService {
     }
     Optional.ofNullable(request.getProduct_id()).ifPresent(oldItem::setProduct_id);
     Optional.ofNullable(request.getExpire_date()).ifPresent(oldItem::setExpire_date);
+    oldItem.setIsdeleted(false);
     return oldItem;
 
   }

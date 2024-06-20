@@ -19,8 +19,8 @@ public class CategoryService {
   }
 
   public Category createCategory(Category request) {
-    Category category = new Category();
-    category.setName(request.getName());
+//    Category category = new Category();
+    request.setIsdeleted(false);
     return categoryRepository.save(request);
 
 
@@ -32,8 +32,10 @@ public class CategoryService {
   }
 
   public void deleteCategoryById(Integer id) {
-    categoryRepository.deleteById(id);
-
+    Category category = getCategoryById(id);
+    category.setIsdeleted(true);
+    categoryRepository.save(category);
+//  categoryRepository.deleteById(id);
   }
 
 
@@ -42,7 +44,7 @@ public class CategoryService {
     if (oldCategory==null) {
       return null;
     }
-
+      oldCategory.setIsdeleted(false);
       Optional.ofNullable(request.getName()).ifPresent(oldCategory::setName);
 
 
@@ -50,6 +52,7 @@ public class CategoryService {
   }
 
   public Category update(Category category){
+
     return categoryRepository.save(category);
   }
 

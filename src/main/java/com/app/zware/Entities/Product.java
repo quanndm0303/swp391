@@ -24,4 +24,5 @@ public class Product {
   private String supplier;
   private String measure_unit;
   private String image;
+  private Boolean isdeleted = false; // Default to false for new product
 }

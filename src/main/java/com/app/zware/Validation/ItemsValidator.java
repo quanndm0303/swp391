@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class ItemsValidator {
@@ -18,7 +19,7 @@ public class ItemsValidator {
 
     public String checkPost(Item item){
         Integer id = item.getProduct_id();
-        if(id == null || !productRepository.existsById(item.getProduct_id())){
+        if(id == null || !productRepository.existsByIdAndIsDeletedFalse(item.getProduct_id())){
             return "Not found ProductID to add";
         }
 
@@ -36,14 +37,23 @@ public class ItemsValidator {
         return "";
     }
     public String checkPut(Integer id, Item item){
-        if( id == null || !itemRepository.existsById(id)){
+        if( id == null || !itemRepository.existsByIdAndIsDeletedFalse(id)){
             return "Not found ID";
         }
-        return checkPost(item);
+        Item existItem =  itemRepository.findByProductIdAndExpiredDate(item.getProduct_id(), item.getExpire_date());
+        if(existItem == null) {
+            return checkPost(item);
+        } else {
+            if(!existItem.getId().equals(id)){
+                return "Information of Item was exist";
+            } else {
+                return "";
+            }
+        }
     }
 
     public String checkGet(Integer id){
-        if(!itemRepository.existsById(id)){
+        if(!itemRepository.existsByIdAndIsDeletedFalse(id)){
             return "Not found ID";
         }
         return "";

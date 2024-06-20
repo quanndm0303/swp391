@@ -63,7 +63,7 @@ public class ItemController {
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
     //approve get item
-    customResponse.setAll(true,"Get data of Item with id: " + itemId+"success",itemService.getItemById(itemId));
+    customResponse.setAll(true,"Get data of Item with id: " + itemId+" success",itemService.getItemById(itemId));
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
@@ -113,7 +113,7 @@ public class ItemController {
     }
     //approve delete item
     itemService.deleteItemById(itemId);
-    customResponse.setAll(true,"Item with id:" + itemId +"has been deleted",null);
+    customResponse.setAll(true,"Item with id:" + itemId +" has been deleted",null);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
 
