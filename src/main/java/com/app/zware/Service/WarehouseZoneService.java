@@ -25,7 +25,7 @@ public class WarehouseZoneService {
 
   public WarehouseZone getWarehouseZoneById(Integer id) {
     return warehouseZoneRespository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not Found WarehouseZone"));
+        .orElse(null);
   }
 
   public void deleteWarehouseZoneById(Integer id) {

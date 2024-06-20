@@ -74,7 +74,7 @@ public class WarehouseZoneController {
 
 
   @GetMapping("/{warehouseZoneId}")
-  public ResponseEntity<?> show(@PathVariable("warehouseZoneId") int warehouseZoneId) {
+  public ResponseEntity<?> show(@PathVariable("warehouseZoneId") Integer warehouseZoneId) {
     //response
     CustomResponse customResponse = new CustomResponse();
 
@@ -96,7 +96,7 @@ public class WarehouseZoneController {
 
 
   @DeleteMapping("/{warehouseZoneId}")
-  public ResponseEntity<?> destroy(@PathVariable("warehouseZoneId") int warehouseZoneId,
+  public ResponseEntity<?> destroy(@PathVariable("warehouseZoneId") Integer warehouseZoneId,
       HttpServletRequest request) {
     //response
     CustomResponse customResponse = new CustomResponse();
@@ -124,7 +124,7 @@ public class WarehouseZoneController {
   }
 
   @PutMapping("/{warehouseZoneId}")
-  public ResponseEntity<?> update(@PathVariable int warehouseZoneId,
+  public ResponseEntity<?> update(@PathVariable Integer warehouseZoneId,
       @RequestBody WarehouseZone requestWarehouseZone, HttpServletRequest request) {
     //response
     CustomResponse customResponse = new CustomResponse();

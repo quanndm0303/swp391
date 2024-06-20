@@ -22,12 +22,17 @@ public class OutboundTransactionService {
 
     }
     public OutboundTransaction createOutboundTransaction(OutboundTransaction request){
-        request.setStatus("pending");
+        request.setStatus("Pending");
+        request.setIsdeleted(false);
         return outboundTransactionRepository.save(request);
     }
 
     public void deleteOutboundTransaction(Integer id){
-        outboundTransactionRepository.deleteById(id);
+        OutboundTransaction outboundTransaction = getOutboundTransactionById(id);
+        outboundTransaction.setIsdeleted(true);
+        outboundTransactionRepository.save(outboundTransaction);
+
+//        outboundTransactionRepository.deleteById(id);
     }
 
     public OutboundTransaction update(OutboundTransaction outboundTransaction){
@@ -46,6 +51,7 @@ public class OutboundTransactionService {
             Optional.ofNullable(request.getDestination()).ifPresent(outboundTransaction::setDestination);
             Optional.ofNullable(request.getExternal_destination()).ifPresent(outboundTransaction::setExternal_destination);
 
+            outboundTransaction.setIsdeleted(false);
             return outboundTransaction;
         }
 

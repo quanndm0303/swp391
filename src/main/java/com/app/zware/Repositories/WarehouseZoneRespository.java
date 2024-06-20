@@ -12,7 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface WarehouseZoneRespository extends JpaRepository<WarehouseZone, Integer> {
-     Optional<WarehouseZone> findByName(String name);
+     @Query(value = "SELECT * FROM warehousezones i WHERE i.name =?1 AND i.isdeleted = 0", nativeQuery = true)
+     WarehouseZone findByName(String name);
 
      @Query(
          value = "SELECT * FROM warehousezones z WHERE z.warehouse_id = ?1 AND z.isdeleted = 0",

@@ -55,7 +55,7 @@ public class OutboundTransactionController {
             return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
         } else {
             //get outbound transaction
-            customResponse.setAll(true,"Get data of outboundTransaction with id: " + id + "success",
+            customResponse.setAll(true,"Get data of outboundTransaction with id: " + id + " success",
                     outboundTransactionService.getOutboundTransactionById(id));
             return new ResponseEntity<>(customResponse, HttpStatus.OK);
         }
@@ -102,7 +102,7 @@ public class OutboundTransactionController {
         } else {
             //approve delete
             outboundTransactionService.deleteOutboundTransaction(id);
-            customResponse.setAll(true,"OutboundTransaction with id: " + id + "has been deleted",null);
+            customResponse.setAll(true,"OutboundTransaction with id: " + id + " has been deleted",null);
             return new ResponseEntity<>(customResponse, HttpStatus.OK);
         }
     }

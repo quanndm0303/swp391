@@ -31,29 +31,33 @@ public class OutBoundTransactionValidator {
         if(outboundTransaction.getDate() == null){
             return "Date is invalid";
         }
-        if( outboundTransaction.getStatus()== null || outboundTransaction.getStatus().isEmpty()){
-            return "Status is invalid";
+
+        Integer makerId = outboundTransaction.getMaker_id();
+        if(makerId == null || !userRepository.existByIdAndIsDeletedFalse(outboundTransaction.getMaker_id())){
+            return "Not found Maker";
         }
+//        if( outboundTransaction.getStatus()== null || outboundTransaction.getStatus().isEmpty()){
+//            return "Status is invalid";
+//        }
 
 //        List<String> statusList = Arrays.asList("pending", "processing", "done", "cancel");
 //        if (!statusList.contains(outboundTransaction.getStatus())) {
 //            return "Status is not valid";
 //        }
 
+
         Integer destination = outboundTransaction.getDestination();
-        if( destination == null || !warehouseRespository.existsById(outboundTransaction.getDestination())){
-            return "Not found ID warehouse for destination";
-        }
+        if(destination == null && outboundTransaction.getExternal_destination() == null){
+            return "Destination and External Destination are invalid !";
+        } else {
+            if (!warehouseRespository.existByIdAndIsDeletedFalse(outboundTransaction.getDestination())) {
+                return "Not found ID warehouse for destination";
+            }
 
-        Integer makerId = outboundTransaction.getMaker_id();
-        if(makerId == null || !userRepository.existsById(outboundTransaction.getMaker_id())){
-            return "Not found Maker";
+            if (outboundTransaction.getExternal_destination().isEmpty()) {
+                return "External destination is invalid";
+            }
         }
-
-        if( outboundTransaction.getExternal_destination() == null ||outboundTransaction.getExternal_destination().isEmpty()){
-            return "External destination is invalid";
-        }
-
         return "";
     }
 
@@ -61,7 +65,7 @@ public class OutBoundTransactionValidator {
         if(id == null || !outboundTransactionRepository.existsById(id)) {
             return "Not found OutboundTransactionID";
         }
-        List<String> statusList = Arrays.asList("pending", "processing", "done", "cancel");
+        List<String> statusList = Arrays.asList("Pending", "Processing", "Done", "Cancel");
         if (!statusList.contains(outboundTransaction.getStatus())) {
             return "Status is not valid";
         }
@@ -82,6 +86,6 @@ public class OutBoundTransactionValidator {
     }
 
     public boolean checkId(Integer id){
-        return outboundTransactionRepository.existsById(id);
+        return outboundTransactionRepository.existsByIdAndIsDeletedFalse(id);
     }
 }

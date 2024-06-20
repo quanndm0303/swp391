@@ -41,4 +41,7 @@ public class ZwareApplication {
  * Quan: OutboundTransaction, Category, Product, Item (nếu có)
  * Hai: Disposal, warehouse, zone,
  *
+ * [new format]
+ * Quan: Cate, Item, Outbound, Warehousezone + item, product
+ * Hai: GoodDisposal, User, Inbound, Warehouse
  * */
