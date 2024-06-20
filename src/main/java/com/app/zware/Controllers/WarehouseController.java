@@ -170,7 +170,7 @@ public class WarehouseController {
 
     if (!checkMessage.isEmpty()) {
       customResponse.setAll(false, checkMessage, null);
-      return new ResponseEntity<>(checkMessage, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     Warehouse updateWarehouse = warehouseService.updateWarehouse(mergedWarehouse);

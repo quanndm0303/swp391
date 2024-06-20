@@ -28,7 +28,7 @@ public class WarehouseValidator {
 
   public String checkPut(Integer warehouseId, Warehouse mergedWarehouse) {
     //Check id
-    if (warehouseId == null || !warehouseRespository.existsById(warehouseId)) {
+    if (warehouseId == null || !warehouseRespository.existByIdAndIsDeletedFalse(warehouseId)) {
       return "Id is not valid";
     }
 
@@ -55,8 +55,12 @@ public class WarehouseValidator {
 //    }
   }
 
+  private boolean checkWarehouseId(Integer id){
+    return warehouseRespository.existByIdAndIsDeletedFalse(id);
+  }
+
   public String checkGet(Integer id) {
-    if (!checkIdExist(id)) {
+    if (!checkWarehouseId(id)) {
       return "Id not valid";
     } else {
       return "";

@@ -63,15 +63,21 @@ public class UserValidator {
 
   //fix trung email nguoi khac
   public String checkPut(Integer userId, User mergedUser) {
-    if (userId == null || !userRepository.existsById(userId)) {
+    if (userId == null || !checkUserId(userId)) {
       return ("User id is not valid");
     }
     String checkPostMessage =  checkPost(mergedUser);
     return (checkPostMessage.equals("Email has been used")) ? "" : checkPostMessage;
   }
 
+  public boolean checkUserId (Integer id){
+    return userRepository.existByIdAndIsDeletedFalse(id);
+  }
   public String checkGet(Integer userId) {
-    return (userRepository.existsById(userId) ? "" : "User id not valid");
+   if(!checkUserId(userId)){
+     return "Not found User Id";
+   }
+   return "";
   }
 
   public String checkDelete(Integer userId) {

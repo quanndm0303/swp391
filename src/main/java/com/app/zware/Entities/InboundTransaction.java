@@ -24,4 +24,6 @@ public class InboundTransaction {
   private Integer source; //warehouse id
 
   private String external_source;
+
+  private boolean isdeleted = false;
 }

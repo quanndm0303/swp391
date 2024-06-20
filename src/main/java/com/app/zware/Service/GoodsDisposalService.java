@@ -1,6 +1,8 @@
 package com.app.zware.Service;
 
+import com.app.zware.Entities.DisposedGood;
 import com.app.zware.Entities.GoodsDisposal;
+import com.app.zware.Repositories.DisposedGoodRespository;
 import com.app.zware.Repositories.GoodsDisposalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,9 @@ public class GoodsDisposalService {
 
     @Autowired
     GoodsDisposalRepository goodsDisposalRepository;
+
+    @Autowired
+    DisposedGoodRespository disposedGoodRespository;
 
     public List<GoodsDisposal> findAllGoods(){
         return goodsDisposalRepository.findAll();
@@ -27,7 +32,12 @@ public class GoodsDisposalService {
     }
 
     public void deleteById(Integer id){
-        goodsDisposalRepository.deleteById(id);
+        GoodsDisposal goodsDisposal = getGoodsById(id);
+        goodsDisposal.setIsdeleted(true);
+        goodsDisposalRepository.save(goodsDisposal);
+        
+
+        //goodsDisposalRepository.deleteById(id);
     }
 
     public Boolean checkIdExist(Integer id){
@@ -51,5 +61,8 @@ public class GoodsDisposalService {
 
     public GoodsDisposal update(GoodsDisposal mergeGoodsDisposal){
         return goodsDisposalRepository.save(mergeGoodsDisposal);
+    }
+    public List<DisposedGood> getDisposedGoodByGoodsDisposalId(Integer disposalId){
+        return disposedGoodRespository.findByGoodDisposalId(disposalId);
     }
 }

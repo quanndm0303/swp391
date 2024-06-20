@@ -28,7 +28,10 @@ public class UserService {
   }
 
   public void deleteUserById(Integer id) {
-    userRepository.deleteById(id);
+    User user = getById(id);
+    user.setIsdeleted(true);
+    userRepository.save(user);
+
   }
 
   public boolean checkIdUserExist(Integer id) {

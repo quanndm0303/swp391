@@ -31,12 +31,17 @@ public class WarehouseService {
   }
 
   public Warehouse getWareHouseById(int id) {
-    return wareHouseRespository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not Found WareHouse"));
+    return wareHouseRespository.findById(id).orElse(null);
+
   }
 
   public void deleteWareHouseById(int id) {
-    wareHouseRespository.deleteById(id);
+
+    Warehouse warehouse = getWareHouseById(id);
+    warehouse.setIsdeleted(true);
+    wareHouseRespository.save(warehouse);
+
+    //wareHouseRespository.deleteById(id);
   }
 
   public Warehouse merge(Integer oldWarehouseId,Warehouse newWarehouse){

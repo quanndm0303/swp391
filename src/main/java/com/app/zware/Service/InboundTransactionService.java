@@ -1,6 +1,8 @@
 package com.app.zware.Service;
 
 import com.app.zware.Entities.InboundTransaction;
+import com.app.zware.Entities.InboundTransactionDetail;
+import com.app.zware.Repositories.InboundTransactionDetailRepository;
 import com.app.zware.Repositories.InboundTransactionRepository;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +14,9 @@ public class InboundTransactionService {
 
   @Autowired
   InboundTransactionRepository repository;
+
+  @Autowired
+  InboundTransactionDetailRepository inboundTransactionDetailRepository;
 
   public List<InboundTransaction> getAll() {
     return repository.findAll();
@@ -52,6 +57,15 @@ public class InboundTransactionService {
   }
 
   public void delete(Integer id) {
-    repository.deleteById(id);
+    InboundTransaction inboundTransaction = getById(id);
+    inboundTransaction.setIsdeleted(true);
+    repository.save(inboundTransaction);
+
+
+
+    //repository.deleteById(id);
+  }
+  public List<InboundTransactionDetail> getInboundDetailsByTransactionId(Integer transactionId){
+    return  inboundTransactionDetailRepository.findByInboundTransactionId(transactionId);
   }
 }

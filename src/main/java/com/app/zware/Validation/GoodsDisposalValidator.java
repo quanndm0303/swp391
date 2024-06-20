@@ -44,14 +44,16 @@ public class GoodsDisposalValidator {
       return "";
     }
     public String checkPut (Integer goodsDisposalId,GoodsDisposal goodsDisposal){
-        if(goodsDisposalId==null||!goodsDisposalRepository.existsById(goodsDisposalId)){
+        if(goodsDisposalId==null||!goodsDisposalRepository.existByIdAndIsDeletedFalse(goodsDisposalId)){
             return "Id is not valid";
         }
         return checkPost(goodsDisposal);
     }
-
+    private boolean checkGoodsDisposalId(Integer id){
+        return goodsDisposalRepository.existByIdAndIsDeletedFalse(id);
+    }
     public String checkGet (Integer id){
-        if(!checkIdExist(id)){
+        if(!checkGoodsDisposalId(id)){
             return "Id is not valid";
         }
         return "";
