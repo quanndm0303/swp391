@@ -50,7 +50,6 @@ public class WarehouseItemValidator {
               return "Quantity is not valid";
           }
           WarehouseItems existWarehouseItem = warehouseItemsRepository.findByZoneIdAndItemId(warehouseItems.getZone_id(), warehouseItems.getItem_id());
-          System.out.println(existWarehouseItem);
           if(existWarehouseItem != null){
               warehouseItemsService.addQuantityToExistWarehouseItem(existWarehouseItem.getId(), warehouseItems);
               return "ZoneId and ItemId were exist so quantity was added to old WarehouseItem";
@@ -89,7 +88,7 @@ public class WarehouseItemValidator {
 
         WarehouseItems existWarehouseItem = warehouseItemsRepository.findByZoneIdAndItemId(warehouseItems.getZone_id(), warehouseItems.getItem_id());
         System.out.println(existWarehouseItem);
-        if(existWarehouseItem != null){
+        if(existWarehouseItem != null && !existWarehouseItem.getId().equals(warehouseItemId)){
             warehouseItemsService.addQuantityToExistWarehouseItem(existWarehouseItem.getId(), warehouseItems);
             warehouseItemsService.deleteWarehouseItemsById(warehouseItemId);
             return "ZoneId and ItemId were exist so quantity was added to old WarehouseItem and WarehouseItem updated was deleted";
