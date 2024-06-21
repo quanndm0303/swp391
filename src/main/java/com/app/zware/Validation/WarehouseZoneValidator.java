@@ -13,67 +13,67 @@ public class WarehouseZoneValidator {
   WarehouseRespository warehouseRespository;
 
   @Autowired
-  WarehouseZoneRespository warehouseZoneRespository;
+  WarehouseZoneRespository zoneRespository;
 
-  public String checkPost(WarehouseZone warehouseZone) {
-    if (warehouseZone.getName() == null || warehouseZone.getName().isEmpty()) {
-      return "WarehouseZone Name is not empty";
+  public String checkGet(Integer id) {
+    if (id == null || !checkIdExist(id)) {
+      return "Zone id is not valid";
+    } else {
+      return "";
     }
-    if (warehouseZone.getWarehouse_id() == null || warehouseZone.getWarehouse_id()
-        .describeConstable().isEmpty()) {
-      return "Warehouse ID is not empty";
+  }
+
+  public String checkPost(WarehouseZone zone) {
+    if (zone.getName() == null || zone.getName().isEmpty()) {
+      return "Zone name cannot be empty";
+    }
+    if (zone.getWarehouse_id() == null) {
+      return "Warehouse ID cannot be empty";
     }
 
-    if (!checkWarehouseExist(warehouseZone.getWarehouse_id())) {
+    if (!checkWarehouseExist(zone.getWarehouse_id())) {
       return "Warehouse ID is not valid ";
     }
 
-    WarehouseZone existingWarehouseZone = warehouseZoneRespository.findByName(
-        warehouseZone.getName());
-    if (existingWarehouseZone != null) {
-      return "WarehouseZone with the same name already exist";
+    WarehouseZone existingZone =
+        zoneRespository.findByNameAndWarehouseId(zone.getName(), zone.getWarehouse_id());
+    if (existingZone != null) {
+      return "A WarehouseZone with the same name already exist";
     }
+
     return "";
   }
 
-  private boolean checkWarehouseExist(Integer warehouse_id) {
 
-    return warehouseRespository.existByIdAndIsDeletedFalse(warehouse_id);
-  }
-
-  public String checkPut(Integer warehouseZoneId, WarehouseZone warehouseZone) {
-    System.out.println(warehouseZoneId);
-    if (warehouseZoneId == null || !warehouseZoneRespository.existsByIdAndIsDeletedFalse(
-        warehouseZoneId)) {
-      System.out.println(checkWarehouseExist(warehouseZoneId));
-      return "Id is not valid";
-    }
-    WarehouseZone existWarehouseZone = warehouseZoneRespository.findByName(warehouseZone.getName());
-    if (existWarehouseZone == null) {
-      return "";
-    } else {
-      return (existWarehouseZone.getId().equals(warehouseZoneId)) ? ""
-          : "WarehouseZone with the same name already exist";
+  public String checkPut(Integer warehouseZoneId, WarehouseZone mergedZone) {
+    if (warehouseZoneId == null
+        || !zoneRespository.existsByIdAndIsDeletedFalse(warehouseZoneId)) {
+      return "Zone ID is not valid";
     }
 
+    WarehouseZone existingZone = zoneRespository.findByNameAndWarehouseId(mergedZone.getName(),
+        mergedZone.getWarehouse_id());
 
-  }
-
-
-  private boolean checkIdExist(Integer id) {
-    return warehouseZoneRespository.existsByIdAndIsDeletedFalse(id);
-  }
-
-  public String checkGet(Integer id) {
-    if (!checkIdExist(id)) {
-      return "Id not valid";
-    } else {
-      return "";
+    if (existingZone != null
+        && existingZone.getWarehouse_id().equals(mergedZone.getWarehouse_id())) {
+      return "A zone with the same name already exist";
     }
+
+    return "";
+
   }
 
   public String checkDelete(Integer id) {
     return checkGet(id);
   }
+
+  private boolean checkIdExist(Integer id) {
+    return zoneRespository.existsByIdAndIsDeletedFalse(id);
+  }
+
+  private boolean checkWarehouseExist(Integer warehouse_id) {
+    return warehouseRespository.existByIdAndIsDeletedFalse(warehouse_id);
+  }
+
 
 }

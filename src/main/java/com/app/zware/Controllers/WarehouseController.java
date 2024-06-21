@@ -90,7 +90,7 @@ public class WarehouseController {
     //finally
     customResponse.setAll(
         true,
-        "get data of warehouse with id " + warehouseId + " success",
+        "Get warehouse data success",
         warehouseService.getWareHouseById(warehouseId)
     );
 
@@ -169,7 +169,7 @@ public class WarehouseController {
 
     //Finally
     warehouseService.deleteWareHouseById(warehouseId);
-    customResponse.setAll(true, "Warehouse with id " + warehouseId + "has been deleted", null);
+    customResponse.setAll(true, "Delete warehouse success", null);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
   }
