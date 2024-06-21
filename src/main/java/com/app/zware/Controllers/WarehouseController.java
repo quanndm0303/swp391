@@ -123,6 +123,30 @@ public class WarehouseController {
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
+
+  @GetMapping("/{warehouseId}/items")
+  public ResponseEntity<?> getItem(@PathVariable("warehouseId") Integer warehouseId){
+    //response
+    CustomResponse customResponse = new CustomResponse();
+
+    //Authorization : ALL
+
+    //Validation
+    String checkMessage = warehouseValidator.checkGet(warehouseId);
+    if(!checkMessage.isEmpty()){
+      customResponse.setAll(false,checkMessage,null);
+      return new ResponseEntity<>(customResponse,HttpStatus.OK);
+
+    }
+
+    //finally
+    customResponse.setAll(true,"Get Items by warehouse success",
+            warehouseService.getItemsByWarehouseId(warehouseId));
+
+    return new ResponseEntity<>(customResponse,HttpStatus.OK);
+
+  }
+
   @DeleteMapping("/{warehouseId}")
   public ResponseEntity<?> destroy(@PathVariable("warehouseId") Integer warehouseId,
       HttpServletRequest request) {
