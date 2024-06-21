@@ -12,115 +12,118 @@ import org.springframework.stereotype.Component;
 public class WarehouseItemValidator {
 
 
-    @Autowired
-    ItemRepository itemRepository;
+  @Autowired
+  ItemRepository itemRepository;
 
-    @Autowired
-    WarehouseZoneRespository warehouseZoneRespository;
+  @Autowired
+  WarehouseZoneRespository warehouseZoneRespository;
 
-    @Autowired
-    WarehouseItemsRepository warehouseItemsRepository;
+  @Autowired
+  WarehouseItemsRepository warehouseItemsRepository;
 
-    @Autowired
-    WarehouseItemsService warehouseItemsService;
+  @Autowired
+  WarehouseItemsService warehouseItemsService;
 
-    public String checkPost(WarehouseItems warehouseItems){
+  public String checkPost(WarehouseItems warehouseItems) {
 
-         if(warehouseItems.getItem_id()==null){
-             return "Item Id is not empty";
-         }
-
-         if(warehouseItems.getZone_id()==null){
-             return "Zone Id is not empty";
-         }
-
-          if(!checkItemExist(warehouseItems.getItem_id())){
-              return "Item is not valid";
-          }
-
-          if(!checkWarehouseZoneExist(warehouseItems.getZone_id())){
-              return "WarehouseZone is not valid";
-          }
-
-          if(warehouseItems.getQuantity()==null){
-              return "Quantity is not empty";
-          }
-
-          if(warehouseItems.getQuantity()<0){
-              return "Quantity is not valid";
-          }
-          WarehouseItems existWarehouseItem = warehouseItemsRepository.findByZoneIdAndItemId(warehouseItems.getZone_id(), warehouseItems.getItem_id());
-          if(existWarehouseItem != null){
-              warehouseItemsService.addQuantityToExistWarehouseItem(existWarehouseItem.getId(), warehouseItems);
-              return "ZoneId and ItemId were exist so quantity was added to old WarehouseItem";
-          }
-          return "";
+    if (warehouseItems.getItem_id() == null) {
+      return "Item Id is not empty";
     }
 
-    public String checkPut(Integer warehouseItemId,WarehouseItems warehouseItems){
-        if(warehouseItemId==null||!warehouseItemsRepository.existsByIdAndIsDeletedFalse(warehouseItemId)){
-            return "Id is not found";
-        }
-
-        if(warehouseItems.getItem_id()==null){
-            return "Item Id is not empty";
-        }
-
-        if(warehouseItems.getZone_id()==null){
-            return "Zone Id is not empty";
-        }
-
-        if(!checkItemExist(warehouseItems.getItem_id())){
-            return "Item is not valid";
-        }
-
-        if(!checkWarehouseZoneExist(warehouseItems.getZone_id())){
-            return "WarehouseZone is not valid";
-        }
-
-        if(warehouseItems.getQuantity()==null){
-            return "Quantity is not empty";
-        }
-
-        if(warehouseItems.getQuantity()<0){
-            return "Quantity is not valid";
-        }
-
-        WarehouseItems existWarehouseItem = warehouseItemsRepository.findByZoneIdAndItemId(warehouseItems.getZone_id(), warehouseItems.getItem_id());
-        System.out.println(existWarehouseItem);
-        if(existWarehouseItem != null && !existWarehouseItem.getId().equals(warehouseItemId)){
-            warehouseItemsService.addQuantityToExistWarehouseItem(existWarehouseItem.getId(), warehouseItems);
-            warehouseItemsService.deleteWarehouseItemsById(warehouseItemId);
-            return "ZoneId and ItemId were exist so quantity was added to old WarehouseItem and WarehouseItem updated was deleted";
-        }
-        return "";
+    if (warehouseItems.getZone_id() == null) {
+      return "Zone Id is not empty";
     }
 
-    public String checkGet(Integer id){
-        if(!checkIdExist(id)||id==null){
-            return "Id is not found";
-        }
-
-        return "";
+    if (!checkItemExist(warehouseItems.getItem_id())) {
+      return "Item is not valid";
     }
 
-    public String checkDelete(Integer id){
-        return checkGet(id);
+    if (!checkWarehouseZoneExist(warehouseItems.getZone_id())) {
+      return "WarehouseZone is not valid";
     }
 
-
-
-
-    private boolean checkWarehouseZoneExist(Integer id){
-        return warehouseZoneRespository.existsByIdAndIsDeletedFalse(id);
+    if (warehouseItems.getQuantity() == null) {
+      return "Quantity is not empty";
     }
 
+    if (warehouseItems.getQuantity() < 0) {
+      return "Quantity is not valid";
+    }
+    WarehouseItems existWarehouseItem = warehouseItemsRepository.findByZoneIdAndItemId(
+        warehouseItems.getZone_id(), warehouseItems.getItem_id());
+    if (existWarehouseItem != null) {
+      warehouseItemsService.addQuantityToExistWarehouseItem(existWarehouseItem.getId(),
+          warehouseItems);
+      return "ZoneId and ItemId were exist so quantity was added to old WarehouseItem";
+    }
+    return "";
+  }
 
-    private boolean checkItemExist(Integer id){
-        return itemRepository.existsByIdAndIsDeletedFalse(id);
+  public String checkPut(Integer warehouseItemId, WarehouseItems warehouseItems) {
+    if (warehouseItemId == null || !warehouseItemsRepository.existsByIdAndIsDeletedFalse(
+        warehouseItemId)) {
+      return "Id is not found";
     }
 
-    private boolean checkIdExist(Integer id){
-        return warehouseItemsRepository.existsByIdAndIsDeletedFalse(id);
+    if (warehouseItems.getItem_id() == null) {
+      return "Item Id is not empty";
     }
+
+    if (warehouseItems.getZone_id() == null) {
+      return "Zone Id is not empty";
+    }
+
+    if (!checkItemExist(warehouseItems.getItem_id())) {
+      return "Item is not valid";
+    }
+
+    if (!checkWarehouseZoneExist(warehouseItems.getZone_id())) {
+      return "WarehouseZone is not valid";
+    }
+
+    if (warehouseItems.getQuantity() == null) {
+      return "Quantity is not empty";
+    }
+
+    if (warehouseItems.getQuantity() < 0) {
+      return "Quantity is not valid";
+    }
+
+    WarehouseItems existWarehouseItem = warehouseItemsRepository.findByZoneIdAndItemId(
+        warehouseItems.getZone_id(), warehouseItems.getItem_id());
+    System.out.println(existWarehouseItem);
+    if (existWarehouseItem != null && !existWarehouseItem.getId().equals(warehouseItemId)) {
+      warehouseItemsService.addQuantityToExistWarehouseItem(existWarehouseItem.getId(),
+          warehouseItems);
+      warehouseItemsService.deleteWarehouseItemsById(warehouseItemId);
+      return "ZoneId and ItemId were exist so quantity was added to old WarehouseItem and WarehouseItem updated was deleted";
+    }
+    return "";
+  }
+
+  public String checkGet(Integer id) {
+    if (!checkIdExist(id) || id == null) {
+      return "Id is not found";
+    }
+
+    return "";
+  }
+
+  public String checkDelete(Integer id) {
+    return checkGet(id);
+  }
+
+
+  private boolean checkWarehouseZoneExist(Integer id) {
+    return warehouseZoneRespository.existsByIdAndIsDeletedFalse(id);
+  }
+
+
+  private boolean checkItemExist(Integer id) {
+    return itemRepository.existsByIdAndIsDeletedFalse(id);
+  }
+
+  private boolean checkIdExist(Integer id) {
+    return warehouseItemsRepository.existsByIdAndIsDeletedFalse(id);
+  }
 }

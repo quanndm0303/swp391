@@ -39,7 +39,7 @@ public class ItemService {
 
   public Item merge(Integer id, Item request) {
     Item oldItem = getItemById(id);
-    if(oldItem == null){
+    if (oldItem == null) {
       return null;
     }
     Optional.ofNullable(request.getProduct_id()).ifPresent(oldItem::setProduct_id);
@@ -49,7 +49,7 @@ public class ItemService {
 
   }
 
-  public Item update(Item item){
+  public Item update(Item item) {
     return itemRepository.save(item);
   }
 

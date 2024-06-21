@@ -20,7 +20,7 @@ public class WarehouseItemsService {
 
   public WarehouseItems getById(Integer id) {
     return warehouseItemsRepository.findById(id)
-            .orElse(null); // Return null if item is not found
+        .orElse(null); // Return null if item is not found
   }
 
   public WarehouseItems createWarehouseItems(WarehouseItems request) {
@@ -29,9 +29,9 @@ public class WarehouseItemsService {
   }
 
   public void deleteWarehouseItemsById(Integer id) {
-  WarehouseItems warehouseItems = getById(id);
-  warehouseItems.setIsdeleted(true);
-  warehouseItemsRepository.save(warehouseItems);
+    WarehouseItems warehouseItems = getById(id);
+    warehouseItems.setIsdeleted(true);
+    warehouseItemsRepository.save(warehouseItems);
 //    warehouseItemsRepository.deleteById(id);
   }
 
@@ -39,9 +39,10 @@ public class WarehouseItemsService {
     return warehouseItemsRepository.existsByIdAndIsDeletedFalse(id);
   }
 
-  public WarehouseItems merge(Integer oldWarehouseItemId,WarehouseItems newWarehouseItem){
-    WarehouseItems oldWarehouseItem =  warehouseItemsRepository.findById(oldWarehouseItemId).orElse(null);
-    if(oldWarehouseItem==null){
+  public WarehouseItems merge(Integer oldWarehouseItemId, WarehouseItems newWarehouseItem) {
+    WarehouseItems oldWarehouseItem = warehouseItemsRepository.findById(oldWarehouseItemId)
+        .orElse(null);
+    if (oldWarehouseItem == null) {
       return null;
     }
     Optional.ofNullable(newWarehouseItem.getZone_id()).ifPresent(oldWarehouseItem::setZone_id);
@@ -49,13 +50,14 @@ public class WarehouseItemsService {
     Optional.ofNullable(newWarehouseItem.getQuantity()).ifPresent(oldWarehouseItem::setQuantity);
 
     oldWarehouseItem.setIsdeleted(false);
-  return oldWarehouseItem;
+    return oldWarehouseItem;
   }
-  public WarehouseItems update (WarehouseItems mergeWarehouseItem){
+
+  public WarehouseItems update(WarehouseItems mergeWarehouseItem) {
     return warehouseItemsRepository.save(mergeWarehouseItem);
   }
 
-  public void addQuantityToExistWarehouseItem(Integer id, WarehouseItems warehouseItems){
+  public void addQuantityToExistWarehouseItem(Integer id, WarehouseItems warehouseItems) {
     WarehouseItems existWarehouseItem = getById(id);
     int existQuantity = existWarehouseItem.getQuantity();
     existWarehouseItem.setQuantity(existQuantity + warehouseItems.getQuantity());

@@ -38,7 +38,7 @@ public class UserService {
     return userRepository.existsById(id);
   }
 
-  public User save(User request){
+  public User save(User request) {
 
     User user = new User();
     user.setEmail(request.getEmail());
@@ -55,7 +55,7 @@ public class UserService {
   }
 
   public User update(Integer id, User mergedUser) {
-    if (!mergedUser.getId().equals(id)){
+    if (!mergedUser.getId().equals(id)) {
       return null;
     }
 

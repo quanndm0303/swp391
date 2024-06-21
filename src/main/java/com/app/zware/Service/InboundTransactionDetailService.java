@@ -26,7 +26,7 @@ public class InboundTransactionDetailService {
     return detailRepository.findById(id).orElse(null);
   }
 
-  public InboundTransaction getTransaction(InboundTransactionDetail detail){
+  public InboundTransaction getTransaction(InboundTransactionDetail detail) {
     return transactionRepository.findById(detail.getTransaction_id()).orElse(null);
   }
 
@@ -36,7 +36,7 @@ public class InboundTransactionDetailService {
   }
 
   public InboundTransactionDetail update(Integer id, InboundTransactionDetail mergedDetail) {
-    if (id.equals(mergedDetail.getTransaction_id())){
+    if (id.equals(mergedDetail.getTransaction_id())) {
       return detailRepository.save(mergedDetail);
     }
     return null;

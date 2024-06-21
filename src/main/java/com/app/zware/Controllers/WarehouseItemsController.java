@@ -10,9 +10,8 @@ import com.app.zware.Service.UserService;
 import com.app.zware.Service.WarehouseItemsService;
 import com.app.zware.Service.WarehouseZoneService;
 import com.app.zware.Validation.WarehouseItemValidator;
-import java.util.List;
-
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,14 +56,15 @@ public class WarehouseItemsController {
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //success
-      customResponse.setAll(true,"Get data of all WarehouseItem success !", warehouseItemsList);
+      customResponse.setAll(true, "Get data of all WarehouseItem success !", warehouseItemsList);
       return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
 
   @PostMapping("")
-  public ResponseEntity<?> store(@RequestBody WarehouseItems requestWarehouseItem,HttpServletRequest request) {
+  public ResponseEntity<?> store(@RequestBody WarehouseItems requestWarehouseItem,
+      HttpServletRequest request) {
     //response
     CustomResponse customResponse = new CustomResponse();
 
@@ -72,22 +72,25 @@ public class WarehouseItemsController {
 
     User user = userService.getRequestMaker(request);
 
-    WarehouseZone warehouseZone = warehouseZoneService.getWarehouseZoneById(requestWarehouseItem.getZone_id());
+    WarehouseZone warehouseZone = warehouseZoneService.getWarehouseZoneById(
+        requestWarehouseItem.getZone_id());
 
-    if (!user.getRole().equals("admin")&&!user.getWarehouse_id().equals(warehouseZone.getWarehouse_id())){
+    if (!user.getRole().equals("admin") && !user.getWarehouse_id()
+        .equals(warehouseZone.getWarehouse_id())) {
       customResponse.setAll(false, "You are not allowed !", null);
-      return new ResponseEntity<>(customResponse,HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     String checkMessage = warehouseItemValidator.checkPost(requestWarehouseItem);
     if (!checkMessage.isEmpty()) {
       //error
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //approve
       warehouseItemsService.createWarehouseItems(requestWarehouseItem);
-      customResponse.setAll(true,"WarehouseItems has been created successfully", requestWarehouseItem);
+      customResponse.setAll(true, "WarehouseItems has been created successfully",
+          requestWarehouseItem);
       return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
     }
@@ -104,19 +107,20 @@ public class WarehouseItemsController {
     String checkMessage = warehouseItemValidator.checkGet(warehouseitemId);
     if (!checkMessage.isEmpty()) {
       //error
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
     } else {
       //approve
-      customResponse.setAll(true,"Get data of warehouseItem with id: " + warehouseitemId +
-              " has been success", warehouseItemsService.getById(warehouseitemId));
+      customResponse.setAll(true, "Get data of warehouseItem with id: " + warehouseitemId +
+          " has been success", warehouseItemsService.getById(warehouseitemId));
       return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
 
   @DeleteMapping("/{warehouseitemid}")
-  public ResponseEntity<?> destroy(@PathVariable("warehouseitemid") Integer warehouseitemId, HttpServletRequest request) {
+  public ResponseEntity<?> destroy(@PathVariable("warehouseitemid") Integer warehouseitemId,
+      HttpServletRequest request) {
     //response
     CustomResponse customResponse = new CustomResponse();
     // Authorization : Admin and manager
@@ -124,61 +128,66 @@ public class WarehouseItemsController {
     User user = userService.getRequestMaker(request);
     WarehouseItems warehouseItems = warehouseItemsService.getById(warehouseitemId);
     if (warehouseItems == null) {
-      customResponse.setAll(false,"WarehouseItem not found to delete !",null);
+      customResponse.setAll(false, "WarehouseItem not found to delete !", null);
       return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
     }
-    WarehouseZone warehouseZone = warehouseZoneService.getWarehouseZoneById(warehouseItems.getZone_id());
+    WarehouseZone warehouseZone = warehouseZoneService.getWarehouseZoneById(
+        warehouseItems.getZone_id());
 
-   //Authorization
-    if(!user.getRole().equals("admin")&&(!user.getWarehouse_id().equals(warehouseZone.getWarehouse_id()))){
-      customResponse.setAll(false,"You are not allowed !", null);
-      return new ResponseEntity<>(customResponse,HttpStatus.UNAUTHORIZED);
+    //Authorization
+    if (!user.getRole().equals("admin") && (!user.getWarehouse_id()
+        .equals(warehouseZone.getWarehouse_id()))) {
+      customResponse.setAll(false, "You are not allowed !", null);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
-
 
     String checkMessage = warehouseItemValidator.checkDelete(warehouseitemId);
     if (!checkMessage.isEmpty()) {
       //error
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       warehouseItemsService.deleteWarehouseItemsById(warehouseitemId);
-      customResponse.setAll(true, "WarehouseItem with id: "+ warehouseitemId +" has been deleted successfully", null);
+      customResponse.setAll(true,
+          "WarehouseItem with id: " + warehouseitemId + " has been deleted successfully", null);
       return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
   @PutMapping("/{warehouseitemid}")
   public ResponseEntity<?> update(@PathVariable Integer warehouseitemid,
-      @RequestBody WarehouseItems requestWarehouseItem,HttpServletRequest request) {
+      @RequestBody WarehouseItems requestWarehouseItem, HttpServletRequest request) {
     //response
     CustomResponse customResponse = new CustomResponse();
     //Authorization
     User user = userService.getRequestMaker(request);
 
     WarehouseItems warehouseItems = warehouseItemsService.getById(warehouseitemid);
-    if(warehouseItems==null){
-      customResponse.setAll(false,"WarehouseItem not found to updated !",null);
-      return new ResponseEntity<>(customResponse,HttpStatus.NOT_FOUND);
+    if (warehouseItems == null) {
+      customResponse.setAll(false, "WarehouseItem not found to updated !", null);
+      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
     }
-    WarehouseZone warehouseZone = warehouseZoneService.getWarehouseZoneById(warehouseItems.getZone_id());
-    if(!user.getRole().equals("admin")&&!user.getWarehouse_id().equals(warehouseZone.getWarehouse_id())){
+    WarehouseZone warehouseZone = warehouseZoneService.getWarehouseZoneById(
+        warehouseItems.getZone_id());
+    if (!user.getRole().equals("admin") && !user.getWarehouse_id()
+        .equals(warehouseZone.getWarehouse_id())) {
       customResponse.setAll(false, "You are not allowed !", null);
-      return new ResponseEntity<>(customResponse,HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
-
-    WarehouseItems mergedWarehouseItem = warehouseItemsService.merge(warehouseitemid, requestWarehouseItem);
+    WarehouseItems mergedWarehouseItem = warehouseItemsService.merge(warehouseitemid,
+        requestWarehouseItem);
 
     //Validation
     String checkMessage = warehouseItemValidator.checkPut(warehouseitemid, mergedWarehouseItem);
     if (!checkMessage.isEmpty()) {
       //error
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       WarehouseItems updated = warehouseItemsService.update(mergedWarehouseItem);
-      customResponse.setAll(true,"WarehouseItem with id : " + warehouseitemid + " has been updated", updated);
+      customResponse.setAll(true,
+          "WarehouseItem with id : " + warehouseitemid + " has been updated", updated);
       return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
 

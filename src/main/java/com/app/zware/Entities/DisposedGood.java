@@ -10,13 +10,14 @@ import lombok.Data;
 @Entity(name = "disposedgoods")
 @Data
 public class DisposedGood {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
 
-    private Integer disposal_id;
-    private Integer item_id;
-    private Integer quantity;
-    private String reason;
+  private Integer disposal_id;
+  private Integer item_id;
+  private Integer quantity;
+  private String reason;
 }

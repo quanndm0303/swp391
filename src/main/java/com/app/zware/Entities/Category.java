@@ -16,5 +16,5 @@ public class Category {
   private Integer id;
   private String name;
   private Boolean isdeleted = false; // Default to false for new categories
-};
+}
 

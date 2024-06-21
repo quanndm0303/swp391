@@ -8,7 +8,6 @@ import com.app.zware.Repositories.WarehouseRespository;
 import com.app.zware.Repositories.WarehouseZoneRespository;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,9 +49,9 @@ public class WarehouseService {
     //wareHouseRespository.deleteById(id);
   }
 
-  public Warehouse merge(Integer oldWarehouseId,Warehouse newWarehouse){
+  public Warehouse merge(Integer oldWarehouseId, Warehouse newWarehouse) {
     Warehouse oldWarehouse = wareHouseRespository.findById(oldWarehouseId).orElse(null);
-    if(oldWarehouse == null){
+    if (oldWarehouse == null) {
       return null;
     }
 
@@ -68,11 +67,11 @@ public class WarehouseService {
 
   }
 
-  public List<WarehouseZone> getZonesByWarehouseId(Integer warehouseId){
+  public List<WarehouseZone> getZonesByWarehouseId(Integer warehouseId) {
     return zoneRespository.findByWarehouseId(warehouseId);
   }
 
-  public List<WarehouseItems> getItemsByWarehouseId(Integer warehouseId){
+  public List<WarehouseItems> getItemsByWarehouseId(Integer warehouseId) {
     return warehouseItemsRepository.findWarehouseItemByWarehouseId(warehouseId);
   }
 

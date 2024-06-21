@@ -7,7 +7,6 @@ import com.app.zware.Service.InboundTransactionService;
 import com.app.zware.Service.UserService;
 import com.app.zware.Validation.InboundTransactionValidator;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +40,8 @@ public class InboundTransactionController {
     CustomResponse customResponse = new CustomResponse();
 
     //GET
-    customResponse.setAll(true,"Get data of all inbound transaction success",service.getAll());
-    return new ResponseEntity<>(customResponse,HttpStatus.OK);
+    customResponse.setAll(true, "Get data of all inbound transaction success", service.getAll());
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
@@ -59,7 +58,8 @@ public class InboundTransactionController {
     }
 
     //Get
-    customResponse.setAll(true, "get data of inbound transaction with id " + id + " success", service.getById(id));
+    customResponse.setAll(true, "get data of inbound transaction with id " + id + " success",
+        service.getById(id));
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
@@ -72,14 +72,14 @@ public class InboundTransactionController {
     //Validate
     String checkMessage = validator.checkPost(transaction);
     if (!checkMessage.isEmpty()) {
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //Save
 
     InboundTransaction created = service.save(transaction);
-    customResponse.setAll(true,"InboundTransaction created",created);
+    customResponse.setAll(true, "InboundTransaction created", created);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
@@ -94,8 +94,9 @@ public class InboundTransactionController {
     CustomResponse customResponse = new CustomResponse();
     //Validation: Admin or Transaction's maker
     User requestMaker = userService.getRequestMaker(request);
-    if (!requestMaker.getRole().equals("admin") && !requestMaker.getId().equals(transaction.getId())) {
-      customResponse.setAll(false,"You are not allowed",null);
+    if (!requestMaker.getRole().equals("admin") && !requestMaker.getId()
+        .equals(transaction.getId())) {
+      customResponse.setAll(false, "You are not allowed", null);
       return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
@@ -106,13 +107,13 @@ public class InboundTransactionController {
     String checkMessage = validator.checkPut(id, mergedTransaction);
     if (!checkMessage.isEmpty()) {
 
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //Update
     InboundTransaction updatedTransaction = service.update(mergedTransaction);
-    customResponse.setAll(true,"Inbound Transaction update successful",updatedTransaction);
+    customResponse.setAll(true, "Inbound Transaction update successful", updatedTransaction);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
   }
@@ -128,24 +129,25 @@ public class InboundTransactionController {
     //Validation: Admin only
     User requestMaker = userService.getRequestMaker(request);
     if (!requestMaker.getRole().equals("admin")) {
-      customResponse.setAll(false,"You are not allowed",null);
+      customResponse.setAll(false, "You are not allowed", null);
       return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //Validate
     String checkMessage = validator.checkDelete(id);
     if (!checkMessage.isEmpty()) {
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //Delete
     service.delete(id);
-    customResponse.setAll(true,"Inbound Transaction with id "+id+" has been deleted",null);
+    customResponse.setAll(true, "Inbound Transaction with id " + id + " has been deleted", null);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
+
   @GetMapping("/{id}/details")
-  public ResponseEntity<?> getInboundTransactionDetails(@PathVariable("id") Integer id){
+  public ResponseEntity<?> getInboundTransactionDetails(@PathVariable("id") Integer id) {
 
     //Response
     CustomResponse customResponse = new CustomResponse();
@@ -154,14 +156,15 @@ public class InboundTransactionController {
 
     //Validation
     String checkMessage = validator.checkGet(id);
-    if(!checkMessage.isEmpty()){
-      customResponse.setAll(false,checkMessage,null);
-      return new ResponseEntity<>(customResponse,HttpStatus.OK);
+    if (!checkMessage.isEmpty()) {
+      customResponse.setAll(false, checkMessage, null);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
 
     //finally
-    customResponse.setAll(true,"Get Inbound Transaction Details success",service.getInboundDetailsByTransactionId(id));
-    return new ResponseEntity<>(customResponse,HttpStatus.OK);
+    customResponse.setAll(true, "Get Inbound Transaction Details success",
+        service.getInboundDetailsByTransactionId(id));
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
   }
 }

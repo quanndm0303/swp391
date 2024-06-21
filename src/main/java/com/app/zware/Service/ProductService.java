@@ -3,7 +3,6 @@ package com.app.zware.Service;
 
 import com.app.zware.Entities.Product;
 import com.app.zware.Repositories.ProductRepository;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,10 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 
 @Service
@@ -26,6 +23,8 @@ public class ProductService {
 
   @Autowired
   ProductRepository productRepository;
+  @Value("${image.storage.directory}")
+  private String storageDirectory;
 
   public List<Product> getAllProducts() {
     return productRepository.findAll();
@@ -42,20 +41,20 @@ public class ProductService {
     return productRepository.save(request);
   }
 
-  public void deleteProductById(Integer id) {
-    Product product = getById(id);
-
-      product.setIsdeleted(true);
-      productRepository.save(product);
-  }
-
 //  public boolean checkIdProductExist(int id) {
 //    return productRepository.existsById(id);
 //  }
 
+  public void deleteProductById(Integer id) {
+    Product product = getById(id);
+
+    product.setIsdeleted(true);
+    productRepository.save(product);
+  }
+
   public Product merger(Integer id, Product productRequest) {
     Product oldProduct = getById(id);
-    if(oldProduct == null){
+    if (oldProduct == null) {
       return null;
     }
 
@@ -68,12 +67,9 @@ public class ProductService {
     return oldProduct;
   }
 
-  public Product update(Product product){
+  public Product update(Product product) {
     return productRepository.save(product);
   }
-
-  @Value("${image.storage.directory}")
-  private String storageDirectory;
 
   public String uploadImage(MultipartFile file, Integer productid) throws IOException {
     // Tạo thư mục nếu chưa tồn tại
@@ -100,7 +96,7 @@ public class ProductService {
 
   public byte[] downloadImage(Integer productid) throws IOException {
     Product product = getById(productid);
-    if(product.getImage() != null) {
+    if (product.getImage() != null) {
       Path filePath = Paths.get(storageDirectory, product.getImage());
       return Files.readAllBytes(filePath);
     }
@@ -109,8 +105,8 @@ public class ProductService {
 //    if (Files.exists(filePath)) {
 //      return Files.readAllBytes(filePath);
 //    }
-     return null;
-    }
+    return null;
+  }
 
   public String deleteImage(Integer productid) throws IOException {
     Product product = getById(productid);

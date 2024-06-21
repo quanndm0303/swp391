@@ -4,7 +4,6 @@ import com.app.zware.Entities.WarehouseZone;
 import com.app.zware.Repositories.WarehouseZoneRespository;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,13 +39,15 @@ public class WarehouseZoneService {
   }
 
 
-  public WarehouseZone merger(Integer oldWarehouseZoneId,WarehouseZone newWarehouseZone){
-    WarehouseZone oldWarehouseZone = warehouseZoneRespository.findById(oldWarehouseZoneId).orElse(null);
-    if(oldWarehouseZone==null){
+  public WarehouseZone merger(Integer oldWarehouseZoneId, WarehouseZone newWarehouseZone) {
+    WarehouseZone oldWarehouseZone = warehouseZoneRespository.findById(oldWarehouseZoneId)
+        .orElse(null);
+    if (oldWarehouseZone == null) {
       return null;
     }
     Optional.ofNullable(newWarehouseZone.getName()).ifPresent(oldWarehouseZone::setName);
-    Optional.ofNullable(newWarehouseZone.getWarehouse_id()).ifPresent(oldWarehouseZone::setWarehouse_id);
+    Optional.ofNullable(newWarehouseZone.getWarehouse_id())
+        .ifPresent(oldWarehouseZone::setWarehouse_id);
 
     oldWarehouseZone.setIsdeleted(false);
 
@@ -54,7 +55,7 @@ public class WarehouseZoneService {
   }
 
 
-  public WarehouseZone update(WarehouseZone mergedWarehouseZone){
-   return warehouseZoneRespository.save(mergedWarehouseZone);
+  public WarehouseZone update(WarehouseZone mergedWarehouseZone) {
+    return warehouseZoneRespository.save(mergedWarehouseZone);
   }
 }

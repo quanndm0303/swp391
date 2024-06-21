@@ -21,7 +21,7 @@ public class InboundTransactionValidator {
   @Autowired
   UserRepository userRepository;
 
-  private boolean checkInboundTransactionId(Integer id){
+  private boolean checkInboundTransactionId(Integer id) {
     return inboundTransactionRepository.existByIdAndIsDeletedFalse(id);
   }
 
@@ -52,7 +52,7 @@ public class InboundTransactionValidator {
     if (source != null && !outboundTransactionRepository.existsById(source)) {
       return "Source is not valid";
     }
-    if(inboundTransaction.getExternal_source() == null){
+    if (inboundTransaction.getExternal_source() == null) {
       return "Extenral source is invalid";
     }
 
@@ -60,7 +60,8 @@ public class InboundTransactionValidator {
   }
 
   public String checkPut(Integer transactionId, InboundTransaction transaction) {
-    if (transactionId == null || !inboundTransactionRepository.existByIdAndIsDeletedFalse(transactionId)) {
+    if (transactionId == null || !inboundTransactionRepository.existByIdAndIsDeletedFalse(
+        transactionId)) {
       return "Id is not valid";
     }
     return checkPost(transaction);

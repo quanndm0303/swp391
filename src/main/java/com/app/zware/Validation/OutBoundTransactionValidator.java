@@ -2,37 +2,40 @@ package com.app.zware.Validation;
 
 
 import com.app.zware.Entities.OutboundTransaction;
-import com.app.zware.Entities.Warehouse;
-import com.app.zware.Repositories.*;
+import com.app.zware.Repositories.OutboundTransactionDetailRepository;
+import com.app.zware.Repositories.OutboundTransactionRepository;
+import com.app.zware.Repositories.UserRepository;
+import com.app.zware.Repositories.WarehouseRespository;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Component
 public class OutBoundTransactionValidator {
-    @Autowired
-    OutboundTransactionRepository outboundTransactionRepository;
 
-    @Autowired
-    WarehouseRespository warehouseRespository;
+  @Autowired
+  OutboundTransactionRepository outboundTransactionRepository;
 
-    @Autowired
-    UserRepository userRepository;
+  @Autowired
+  WarehouseRespository warehouseRespository;
 
-    @Autowired
-    OutboundTransactionDetailRepository outboundTransactionDetailRepository;
+  @Autowired
+  UserRepository userRepository;
 
-    public String checkPost(OutboundTransaction outboundTransaction){
-        if(outboundTransaction.getDate() == null){
-            return "Date is invalid";
-        }
+  @Autowired
+  OutboundTransactionDetailRepository outboundTransactionDetailRepository;
 
-        Integer makerId = outboundTransaction.getMaker_id();
-        if(makerId == null || !userRepository.existByIdAndIsDeletedFalse(outboundTransaction.getMaker_id())){
-            return "Not found Maker";
-        }
+  public String checkPost(OutboundTransaction outboundTransaction) {
+    if (outboundTransaction.getDate() == null) {
+      return "Date is invalid";
+    }
+
+    Integer makerId = outboundTransaction.getMaker_id();
+    if (makerId == null || !userRepository.existByIdAndIsDeletedFalse(
+        outboundTransaction.getMaker_id())) {
+      return "Not found Maker";
+    }
 //        if( outboundTransaction.getStatus()== null || outboundTransaction.getStatus().isEmpty()){
 //            return "Status is invalid";
 //        }
@@ -42,54 +45,53 @@ public class OutBoundTransactionValidator {
 //            return "Status is not valid";
 //        }
 
+    Integer destination = outboundTransaction.getDestination();
+    if (destination == null && outboundTransaction.getExternal_destination() == null) {
+      return "Destination and External Destination are invalid !";
+    } else {
+      if (!warehouseRespository.existByIdAndIsDeletedFalse(outboundTransaction.getDestination())) {
+        return "Not found ID warehouse for destination";
+      }
 
-        Integer destination = outboundTransaction.getDestination();
-        if(destination == null && outboundTransaction.getExternal_destination() == null){
-            return "Destination and External Destination are invalid !";
-        } else {
-            if (!warehouseRespository.existByIdAndIsDeletedFalse(outboundTransaction.getDestination())) {
-                return "Not found ID warehouse for destination";
-            }
-
-            if (outboundTransaction.getExternal_destination().isEmpty()) {
-                return "External destination is invalid";
-            }
-        }
-        return "";
+      if (outboundTransaction.getExternal_destination().isEmpty()) {
+        return "External destination is invalid";
+      }
     }
+    return "";
+  }
 
-    public String checkPut(Integer id, OutboundTransaction outboundTransaction){
-        if(id == null || !outboundTransactionRepository.existsById(id)) {
-            return "Not found OutboundTransactionID";
-        }
-        List<String> statusList = Arrays.asList("Pending", "Processing", "Done", "Cancel");
-        if (!statusList.contains(outboundTransaction.getStatus())) {
-            return "Status is not valid";
-        }
-            return checkPost(outboundTransaction);
-
+  public String checkPut(Integer id, OutboundTransaction outboundTransaction) {
+    if (id == null || !outboundTransactionRepository.existsById(id)) {
+      return "Not found OutboundTransactionID";
     }
-
-    public String checkGet(Integer id){
-        if(!checkId(id)){
-            return "Not found ID";
-        } else {
-            return "";
-        }
+    List<String> statusList = Arrays.asList("Pending", "Processing", "Done", "Cancel");
+    if (!statusList.contains(outboundTransaction.getStatus())) {
+      return "Status is not valid";
     }
+    return checkPost(outboundTransaction);
 
-    public String checkDelete(Integer id){
-        return checkGet(id);
-    }
+  }
 
-    public boolean checkId(Integer id){
-        return outboundTransactionRepository.existsByIdAndIsDeletedFalse(id);
+  public String checkGet(Integer id) {
+    if (!checkId(id)) {
+      return "Not found ID";
+    } else {
+      return "";
     }
+  }
 
-    public String checkGetDetail(Integer id){
-        if(!checkId(id)){
-            return "OutboundID not found or OutboundID was deleted !";
-        }
-        return "";
+  public String checkDelete(Integer id) {
+    return checkGet(id);
+  }
+
+  public boolean checkId(Integer id) {
+    return outboundTransactionRepository.existsByIdAndIsDeletedFalse(id);
+  }
+
+  public String checkGetDetail(Integer id) {
+    if (!checkId(id)) {
+      return "OutboundID not found or OutboundID was deleted !";
     }
+    return "";
+  }
 }

@@ -8,7 +8,6 @@ import com.app.zware.Service.InboundTransactionDetailService;
 import com.app.zware.Service.UserService;
 import com.app.zware.Validation.InboundTransactionDetailValidator;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +40,9 @@ public class InboundTransactionDetailController {
     CustomResponse customResponse = new CustomResponse();
 
     //Get
-    customResponse.setAll(true,"Get data of all inbound transaction details success",service.getAll());
-    return new ResponseEntity<>(customResponse,HttpStatus.OK);
+    customResponse.setAll(true, "Get data of all inbound transaction details success",
+        service.getAll());
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
@@ -55,14 +55,15 @@ public class InboundTransactionDetailController {
     //VALIDATION
     String checkMessage = validator.checkGet(id);
     if (!checkMessage.isEmpty()) {
-      customResponse.setAll(false,checkMessage,null);
-      return new ResponseEntity<>(customResponse,HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false, checkMessage, null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //GET
 
-      customResponse.setAll(true,"get data of inbound transaction details with id "+id+" success",service.getById(id));
-      return new ResponseEntity<>(customResponse, HttpStatus.OK);
+    customResponse.setAll(true,
+        "get data of inbound transaction details with id " + id + " success", service.getById(id));
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
   }
 
@@ -79,21 +80,21 @@ public class InboundTransactionDetailController {
     User user = userService.getRequestMaker(request);
     InboundTransaction transaction = service.getTransaction(detail);
     if (!user.getRole().equals("admin") && !user.getId().equals(transaction.getMaker_id())) {
-      customResponse.setAll(false,"You are nor allowed",null);
+      customResponse.setAll(false, "You are nor allowed", null);
       return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //VALIDATION
     String checkMessage = validator.checkPost(detail);
     if (!checkMessage.isEmpty()) {
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //Create
     //finally
     InboundTransactionDetail storedDetail = service.save(detail);
-    customResponse.setAll(true,"Inbound transaction details created",storedDetail);
+    customResponse.setAll(true, "Inbound transaction details created", storedDetail);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
@@ -115,21 +116,21 @@ public class InboundTransactionDetailController {
     User user = userService.getRequestMaker(request);
     InboundTransaction transaction = service.getTransaction(mergedDetail);
     if (!user.getRole().equals("admin") && !user.getId().equals(transaction.getMaker_id())) {
-      customResponse.setAll(false,"You are not allowed",null);
+      customResponse.setAll(false, "You are not allowed", null);
       return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //VALIDATION
     String checkMessage = validator.checkPut(id, mergedDetail);
     if (!checkMessage.isEmpty()) {
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
 
     //Update
     // finally
     InboundTransactionDetail updatedDetail = service.update(id, mergedDetail);
-    customResponse.setAll(true,"Inbound transaction update success",updatedDetail);
+    customResponse.setAll(true, "Inbound transaction update success", updatedDetail);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 
@@ -138,27 +139,27 @@ public class InboundTransactionDetailController {
       @PathVariable Integer id,
       HttpServletRequest request
   ) {
-     //response
+    //response
     CustomResponse customResponse = new CustomResponse();
 
     //Authorization: Admin
     User user = userService.getRequestMaker(request);
     if (!user.getRole().equals("admin")) {
-      customResponse.setAll(false,"You are not allowed",null);
+      customResponse.setAll(false, "You are not allowed", null);
       return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
     //VALIDATION
     String checkMessage = validator.checkDelete(id);
     if (!checkMessage.isEmpty()) {
-      customResponse.setAll(false,checkMessage,null);
+      customResponse.setAll(false, checkMessage, null);
       return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //DELETE
     // finally
     service.delete(id);
-    customResponse.setAll(true,"Inbound transcation detail "+id+" has been deleted",null);
+    customResponse.setAll(true, "Inbound transcation detail " + id + " has been deleted", null);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
   }
 

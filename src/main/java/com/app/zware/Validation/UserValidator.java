@@ -3,11 +3,10 @@ package com.app.zware.Validation;
 import com.app.zware.Entities.User;
 import com.app.zware.Repositories.UserRepository;
 import com.app.zware.Repositories.WarehouseRespository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class UserValidator {
@@ -37,7 +36,6 @@ public class UserValidator {
 
     }
 
-
     if (user.getPassword().length() < 6) {
       return "Password is not valid";
     }
@@ -47,7 +45,7 @@ public class UserValidator {
     }
 
     Integer wId = user.getWarehouse_id(); //Warehouse ID
-    if ( wId != null && !warehouseRespository.existsById(wId)
+    if (wId != null && !warehouseRespository.existsById(wId)
     ) {
       return "Warehouse id is not valid";
     }
@@ -66,23 +64,25 @@ public class UserValidator {
     if (userId == null || !checkUserId(userId)) {
       return ("User id is not valid");
     }
-    String checkPostMessage =  checkPost(mergedUser);
+    String checkPostMessage = checkPost(mergedUser);
     return (checkPostMessage.equals("Email has been used")) ? "" : checkPostMessage;
   }
 
-  public boolean checkUserId (Integer id){
+  public boolean checkUserId(Integer id) {
     return userRepository.existByIdAndIsDeletedFalse(id);
   }
+
   public String checkGet(Integer userId) {
-   if(!checkUserId(userId)){
-     return "Not found User Id";
-   }
-   return "";
+    if (!checkUserId(userId)) {
+      return "Not found User Id";
+    }
+    return "";
   }
 
   public String checkDelete(Integer userId) {
     return checkGet(userId);
   }
+
   public boolean isValidPhoneNumber(String phoneNumber) {
     // Define a regex for phone number validation,exactly 10 digits
 

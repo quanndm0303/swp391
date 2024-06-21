@@ -41,11 +41,13 @@ public class WarehouseValidator {
     }
 
     //check name : cannot same with other warehouse
-    Warehouse existingWarehouse = warehouseRespository.findByName(mergedWarehouse.getName()).orElse(null);
-    if (existingWarehouse == null){
-        return "";
-    } else{
-      return (existingWarehouse.getId().equals(warehouseId)) ? "" : "Warehouse with the same name already exist";
+    Warehouse existingWarehouse = warehouseRespository.findByName(mergedWarehouse.getName())
+        .orElse(null);
+    if (existingWarehouse == null) {
+      return "";
+    } else {
+      return (existingWarehouse.getId().equals(warehouseId)) ? ""
+          : "Warehouse with the same name already exist";
     }
 //    assert existingWarehouse != null;
 //    if (!existingWarehouse.getId().equals(warehouseId)) {
@@ -55,7 +57,7 @@ public class WarehouseValidator {
 //    }
   }
 
-  private boolean checkWarehouseId(Integer id){
+  private boolean checkWarehouseId(Integer id) {
     return warehouseRespository.existByIdAndIsDeletedFalse(id);
   }
 

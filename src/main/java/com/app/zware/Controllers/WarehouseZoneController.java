@@ -68,7 +68,7 @@ public class WarehouseZoneController {
     } else {
       WarehouseZone newZone = warehouseZoneService.createWarehouseZone(warehouseZone);
       customResponse.setAll(true, "Create warehouse zone success", newZone);
-      return new ResponseEntity<>(newZone, HttpStatus.OK);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 

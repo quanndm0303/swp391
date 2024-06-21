@@ -41,9 +41,9 @@ public class InboundTransactionService {
     return repository.save(mergedTransaction);
   }
 
-  public InboundTransaction merge(Integer oldTransactionId, InboundTransaction newTransaction){
+  public InboundTransaction merge(Integer oldTransactionId, InboundTransaction newTransaction) {
     InboundTransaction oldTransaction = repository.findById(oldTransactionId).orElse(null);
-    if (oldTransaction == null){
+    if (oldTransaction == null) {
       return null;
     }
 
@@ -51,7 +51,8 @@ public class InboundTransactionService {
     Optional.ofNullable(newTransaction.getMaker_id()).ifPresent(oldTransaction::setMaker_id);
     Optional.ofNullable(newTransaction.getStatus()).ifPresent(oldTransaction::setStatus);
     Optional.ofNullable(newTransaction.getSource()).ifPresent(oldTransaction::setSource);
-    Optional.ofNullable(newTransaction.getExternal_source()).ifPresent(oldTransaction::setExternal_source);
+    Optional.ofNullable(newTransaction.getExternal_source())
+        .ifPresent(oldTransaction::setExternal_source);
 
     return oldTransaction; //has been UPDATED
   }
@@ -61,11 +62,10 @@ public class InboundTransactionService {
     inboundTransaction.setIsdeleted(true);
     repository.save(inboundTransaction);
 
-
-
     //repository.deleteById(id);
   }
-  public List<InboundTransactionDetail> getInboundDetailsByTransactionId(Integer transactionId){
-    return  inboundTransactionDetailRepository.findByInboundTransactionId(transactionId);
+
+  public List<InboundTransactionDetail> getInboundDetailsByTransactionId(Integer transactionId) {
+    return inboundTransactionDetailRepository.findByInboundTransactionId(transactionId);
   }
 }

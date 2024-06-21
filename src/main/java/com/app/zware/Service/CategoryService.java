@@ -4,7 +4,6 @@ import com.app.zware.Entities.Category;
 import com.app.zware.Repositories.CategoryRepository;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,17 +40,16 @@ public class CategoryService {
 
   public Category merge(Integer id, Category request) {
     Category oldCategory = getCategoryById(id);
-    if (oldCategory==null) {
+    if (oldCategory == null) {
       return null;
     }
-      oldCategory.setIsdeleted(false);
-      Optional.ofNullable(request.getName()).ifPresent(oldCategory::setName);
-
+    oldCategory.setIsdeleted(false);
+    Optional.ofNullable(request.getName()).ifPresent(oldCategory::setName);
 
     return oldCategory;
   }
 
-  public Category update(Category category){
+  public Category update(Category category) {
 
     return categoryRepository.save(category);
   }

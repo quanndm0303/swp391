@@ -101,7 +101,7 @@ public class WarehouseController {
   @GetMapping("/{warehouseId}/zones")
   public ResponseEntity<?> getZones(
       @PathVariable("warehouseId") Integer warehouseId
-  ){
+  ) {
     //Response
     CustomResponse customResponse = new CustomResponse();
 
@@ -125,7 +125,7 @@ public class WarehouseController {
 
 
   @GetMapping("/{warehouseId}/items")
-  public ResponseEntity<?> getItem(@PathVariable("warehouseId") Integer warehouseId){
+  public ResponseEntity<?> getItem(@PathVariable("warehouseId") Integer warehouseId) {
     //response
     CustomResponse customResponse = new CustomResponse();
 
@@ -133,17 +133,17 @@ public class WarehouseController {
 
     //Validation
     String checkMessage = warehouseValidator.checkGet(warehouseId);
-    if(!checkMessage.isEmpty()){
-      customResponse.setAll(false,checkMessage,null);
-      return new ResponseEntity<>(customResponse,HttpStatus.OK);
+    if (!checkMessage.isEmpty()) {
+      customResponse.setAll(false, checkMessage, null);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
     }
 
     //finally
-    customResponse.setAll(true,"Get Items by warehouse success",
-            warehouseService.getItemsByWarehouseId(warehouseId));
+    customResponse.setAll(true, "Get Items by warehouse success",
+        warehouseService.getItemsByWarehouseId(warehouseId));
 
-    return new ResponseEntity<>(customResponse,HttpStatus.OK);
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
   }
 
@@ -184,7 +184,7 @@ public class WarehouseController {
     //Authorization : Admin
     User user = userService.getRequestMaker(request);
     if (!user.getRole().equals("admin")) {
-      customResponse.setAll(false,"You are not allowed", null);
+      customResponse.setAll(false, "You are not allowed", null);
       return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 

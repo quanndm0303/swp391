@@ -1,6 +1,5 @@
 package com.app.zware.Util;
 
-import com.app.zware.Entities.User;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -82,7 +81,7 @@ public class JwtUtil {
 
   //some Methods with HttpServletRequest
 
-  public static String getJwtToken(HttpServletRequest request){
+  public static String getJwtToken(HttpServletRequest request) {
     //GET Jwt token
     final String authHeader = request.getHeader("Authorization");
     String jwt = null;

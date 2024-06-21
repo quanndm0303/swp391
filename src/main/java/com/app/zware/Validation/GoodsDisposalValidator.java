@@ -7,68 +7,71 @@ import com.app.zware.Repositories.WarehouseRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-
 @Component
 public class GoodsDisposalValidator {
-    @Autowired
-    GoodsDisposalRepository goodsDisposalRepository;
 
-    @Autowired
-    WarehouseRespository warehouseRespository;
+  @Autowired
+  GoodsDisposalRepository goodsDisposalRepository;
 
-    @Autowired
-    UserRepository userRepository;
+  @Autowired
+  WarehouseRespository warehouseRespository;
 
-
-    public String checkPost(GoodsDisposal goodsDisposal){
-      if(goodsDisposal.getStatus().isEmpty()){
-          return "Status is not empty";
-      }
-      if(goodsDisposal.getWarehouse_id()==null){
-          return "Warehouse ID is not empty";
-      }
-      if (!checkWarehouseExist(goodsDisposal.getWarehouse_id())){
-          return "Warehouse ID does not exist";
-      }
-      if(goodsDisposal.getDate()==null) {
-          return "Date is not empty";
-      }
-
-      Integer makerID = goodsDisposal.getMaker_id();
-      if( makerID == null || !userRepository.existsById(makerID)){
-          return "Not Found makerID";
-      }
+  @Autowired
+  UserRepository userRepository;
 
 
-      return "";
+  public String checkPost(GoodsDisposal goodsDisposal) {
+    if (goodsDisposal.getStatus().isEmpty()) {
+      return "Status is not empty";
     }
-    public String checkPut (Integer goodsDisposalId,GoodsDisposal goodsDisposal){
-        if(goodsDisposalId==null||!goodsDisposalRepository.existByIdAndIsDeletedFalse(goodsDisposalId)){
-            return "Id is not valid";
-        }
-        return checkPost(goodsDisposal);
+    if (goodsDisposal.getWarehouse_id() == null) {
+      return "Warehouse ID is not empty";
     }
-    private boolean checkGoodsDisposalId(Integer id){
-        return goodsDisposalRepository.existByIdAndIsDeletedFalse(id);
+    if (!checkWarehouseExist(goodsDisposal.getWarehouse_id())) {
+      return "Warehouse ID does not exist";
     }
-    public String checkGet (Integer id){
-        if(!checkGoodsDisposalId(id)){
-            return "Id is not valid";
-        }
-        return "";
-    }
-    public String checkDelete(Integer id){
-        return checkGet(id);
+    if (goodsDisposal.getDate() == null) {
+      return "Date is not empty";
     }
 
-
-    private boolean checkIdExist(Integer id){
-        return goodsDisposalRepository.existsById(id);
+    Integer makerID = goodsDisposal.getMaker_id();
+    if (makerID == null || !userRepository.existsById(makerID)) {
+      return "Not Found makerID";
     }
 
+    return "";
+  }
 
-    private boolean checkWarehouseExist(Integer id){
-        return warehouseRespository.existsById(id);
+  public String checkPut(Integer goodsDisposalId, GoodsDisposal goodsDisposal) {
+    if (goodsDisposalId == null || !goodsDisposalRepository.existByIdAndIsDeletedFalse(
+        goodsDisposalId)) {
+      return "Id is not valid";
     }
+    return checkPost(goodsDisposal);
+  }
+
+  private boolean checkGoodsDisposalId(Integer id) {
+    return goodsDisposalRepository.existByIdAndIsDeletedFalse(id);
+  }
+
+  public String checkGet(Integer id) {
+    if (!checkGoodsDisposalId(id)) {
+      return "Id is not valid";
+    }
+    return "";
+  }
+
+  public String checkDelete(Integer id) {
+    return checkGet(id);
+  }
+
+
+  private boolean checkIdExist(Integer id) {
+    return goodsDisposalRepository.existsById(id);
+  }
+
+
+  private boolean checkWarehouseExist(Integer id) {
+    return warehouseRespository.existsById(id);
+  }
 }
