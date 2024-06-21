@@ -43,7 +43,7 @@ public class InboundTransactionValidator {
       return "Maker id is not valid";
     }
 
-    List<String> statusList = Arrays.asList("pending", "processing", "done", "cancel");
+    List<String> statusList = Arrays.asList("Pending", "Processing", "Done", "Cancel");
     if (!statusList.contains(inboundTransaction.getStatus())) {
       return "Status is not valid";
     }
