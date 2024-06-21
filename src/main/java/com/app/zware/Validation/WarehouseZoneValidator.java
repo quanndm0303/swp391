@@ -18,10 +18,10 @@ public class WarehouseZoneValidator {
     WarehouseZoneRespository warehouseZoneRespository;
 
     public String checkPost(WarehouseZone warehouseZone){
-        if(warehouseZone.getName().isEmpty()){
+        if(warehouseZone.getName() == null || warehouseZone.getName().isEmpty()){
             return "WarehouseZone Name is not empty";
         }
-        if(warehouseZone.getWarehouse_id()==null){
+        if(warehouseZone.getWarehouse_id()==null || warehouseZone.getWarehouse_id().describeConstable().isEmpty()){
             return "Warehouse ID is not empty";
         }
 
@@ -29,23 +29,23 @@ public class WarehouseZoneValidator {
             return "Warehouse ID is not valid ";
         }
 
-        Optional<WarehouseZone> existingWarehouseZone = warehouseZoneRespository.findByName(warehouseZone.getName());
-        if(existingWarehouseZone.isPresent()){
+        WarehouseZone existingWarehouseZone = warehouseZoneRespository.findByName(warehouseZone.getName());
+        if(existingWarehouseZone != null){
             return "WarehouseZone with the same name already exist";
         }
-
-
         return "";
     }
     private boolean checkWarehouseExist(Integer warehouse_id){
-        return warehouseRespository.existsById(warehouse_id);
+
+        return warehouseRespository.existByIdAndIsDeletedFalse(warehouse_id);
     }
     public String checkPut(Integer warehouseZoneId,WarehouseZone warehouseZone){
-        if(warehouseZoneId==null||!warehouseRespository.existsById(warehouseZoneId)){
+        System.out.println(warehouseZoneId);
+        if(warehouseZoneId==null || !warehouseZoneRespository.existsByIdAndIsDeletedFalse(warehouseZoneId)){
+            System.out.println(checkWarehouseExist(warehouseZoneId));
             return "Id is not valid";
         }
-
-       WarehouseZone existWarehouseZone = warehouseZoneRespository.findByName(warehouseZone.getName()).orElse(null);
+       WarehouseZone existWarehouseZone = warehouseZoneRespository.findByName(warehouseZone.getName());
         if(existWarehouseZone==null){
             return "";
         }else {
@@ -58,7 +58,7 @@ public class WarehouseZoneValidator {
 
 
     private boolean checkIdExist(Integer id){
-      return  warehouseZoneRespository.existsById(id);
+      return  warehouseZoneRespository.existsByIdAndIsDeletedFalse(id);
     }
     public String checkGet(Integer id){
         if(!checkIdExist(id)){

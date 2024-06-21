@@ -18,4 +18,5 @@ public class WarehouseZone {
   private Integer id;
   private Integer warehouse_id;
   private String name;
+  private Boolean isdeleted = false;
 }

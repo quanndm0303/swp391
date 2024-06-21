@@ -15,5 +15,6 @@ public class WarehouseItems {
   private Integer zone_id;
   private Integer item_id;
   private Integer quantity;
+  private Boolean isdeleted = false; //Default to false for new warehouse item
 
 }

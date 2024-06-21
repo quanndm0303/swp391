@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 import org.springframework.dao.DataAccessException;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity(name="outboundtransactions")
@@ -15,9 +16,10 @@ public class OutboundTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Date date;
+    private LocalDate date;
     private Integer maker_id;
     private String status;
     private Integer destination;
     private String external_destination;
+    private Boolean isdeleted = false;
 }

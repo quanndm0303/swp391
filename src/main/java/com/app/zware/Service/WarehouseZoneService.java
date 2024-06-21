@@ -19,22 +19,22 @@ public class WarehouseZoneService {
   }
 
   public WarehouseZone createWarehouseZone(WarehouseZone request) {
-    WarehouseZone warehouseZone = new WarehouseZone();
-    warehouseZone.setName(request.getName());
-    warehouseZone.setWarehouse_id(request.getWarehouse_id());
-    return warehouseZoneRespository.save(warehouseZone);
+    request.setIsdeleted(false);
+    return warehouseZoneRespository.save(request);
   }
 
-  public WarehouseZone getWarehouseZoneById(int id) {
+  public WarehouseZone getWarehouseZoneById(Integer id) {
     return warehouseZoneRespository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not Found WarehouseZone"));
+        .orElse(null);
   }
 
-  public void deleteWarehouseZoneById(int id) {
-    warehouseZoneRespository.deleteById(id);
+  public void deleteWarehouseZoneById(Integer id) {
+    WarehouseZone warehouseZone = getWarehouseZoneById(id);
+    warehouseZone.setIsdeleted(true);
+    warehouseZoneRespository.save(warehouseZone);
   }
 
-  public boolean checkIdExist(int id) {
+  public boolean checkIdExist(Integer id) {
     return warehouseZoneRespository.existsById(id);
 
   }
@@ -47,6 +47,8 @@ public class WarehouseZoneService {
     }
     Optional.ofNullable(newWarehouseZone.getName()).ifPresent(oldWarehouseZone::setName);
     Optional.ofNullable(newWarehouseZone.getWarehouse_id()).ifPresent(oldWarehouseZone::setWarehouse_id);
+
+    oldWarehouseZone.setIsdeleted(false);
 
     return oldWarehouseZone;
   }
