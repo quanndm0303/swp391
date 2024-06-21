@@ -1,8 +1,10 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.OutboundTransaction;
+import com.app.zware.Entities.OutboundTransactionDetail;
 import com.app.zware.Entities.User;
 import com.app.zware.HttpEntities.CustomResponse;
+import com.app.zware.Repositories.OutboundTransactionDetailRepository;
 import com.app.zware.Service.OutboundTransactionService;
 import com.app.zware.Service.UserService;
 import com.app.zware.Validation.OutBoundTransactionValidator;
@@ -25,6 +27,9 @@ public class OutboundTransactionController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    OutboundTransactionDetailRepository outboundTransactionDetailRepository;
 
     @GetMapping("")
     public ResponseEntity<?> index() {
@@ -134,5 +139,26 @@ public class OutboundTransactionController {
         customResponse.setAll(true,"OutboundTransaction has been updated", updatedOutboundTransaction);
         return new ResponseEntity<>(customResponse, HttpStatus.OK);
 
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<?> getOutboundDetailsByOutboundId(@PathVariable("id") Integer id){
+        //response
+        CustomResponse customResponse = new CustomResponse();
+
+        //Authorization : ALL
+
+        //validate
+        String message = outBoundTransactionValidator.checkGetDetail(id);
+        if(!message.isEmpty()){
+            customResponse.setAll(false, message , null);
+            return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
+        } else {
+            List<OutboundTransactionDetail> outboundTransactionDetail =
+                    outboundTransactionDetailRepository.findAllDetailsByOutboundTransactionIdAndIsDeletedFalse(id);
+            customResponse.setAll(true,"Get all data details of OutboundTransaction with id : " +
+                    id + " has been success", outboundTransactionDetail);
+            return new ResponseEntity<>(customResponse,HttpStatus.OK);
+        }
     }
 }

@@ -3,10 +3,7 @@ package com.app.zware.Validation;
 
 import com.app.zware.Entities.OutboundTransaction;
 import com.app.zware.Entities.Warehouse;
-import com.app.zware.Repositories.OutboundTransactionRepository;
-import com.app.zware.Repositories.UserRepository;
-import com.app.zware.Repositories.WarehouseItemsRepository;
-import com.app.zware.Repositories.WarehouseRespository;
+import com.app.zware.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +22,7 @@ public class OutBoundTransactionValidator {
     UserRepository userRepository;
 
     @Autowired
-    WarehouseItemsRepository warehouseItemsRepository;
+    OutboundTransactionDetailRepository outboundTransactionDetailRepository;
 
     public String checkPost(OutboundTransaction outboundTransaction){
         if(outboundTransaction.getDate() == null){
@@ -87,5 +84,12 @@ public class OutBoundTransactionValidator {
 
     public boolean checkId(Integer id){
         return outboundTransactionRepository.existsByIdAndIsDeletedFalse(id);
+    }
+
+    public String checkGetDetail(Integer id){
+        if(!checkId(id)){
+            return "OutboundID not found or OutboundID was deleted !";
+        }
+        return "";
     }
 }
