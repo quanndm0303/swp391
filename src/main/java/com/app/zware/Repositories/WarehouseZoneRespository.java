@@ -28,4 +28,9 @@ public interface WarehouseZoneRespository extends JpaRepository<WarehouseZone, I
 
   @Query("SELECT CASE WHEN COUNT(id) > 0 THEN true ELSE false END FROM warehousezones i WHERE i.id = ?1 AND i.isdeleted = false")
   boolean existsByIdAndIsDeletedFalse(Integer id);
+
+
+  @Query(value = "select count(*) from warehousezones where warehouse_id=?1 and isdeleted=0",nativeQuery = true)
+  Long countZoneInWarehouse(Integer warehouseId);
+
 }
