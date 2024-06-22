@@ -32,7 +32,14 @@ public class WarehouseItemsService {
     WarehouseItems warehouseItems = getById(id);
     warehouseItems.setIsdeleted(true);
     warehouseItemsRepository.save(warehouseItems);
-//    warehouseItemsRepository.deleteById(id);
+  }
+
+  public void deleteWarehouseItemsByZoneId(Integer id) {
+    List<WarehouseItems> warehouseItems = warehouseItemsRepository.findZoneId(id);
+    for ( WarehouseItems warehouseItemsToDelete :warehouseItems ){
+      warehouseItemsToDelete.setIsdeleted(true);
+      warehouseItemsRepository.save(warehouseItemsToDelete);
+    }
   }
 
   public Boolean checkWarehouseItemsId(Integer id) {

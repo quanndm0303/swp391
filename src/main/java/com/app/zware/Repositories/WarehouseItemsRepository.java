@@ -25,6 +25,9 @@ public interface WarehouseItemsRepository extends JpaRepository<WarehouseItems, 
     @Query(value = "SELECT * FROM warehouseitems i WHERE i.id = ?1 AND i.isdeleted = 0", nativeQuery = true)
     Optional<WarehouseItems> findById(Integer id);
 
+    @Query(value = "SELECT * FROM warehouseitems i WHERE i.zone_id = ?1 AND i.isdeleted = 0", nativeQuery = true)
+    List<WarehouseItems> findZoneId(Integer id);
+
     @Query("SELECT CASE WHEN COUNT(id) > 0 THEN true ELSE false END FROM warehouseitems i WHERE i.id = ?1 AND i.isdeleted = false")
     boolean existsByIdAndIsDeletedFalse(Integer id);
 
@@ -44,4 +47,9 @@ public interface WarehouseItemsRepository extends JpaRepository<WarehouseItems, 
             + "WHERE wz.warehouse_id = :warehouseId and wi.isdeleted=false", nativeQuery = true)
     Long countItemsInWarehouse(Integer warehouseId);
 
+
+    @Query(value = "SELECT wi.* FROM WarehouseItems wi "
+            + "JOIN WarehouseZones wz ON wi.zone_id = wz.id "
+            + "WHERE wi.zone_id = :zoneId AND wi.quantity > 0 AND wi.isdeleted = false", nativeQuery = true)
+    List<WarehouseItems> findItemsInWarehouseZone(Integer zoneId);
 }

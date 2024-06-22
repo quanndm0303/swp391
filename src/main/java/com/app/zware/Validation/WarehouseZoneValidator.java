@@ -1,10 +1,15 @@
 package com.app.zware.Validation;
 
+import com.app.zware.Entities.WarehouseItems;
 import com.app.zware.Entities.WarehouseZone;
+import com.app.zware.Repositories.WarehouseItemsRepository;
 import com.app.zware.Repositories.WarehouseRespository;
 import com.app.zware.Repositories.WarehouseZoneRespository;
+import com.app.zware.Service.WarehouseItemsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class WarehouseZoneValidator {
@@ -14,6 +19,12 @@ public class WarehouseZoneValidator {
 
   @Autowired
   WarehouseZoneRespository zoneRespository;
+
+  @Autowired
+  WarehouseItemsRepository warehouseItemsRepository;
+
+  @Autowired
+  WarehouseItemsService warehouseItemsService;
 
   public String checkGet(Integer id) {
     if (id == null || !checkIdExist(id)) {
@@ -64,7 +75,17 @@ public class WarehouseZoneValidator {
   }
 
   public String checkDelete(Integer id) {
-    return checkGet(id);
+    if (id == null || !checkIdExist(id)) {
+      return "Zone id is not valid";
+    }
+    List<WarehouseItems> itemsInZone = warehouseItemsRepository.findItemsInWarehouseZone(id);
+    if(!itemsInZone.isEmpty()){
+      return "Cannot delete this warehouseZones, " +
+              "It contains items and the quantity of items remaining.";
+    }
+    //deleted zone_id in warehouseItems
+    warehouseItemsService.deleteWarehouseItemsByZoneId(id);
+    return "";
   }
 
   private boolean checkIdExist(Integer id) {
