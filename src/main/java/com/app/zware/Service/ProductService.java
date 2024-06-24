@@ -72,21 +72,28 @@ public class ProductService {
   }
 
   public String uploadImage(MultipartFile file, Integer productid) throws IOException {
-    // Tạo thư mục nếu chưa tồn tại
+    Product imageData = getById(productid);
+
+    // Delete the old image if it exists
+    if (imageData.getImage() != null) {
+      Path oldImagePath = Paths.get(storageDirectory, imageData.getImage());
+      Files.deleteIfExists(oldImagePath);
+    }
+
+    // Create the directory if it doesn't exist
     File directory = new File(storageDirectory);
     if (!directory.exists()) {
       directory.mkdirs();
     }
 
-    // Lưu tệp ảnh vào thư mục với tên chứa thời gian
+    // Save the new image with a timestamp in its name
     String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
     String fileExtension = getFileExtension(file.getOriginalFilename());
     String fileName = timestamp + fileExtension;
     Path filePath = Paths.get(storageDirectory, fileName);
     Files.write(filePath, file.getBytes());
 
-    // Lưu thông tin ảnh vào cơ sở dữ liệu
-    Product imageData = getById(productid);
+    // Save the new image information to the database
     imageData.setImage(fileName);
     productRepository.save(imageData);
 

@@ -7,6 +7,7 @@ import com.app.zware.Repositories.CategoryRepository;
 import com.app.zware.Repositories.ItemRepository;
 import com.app.zware.Repositories.ProductRepository;
 import com.app.zware.Repositories.WarehouseItemsRepository;
+import com.app.zware.Service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,9 @@ public class ProductValidator {
 
   @Autowired
   WarehouseItemsRepository warehouseItemsRepository;
+
+  @Autowired
+  ItemService itemService;
 
   public String checkPost(Product product) {
     if (product.getName() == null || product.getName().isEmpty()) {
@@ -67,16 +71,16 @@ public class ProductValidator {
     }
     List<Item> listItemByProductId = itemRepository.findByProductId(id);
     //Find any items containing productId
-    if(listItemByProductId != null){
+    if(!listItemByProductId.isEmpty()){
       //Find out if the item is still in quantity
       for(Item item : listItemByProductId){
         List<WarehouseItems> warehouseItems = warehouseItemsRepository.findByItemId(item.getId());
-        for(WarehouseItems wh : warehouseItems){
-         if(wh != null)
+         if(!warehouseItems.isEmpty())
           return "Cannot delete this product, there are some warehouse in this product that are in quantity";
-        }
       }
     }
+    // if delete product success, item contain productId will deleted
+    itemService.deletedItemByProductId(id);
     return "";
   }
 
