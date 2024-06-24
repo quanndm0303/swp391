@@ -136,17 +136,31 @@ public class UserController {
       HttpServletRequest request
   ) {
 
+
+
     //response
     CustomResponse customResponse = new CustomResponse();
     //Only admin or right user can edit
     User requestMaker = userService.getRequestMaker(request);
+
+    boolean isAdmin = requestMaker.getRole().equals("admin");
     if (!requestMaker.getRole().equals("admin") && !requestMaker.getId().equals(userId)) {
       customResponse.setAll(false, "You are not allowed", null);
       return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
 
+
+    // Check for unauthorized field updates
+    if (!isAdmin) {
+      if (newUser.getWarehouse_id() != null || newUser.getRole() != null) {
+        customResponse.setAll(false, "You are not allowed to update warehouse_id or role", null);
+        return new ResponseEntity<>(customResponse, HttpStatus.FORBIDDEN);
+      }
+    }
+
+
     //validate
-    User mergedUser = userService.merge(userId, newUser);
+    User mergedUser = userService.merge(userId, newUser,isAdmin);
     String checkMessage = userValidator.checkPut(userId, mergedUser);
     if (!checkMessage.isEmpty()) {
       customResponse.setAll(false, checkMessage, null);
