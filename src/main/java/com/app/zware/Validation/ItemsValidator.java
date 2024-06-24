@@ -1,9 +1,13 @@
 package com.app.zware.Validation;
 
 import com.app.zware.Entities.Item;
+import com.app.zware.Entities.WarehouseItems;
 import com.app.zware.Repositories.ItemRepository;
 import com.app.zware.Repositories.ProductRepository;
 import java.time.LocalDate;
+import java.util.List;
+
+import com.app.zware.Repositories.WarehouseItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +20,9 @@ public class ItemsValidator {
 
   @Autowired
   ProductRepository productRepository;
+
+  @Autowired
+  WarehouseItemsRepository warehouseItemsRepository;
 
   public String checkPost(Item item) {
     Integer id = item.getProduct_id();
@@ -85,7 +92,16 @@ public class ItemsValidator {
   }
 
   public String checkDelete(Integer id) {
-    return checkGet(id);
+    if (!itemRepository.existsByIdAndIsDeletedFalse(id)) {
+      return "Not found ID";
+    }
+    List<WarehouseItems>  warehouseItems = warehouseItemsRepository.findByItemId(id);
+    for(WarehouseItems wh : warehouseItems){
+      if(wh != null) {
+        return "Cannot delete this item, there are some warehouse in this items that are in quantity";
+      }
+    }
+    return "";
   }
 
 

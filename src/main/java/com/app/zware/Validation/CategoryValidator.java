@@ -1,8 +1,13 @@
 package com.app.zware.Validation;
 
 import com.app.zware.Entities.Category;
+import com.app.zware.Entities.Product;
 import com.app.zware.Repositories.CategoryRepository;
+
+import java.util.List;
 import java.util.Optional;
+
+import com.app.zware.Repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +16,9 @@ public class CategoryValidator {
 
   @Autowired
   CategoryRepository categoryRepository;
+
+  @Autowired
+  ProductRepository productRepository;
 
   public String checkPost(Category category) {
     if (category.getName() == null || category.getName().isBlank()) {
@@ -47,7 +55,15 @@ public class CategoryValidator {
   }
 
   public String checkDelete(Integer categoryId) {
-    return checkGet(categoryId);
+    if (!checkCategoryId(categoryId)) {
+      return "Not Found Category ID";
+    }
+    //find product by categoryId
+    List<Product> listProduct = productRepository.findByCategoryId(categoryId);
+    if(listProduct != null){
+      return "Cannot delete this category, there are some products in this category";
+    }
+    return "";
   }
 
 }

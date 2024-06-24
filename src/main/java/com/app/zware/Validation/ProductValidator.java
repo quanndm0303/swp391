@@ -1,10 +1,16 @@
 package com.app.zware.Validation;
 
+import com.app.zware.Entities.Item;
 import com.app.zware.Entities.Product;
+import com.app.zware.Entities.WarehouseItems;
 import com.app.zware.Repositories.CategoryRepository;
+import com.app.zware.Repositories.ItemRepository;
 import com.app.zware.Repositories.ProductRepository;
+import com.app.zware.Repositories.WarehouseItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ProductValidator {
@@ -14,6 +20,12 @@ public class ProductValidator {
 
   @Autowired
   CategoryRepository categoryRepository;
+
+  @Autowired
+  ItemRepository itemRepository;
+
+  @Autowired
+  WarehouseItemsRepository warehouseItemsRepository;
 
   public String checkPost(Product product) {
     if (product.getName() == null || product.getName().isEmpty()) {
@@ -50,7 +62,22 @@ public class ProductValidator {
   }
 
   public String checkDelete(Integer id) {
-    return checkGet(id);
+    if (!checkProductId(id)) {
+      return "Not found ID product";
+    }
+    List<Item> listItemByProductId = itemRepository.findByProductId(id);
+    //Find any items containing productId
+    if(listItemByProductId != null){
+      //Find out if the item is still in quantity
+      for(Item item : listItemByProductId){
+        List<WarehouseItems> warehouseItems = warehouseItemsRepository.findByItemId(item.getId());
+        for(WarehouseItems wh : warehouseItems){
+         if(wh != null)
+          return "Cannot delete this product, there are some warehouse in this product that are in quantity";
+        }
+      }
+    }
+    return "";
   }
 
   public boolean checkProductId(Integer id) {

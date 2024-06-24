@@ -18,6 +18,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
   @Query(value = "SELECT * FROM products p WHERE p.id = ?1 AND p.isdeleted = 0", nativeQuery = true)
   Optional<Product> findById(Integer id);
 
+  @Query(value = "SELECT * FROM products p WHERE p.category_id = ?1 AND p.isdeleted = 0", nativeQuery = true)
+  List<Product> findByCategoryId(Integer id);
+
   @Query("SELECT CASE WHEN COUNT(id) > 0 THEN true ELSE false END FROM products p WHERE p.id = ?1 AND p.isdeleted = false")
   boolean existsByIdAndIsDeletedFalse(Integer id);
 }
