@@ -1,6 +1,7 @@
 package com.app.zware.Validation;
 
 import com.app.zware.Entities.Product;
+import com.app.zware.Repositories.CategoryRepository;
 import com.app.zware.Repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,9 @@ public class ProductValidator {
 
   @Autowired
   ProductRepository productRepository;
+
+  @Autowired
+  CategoryRepository categoryRepository;
 
   public String checkPost(Product product) {
     if (product.getName() == null || product.getName().isEmpty()) {
@@ -21,8 +25,8 @@ public class ProductValidator {
     if (product.getMeasure_unit() == null || product.getMeasure_unit().isEmpty()) {
       return "Measure unit is not valid";
     }
-    if (product.getCategory_id() == null || !productRepository.existsByIdAndIsDeletedFalse(
-        product.getCategory_id())) {
+    if (product.getCategory_id() == null
+        ||  !categoryRepository.existsByIdAndIsDeletedFalse(product.getCategory_id())) {
       return "Not found Category ID";
     }
     return "";

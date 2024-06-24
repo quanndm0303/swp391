@@ -69,12 +69,12 @@ public class ProductController {
     if (!messages.isEmpty()) {
       //error
       customResponse.setAll(false, messages, null);
-      return new ResponseEntity<>(customResponse, HttpStatus.OK);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //approve
       customResponse.setAll(true, "Product has been created",
           productService.createProduct(product));
-      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(customResponse, HttpStatus.OK);
     }
   }
 
