@@ -211,9 +211,9 @@ public class ProductController {
             .contentType(MediaType.IMAGE_JPEG)
             .body(imageData);
       } else {
-        //error show image
+        //not found image
         customResponse.setAll(false, "Image not found", null);
-        return new ResponseEntity<>(customResponse, HttpStatus.OK);
+        return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
       }
     }
   }

@@ -98,7 +98,11 @@ public class ProductService {
     Product product = getById(productid);
     if (product.getImage() != null) {
       Path filePath = Paths.get(storageDirectory, product.getImage());
+          if (Files.exists(filePath)) {
       return Files.readAllBytes(filePath);
+    }
+//      return Files.readAllBytes(filePath);
+      return null;
     }
 //    Path filePath = Paths.get(storageDirectory, product.getImage());
 //
