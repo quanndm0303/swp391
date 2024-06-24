@@ -114,7 +114,7 @@ public class CategoryController {
     if (!message.isEmpty()) {
       //error
       customResponse.setAll(false, message, null);
-      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //approve
       categoryService.deleteCategoryById(categoryId);

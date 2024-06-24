@@ -3,11 +3,9 @@ package com.app.zware.Validation;
 import com.app.zware.Entities.Category;
 import com.app.zware.Entities.Product;
 import com.app.zware.Repositories.CategoryRepository;
-
+import com.app.zware.Repositories.ProductRepository;
 import java.util.List;
 import java.util.Optional;
-
-import com.app.zware.Repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +58,7 @@ public class CategoryValidator {
     }
     //find product by categoryId
     List<Product> listProduct = productRepository.findByCategoryId(categoryId);
-    if(listProduct != null){
+    if (!listProduct.isEmpty()) {
       return "Cannot delete this category, there are some products in this category";
     }
     return "";

@@ -34,3 +34,4 @@ build/
 
 # ignore by Quangz #
 !**/src/main/resources/application.properties
+/uploads/
