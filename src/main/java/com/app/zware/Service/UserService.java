@@ -62,7 +62,7 @@ public class UserService {
     return userRepository.save(mergedUser);
   }
 
-  public User merge(Integer oldUserId, User newUser) {
+  public User merge(Integer oldUserId, User newUser,boolean isAdmin) {
     User oldUser = userRepository.findById(oldUserId).orElse(null);
     if (oldUser == null) {
       return null;
@@ -75,9 +75,13 @@ public class UserService {
     Optional.ofNullable(newUser.getPhone()).ifPresent(oldUser::setPhone);
     Optional.ofNullable(newUser.getGender()).ifPresent(oldUser::setGender);
     Optional.ofNullable(newUser.getEmail()).ifPresent(oldUser::setEmail);
-    Optional.ofNullable(newUser.getWarehouse_id()).ifPresent(oldUser::setWarehouse_id);
-    Optional.ofNullable(newUser.getRole()).ifPresent(oldUser::setRole);
     Optional.ofNullable(newUser.getPassword()).ifPresent(oldUser::setPassword);
+
+    // only admin can update warehouseId and role
+    if(isAdmin){
+      Optional.ofNullable(newUser.getWarehouse_id()).ifPresent(oldUser::setWarehouse_id);
+      Optional.ofNullable(newUser.getRole()).ifPresent(oldUser::setRole);
+    }
 
     return oldUser;   //Updated
   }
