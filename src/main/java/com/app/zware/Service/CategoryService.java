@@ -1,9 +1,12 @@
 package com.app.zware.Service;
 
 import com.app.zware.Entities.Category;
+import com.app.zware.Entities.Product;
 import com.app.zware.Repositories.CategoryRepository;
 import java.util.List;
 import java.util.Optional;
+
+import com.app.zware.Repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +35,8 @@ public class CategoryService {
 
   public void deleteCategoryById(Integer id) {
     Category category = getCategoryById(id);
-    category.setIsdeleted(true);
-    categoryRepository.save(category);
+      category.setIsdeleted(true);
+      categoryRepository.save(category);
 //  categoryRepository.deleteById(id);
   }
 
