@@ -1,7 +1,9 @@
 package com.app.zware.Service;
 
 import com.app.zware.Entities.User;
+import com.app.zware.Entities.Warehouse;
 import com.app.zware.Repositories.UserRepository;
+import com.app.zware.Repositories.WarehouseRespository;
 import com.app.zware.Util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -14,6 +16,9 @@ public class UserService {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  WarehouseRespository warehouseRespository;
 
   public List<User> getAllUsers() {
     return userRepository.findAll();
@@ -91,5 +96,10 @@ public class UserService {
     String jwt = JwtUtil.getJwtToken(request);
     String email = JwtUtil.extractEmail(jwt);
     return userRepository.findByEmail(email);
+  }
+
+  // getWarehouse By User
+  public Warehouse getWarehouseByUser(Integer id){
+    return warehouseRespository.findByUserId(id);
   }
 }
