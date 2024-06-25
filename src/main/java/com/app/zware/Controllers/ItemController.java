@@ -41,7 +41,7 @@ public class ItemController {
     List<Item> itemList = itemService.getAllItems();
     if (itemList.isEmpty()) {
       customResponse.setAll(false, "List Items are empty!", null);
-      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       customResponse.setAll(true, "Get data of all Items success", itemList);
       return new ResponseEntity<>(customResponse, HttpStatus.OK);

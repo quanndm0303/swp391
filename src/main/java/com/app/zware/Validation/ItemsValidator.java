@@ -95,12 +95,11 @@ public class ItemsValidator {
     if (!itemRepository.existsByIdAndIsDeletedFalse(id)) {
       return "Not found ID";
     }
+    //check warehouse contains item
     List<WarehouseItems>  warehouseItems = warehouseItemsRepository.findByItemId(id);
-    for(WarehouseItems wh : warehouseItems){
-      if(wh != null) {
+      if(!warehouseItems.isEmpty()) {
         return "Cannot delete this item, there are some warehouse in this items that are in quantity";
       }
-    }
     return "";
   }
 

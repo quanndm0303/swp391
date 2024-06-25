@@ -108,7 +108,7 @@ public class WarehouseItemsController {
     if (!checkMessage.isEmpty()) {
       //error
       customResponse.setAll(false, checkMessage, null);
-      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //approve
       customResponse.setAll(true, "Get data of warehouseItem with id: " + warehouseitemId +
@@ -129,7 +129,7 @@ public class WarehouseItemsController {
     WarehouseItems warehouseItems = warehouseItemsService.getById(warehouseitemId);
     if (warehouseItems == null) {
       customResponse.setAll(false, "WarehouseItem not found to delete !", null);
-      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
     WarehouseZone warehouseZone = warehouseZoneService.getWarehouseZoneById(
         warehouseItems.getZone_id());
@@ -165,7 +165,7 @@ public class WarehouseItemsController {
     WarehouseItems warehouseItems = warehouseItemsService.getById(warehouseitemid);
     if (warehouseItems == null) {
       customResponse.setAll(false, "WarehouseItem not found to updated !", null);
-      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
     WarehouseZone warehouseZone = warehouseZoneService.getWarehouseZoneById(
         warehouseItems.getZone_id());

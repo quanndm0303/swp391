@@ -83,7 +83,7 @@ public class WarehouseZoneValidator {
       return "Cannot delete this warehouseZones, " +
               "It contains items and the quantity of items remaining.";
     }
-    //deleted zone_id in warehouseItems
+    //if zone was deleted, warehouseItems contain zone was deleted by zone_id
     warehouseItemsService.deleteWarehouseItemsByZoneId(id);
     return "";
   }

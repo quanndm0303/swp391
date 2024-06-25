@@ -43,7 +43,7 @@ public class OutboundTransactionDetailController {
     List<OutboundTransactionDetail> transactionDetailList = outboundTransactionDetailService.getAll();
     if (transactionDetailList.isEmpty()) {
       customResponse.setAll(false, "List are empty!", null);
-      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       customResponse.setAll(true, "Get data of all OutboundTransactionDetail success",
           transactionDetailList);
@@ -153,7 +153,7 @@ public class OutboundTransactionDetailController {
     if (!message.isEmpty()) {
       //error
       customResponse.setAll(false, message, null);
-      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       //approve updated
       outboundTransactionDetailService.update(updatedOutboundDetails);

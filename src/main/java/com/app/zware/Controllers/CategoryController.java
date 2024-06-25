@@ -42,7 +42,7 @@ public class CategoryController {
     if (categoryList.isEmpty()) {
       //Not found
       customResponse.setAll(false, "Empty categoryList", null);
-      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     } else {
       customResponse.setAll(true, "Get data of all Category success",
           categoryService.getCategory());

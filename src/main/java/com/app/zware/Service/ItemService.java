@@ -4,6 +4,7 @@ import com.app.zware.Entities.Item;
 import com.app.zware.Repositories.ItemRepository;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ public class ItemService {
 
   @Autowired
   ItemRepository itemRepository;
+
 
   public List<Item> getAllItems() {
     return itemRepository.findAll();
@@ -35,6 +37,14 @@ public class ItemService {
     item.setIsdeleted(true);
     itemRepository.save(item);
 //    itemRepository.deleteById(id);
+  }
+
+  public void deletedItemByProductId(Integer id){
+    List<Item> itemByProductId = itemRepository.findByProductId(id);
+    for(Item i : itemByProductId){
+      i.setIsdeleted(true);
+      itemRepository.save(i);
+    }
   }
 
   public Item merge(Integer id, Item request) {
