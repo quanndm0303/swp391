@@ -1,6 +1,7 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.User;
+import com.app.zware.Entities.Warehouse;
 import com.app.zware.HttpEntities.CustomResponse;
 import com.app.zware.Service.UserService;
 import com.app.zware.Util.PasswordUtil;
@@ -185,6 +186,33 @@ public class UserController {
 
     customResponse.setAll(true, "get current user data success", currentUser);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
+  }
+
+
+  // get warehouse if user manager
+  @GetMapping("/{id}/warehouse")
+  public ResponseEntity<?> getWarehouse(@PathVariable("id") Integer userId){
+
+    //response
+    CustomResponse customResponse = new CustomResponse();
+    //Validation: Any Authenticated user
+    //Validate
+    String checkMessage = userValidator.checkGet(userId);
+    if (!checkMessage.isEmpty()) {
+      customResponse.setAll(false, checkMessage, null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
+    }
+    Warehouse warehouse = userService.getWarehouseByUser(userId);
+    if (warehouse == null) {
+      customResponse.setAll(false, "Warehouse not found for user", null);
+      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
+    }
+
+    customResponse.setAll(true, "get warehouse by user success",userService.getWarehouseByUser(userId));
+
+
+    return new ResponseEntity<>(customResponse, HttpStatus.OK);
+
   }
 
 }

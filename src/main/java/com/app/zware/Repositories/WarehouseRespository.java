@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -22,5 +23,8 @@ public interface WarehouseRespository extends JpaRepository<Warehouse, Integer> 
   @Query("select case when COUNT(id)>0 THEN true ELSE false END FROM warehouses w where w.id=?1 and w.isdeleted = false")
   boolean existByIdAndIsDeletedFalse(Integer id);
 
+
+  @Query(value = "SELECT w.* FROM warehouses w INNER JOIN users u ON w.id = u.warehouse_id WHERE u.id = ?1 AND w.isdeleted = false", nativeQuery = true)
+  Warehouse findByUserId(Integer userId);
 
 }
