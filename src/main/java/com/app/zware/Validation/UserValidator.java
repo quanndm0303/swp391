@@ -23,25 +23,45 @@ public class UserValidator {
    * */
 
   public String checkPost(User user) {
-    if (user.getName().isBlank()) {
-      return "Name is not valid";
+    System.out.println(user.getPhone());
+
+    //MUST-HAVE fields
+    if (user.getEmail() == null){
+      return "Email is required";
     }
 
-    if (!user.getEmail().matches("^(.+)@(\\S+)$")) {
+    if (user.getPassword() == null){
+      return "Password is required";
+    }
+
+    if (user.getName() == null){
+      return "Name is required";
+    }
+
+    if (user.getRole() == null){
+      return "Role is required";
+    }
+
+    if (user.getRole().equals("manager") && user.getWarehouse_id()== null){
+      return "Warehouse Id is required";
+    }
+
+    //Check valid
+    String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]+$";
+    if (!user.getEmail().matches(emailRegex)) {
       return "Email is not valid";
     }
 
-    if (!isValidPhoneNumber(user.getPhone())) {
-      return "Phone is not valid";
-
-    }
-
-    if (user.getPassword().length() < 6) {
-      return "Password is not valid";
+    if ( user.getPassword().length() < 6) {
+      return "Password is at least 6 characters";
     }
 
     if (!user.getRole().equals("admin") && !user.getRole().equals("manager")) {
       return "Role is not valid";
+    }
+
+    if (user.getPhone() != null && !user.getPhone().matches("^\\d+$")) {
+      return "Phone is not valid";
     }
 
     Integer wId = user.getWarehouse_id(); //Warehouse ID
@@ -50,26 +70,21 @@ public class UserValidator {
       return "Warehouse id is not valid";
     }
 
-    //If return this to checkPut, it is OK.
+    //this condition need to be in the last
     if (userRepository.findByEmail(user.getEmail()) != null) {
       return "Email has been used";
     }
 
+    //IF pass all
     return "";
   }
 
-
-  //fix trung email nguoi khac
   public String checkPut(Integer userId, User mergedUser) {
     if (userId == null || !checkUserId(userId)) {
       return ("User id is not valid");
     }
     String checkPostMessage = checkPost(mergedUser);
     return (checkPostMessage.equals("Email has been used")) ? "" : checkPostMessage;
-  }
-
-  public boolean checkUserId(Integer id) {
-    return userRepository.existByIdAndIsDeletedFalse(id);
   }
 
   public String checkGet(Integer userId) {
@@ -83,9 +98,12 @@ public class UserValidator {
     return checkGet(userId);
   }
 
-  public boolean isValidPhoneNumber(String phoneNumber) {
-    // Define a regex for phone number validation,exactly 10 digits
+  public boolean checkUserId(Integer id) {
+    return userRepository.existByIdAndIsDeletedFalse(id);
+  }
 
+  public boolean isValidPhoneNumber(String phoneNumber) {
+    // Define a regex for phone number validation, exactly 10 digits
     String phoneRegex = "^\\d{10}$";
 
     Pattern pattern = Pattern.compile(phoneRegex);

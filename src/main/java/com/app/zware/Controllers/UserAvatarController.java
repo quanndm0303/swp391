@@ -106,7 +106,7 @@ public class UserAvatarController {
     String avatarFileName = user.getAvatar();
     if (avatarFileName == null || avatarFileName.isEmpty()) {
       customResponse.setAll(false, "User does not have an avatar", null);
-      return new ResponseEntity<>(customResponse, HttpStatus.OK);
+      return new ResponseEntity<>(customResponse, HttpStatus.NOT_FOUND);
     }
 
     File file = new File(UPLOAD_DIR + user.getAvatar());

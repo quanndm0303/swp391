@@ -75,12 +75,13 @@ public class UserService {
 
     //Update non-null field of newUser -> oldUser
     Optional.ofNullable(newUser.getName()).ifPresent(oldUser::setName);
-    Optional.ofNullable(newUser.getAvatar()).ifPresent(oldUser::setAvatar);
     Optional.ofNullable(newUser.getDate_of_birth()).ifPresent(oldUser::setDate_of_birth);
     Optional.ofNullable(newUser.getPhone()).ifPresent(oldUser::setPhone);
     Optional.ofNullable(newUser.getGender()).ifPresent(oldUser::setGender);
-    Optional.ofNullable(newUser.getEmail()).ifPresent(oldUser::setEmail);
-    Optional.ofNullable(newUser.getPassword()).ifPresent(oldUser::setPassword);
+//    Optional.ofNullable(newUser.getEmail()).ifPresent(oldUser::setEmail);
+//    Optional.ofNullable(newUser.getPassword()).ifPresent(oldUser::setPassword);
+//    Optional.ofNullable(newUser.getAvatar()).ifPresent(oldUser::setAvatar);
+
 
     // only admin can update warehouseId and role
     if(isAdmin){

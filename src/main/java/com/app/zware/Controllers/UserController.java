@@ -136,20 +136,17 @@ public class UserController {
       @RequestBody User newUser,
       HttpServletRequest request
   ) {
-
-
-
     //response
     CustomResponse customResponse = new CustomResponse();
+
     //Only admin or right user can edit
     User requestMaker = userService.getRequestMaker(request);
 
     boolean isAdmin = requestMaker.getRole().equals("admin");
-    if (!requestMaker.getRole().equals("admin") && !requestMaker.getId().equals(userId)) {
+    if (!isAdmin&& !requestMaker.getId().equals(userId)) {
       customResponse.setAll(false, "You are not allowed", null);
       return new ResponseEntity<>(customResponse, HttpStatus.UNAUTHORIZED);
     }
-
 
     // Check for unauthorized field updates
     if (!isAdmin) {
@@ -159,6 +156,13 @@ public class UserController {
       }
     }
 
+    //data pre-process, allow only editable field
+    newUser.setEmail(null);
+    newUser.setPassword(null);
+    newUser.setAvatar(null);
+    if (newUser.getRole() != null && newUser.getRole().equals("admin")) {
+      newUser.setWarehouse_id(null);  //if admin, no warehouse_id
+    }
 
     //validate
     User mergedUser = userService.merge(userId, newUser,isAdmin);
@@ -169,7 +173,6 @@ public class UserController {
     }
 
     //finally
-    //UPDATE
     User userUpdate = userService.update(userId, mergedUser);
     customResponse.setAll(true, "User update success", userUpdate);
     return new ResponseEntity<>(customResponse, HttpStatus.OK);
