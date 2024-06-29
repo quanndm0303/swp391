@@ -14,6 +14,7 @@ import com.app.zware.Service.ItemService;
 import com.app.zware.Service.UserService;
 import com.app.zware.Validation.InboundTransactionValidator;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,8 +77,8 @@ public class InboundTransactionController {
     InboundTransaction newTransaction = new InboundTransaction();
     newTransaction.setId(null); //Create new, not update
     newTransaction.setWarehouse_id(inboundDto.getWarehouse_id());
-    newTransaction.setDate(inboundDto.getDate());
-    newTransaction.setMaker_id(inboundDto.getMaker_id());
+    newTransaction.setDate(LocalDate.now());
+    newTransaction.setMaker_id(requestMaker.getId());
     newTransaction.setStatus("pending");  //default when create
     if (inboundDto.getSource() == null){
       newTransaction.setExternal_source(inboundDto.getExternal_source());

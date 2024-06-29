@@ -13,6 +13,7 @@ import com.app.zware.Service.UserService;
 import com.app.zware.Service.WarehouseItemsService;
 import com.app.zware.Service.WarehouseService;
 import com.app.zware.Service.WarehouseZoneService;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,60 +54,83 @@ public class InboundTransactionValidator {
   }
 
   public String checkCreate(InboundTransactionDTO transactionDTO) {
+    //REQUIRED
+    if (transactionDTO.getWarehouse_id() == null) {
+      return "Warehouse Id is required";
+    }
+
+    if (transactionDTO.getSource() == null && transactionDTO.getExternal_source() == null) {
+      return "Source or External source is required";
+    }
+
+    if (transactionDTO.getSource() != null && transactionDTO.getExternal_source() != null) {
+      return "Only source or external source, not both";
+    }
+
+    if (transactionDTO.getDetails() == null ||
+        transactionDTO.getDetails().isEmpty()){
+    return "Details are required";
+    }
+
+    //CONDITION CHECK
     if (!warehouseService.existById(transactionDTO.getWarehouse_id())) {
       return "Warehouse ID is not valid";
     }
 
-    if (transactionDTO.getSource().equals(transactionDTO.getWarehouse_id())){
+    if (transactionDTO.getSource() != null &&
+        !warehouseService.existById(transactionDTO.getSource())) {
+      return "Source is not valid";
+    }
+
+    assert transactionDTO.getSource() != null;
+    if (transactionDTO.getSource().equals(transactionDTO.getWarehouse_id())) {
       return "Cannot inbound from same warehouse";
     }
 
-    if (!userService.existById(transactionDTO.getMaker_id())) {
-      return "Maker ID is not valid";
-    }
-
-    if (transactionDTO.getSource() == null) {
-      if (transactionDTO.getExternal_source() == null ||
-          transactionDTO.getExternal_source().isBlank()) {
-        return "External source is required when source = null";
-      }
-    } else {
-      if (transactionDTO.getExternal_source() != null &&
-          !transactionDTO.getExternal_source().isEmpty()
-      ) {
-        return "External source is not allowed";
-      }
-      if (!warehouseService.existById(transactionDTO.getSource())) {
-        return "Source is not valid";
-      }
-
-    }
-
     for (InboundDetailDTO detail : transactionDTO.getDetails()) {
-      if (!productService.existById(detail.getProduct_id())) {
-        return "Product Id is not valid: " + detail.getProduct_id();
+      String checkDetailMessage = checkCreateDetail(detail, transactionDTO);
+      if (!checkDetailMessage.isEmpty()) {
+        return checkDetailMessage;
       }
+    }
+
+    return "";
+  }
+
+  public String checkCreateDetail(InboundDetailDTO detail, InboundTransactionDTO transactionDTO) {
+    //CHECK REQUIRE
+    if (detail.getProduct_id() == null || detail.getExpire_date() == null
+        || detail.getQuantity() == null || detail.getZone_id() == null
+    ) {
+      return "Product Id, Expired date, Quantity and ZoneId are required in each detail";
+    }
+
+    //CHECK CONDITION
+    if (!productService.existById(detail.getProduct_id())) {
+      return "Product Id is not valid: " + detail.getProduct_id();
+    }
+
+    if (LocalDate.now().isAfter(detail.getExpire_date())) {
+      return "Expire date cannot be in the past";
+    }
 
 //      System.out.println(warehouseItemsService.getTotalQuantityByProductIdAndWarehouseId(2,2));
-      int quantityInWarehouse =
-          warehouseItemsService.getTotalQuantityByProductIdAndWarehouseId(
-              detail.getProduct_id(), transactionDTO.getWarehouse_id()
-          );
+    int quantityInWarehouse =
+        warehouseItemsService.getTotalQuantityByProductIdAndWarehouseId(
+            detail.getProduct_id(), transactionDTO.getWarehouse_id()
+        );
 
-//      System.out.println(quantityInWarehouse);
+    if (quantityInWarehouse < detail.getQuantity()) {
+      return "Quantity of product " + detail.getProduct_id() + " is not enough";
+    }
 
-      if (quantityInWarehouse < detail.getQuantity()){
-        return "Quantity of product " + detail.getProduct_id() + " is not enough";
-      }
-
-      if (!warehouseZoneService.existById(detail.getZone_id())) {
-        return "Zone id is not exist: " + detail.getZone_id();
-      } else {
-        WarehouseZone zone = warehouseZoneService.getWarehouseZoneById(detail.getZone_id());
-        if (!zone.getWarehouse_id().equals(transactionDTO.getWarehouse_id())) {
-          return "Zone id " + zone.getId() + " is not valid, it's NOT in the warehouse with id: "
-              + transactionDTO.getWarehouse_id();
-        }
+    if (!warehouseZoneService.existById(detail.getZone_id())) {
+      return "Zone id is not exist: " + detail.getZone_id();
+    } else {
+      WarehouseZone zone = warehouseZoneService.getWarehouseZoneById(detail.getZone_id());
+      if (!zone.getWarehouse_id().equals(transactionDTO.getWarehouse_id())) {
+        return "Zone id " + zone.getId() + " is not valid, it's NOT in the warehouse with id: "
+            + transactionDTO.getWarehouse_id();
       }
     }
 
