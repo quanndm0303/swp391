@@ -36,7 +36,7 @@ public class WarehouseItemsService {
 
   public void deleteWarehouseItemsByZoneId(Integer id) {
     List<WarehouseItems> warehouseItems = warehouseItemsRepository.findZoneId(id);
-    for ( WarehouseItems warehouseItemsToDelete :warehouseItems ){
+    for (WarehouseItems warehouseItemsToDelete : warehouseItems) {
       warehouseItemsToDelete.setIsdeleted(true);
       warehouseItemsRepository.save(warehouseItemsToDelete);
     }
@@ -69,5 +69,25 @@ public class WarehouseItemsService {
     int existQuantity = existWarehouseItem.getQuantity();
     existWarehouseItem.setQuantity(existQuantity + warehouseItems.getQuantity());
     warehouseItemsRepository.save(existWarehouseItem);
+  }
+
+  public List<WarehouseItems> getWarehouseItemsByProductIdAndWarehouseId(Integer productId,
+      Integer warehouseId) {
+    return warehouseItemsRepository.getWarehouseItemsByProductIdAndWarehouseId(productId,
+        warehouseId);
+  }
+
+  public int getTotalQuantityByProductIdAndWarehouseId(Integer productId, Integer warehouseId) {
+    List<WarehouseItems> warehouseItems = this.getWarehouseItemsByProductIdAndWarehouseId(productId,
+        warehouseId);
+    if (warehouseItems.isEmpty()) {
+      return 0;
+    }
+
+    int total = 0;
+    for (WarehouseItems wi : warehouseItems) {
+      total += wi.getQuantity();
+    }
+    return total;
   }
 }

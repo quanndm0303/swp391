@@ -1,9 +1,16 @@
 package com.app.zware.Controllers;
 
 import com.app.zware.Entities.InboundTransaction;
+import com.app.zware.Entities.InboundTransactionDetail;
+import com.app.zware.Entities.Item;
 import com.app.zware.Entities.User;
+import com.app.zware.Entities.WarehouseItems;
 import com.app.zware.HttpEntities.CustomResponse;
+import com.app.zware.HttpEntities.InboundDetailDTO;
+import com.app.zware.HttpEntities.InboundTransactionDTO;
+import com.app.zware.Service.InboundTransactionDetailService;
 import com.app.zware.Service.InboundTransactionService;
+import com.app.zware.Service.ItemService;
 import com.app.zware.Service.UserService;
 import com.app.zware.Validation.InboundTransactionValidator;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +38,76 @@ public class InboundTransactionController {
 
   @Autowired
   UserService userService;
+
+  @Autowired
+  ItemService itemService;
+
+  @Autowired
+  InboundTransactionDetailService inboundTransactionDetailService;
+
+  @PostMapping("/create")
+  public ResponseEntity<?> createInboundTransaction(
+      @RequestBody InboundTransactionDTO inboundDto,
+      HttpServletRequest request)
+  {
+    CustomResponse response = new CustomResponse();
+
+    //authorization
+    User requestMaker = userService.getRequestMaker(request);
+    if (!requestMaker.getRole().equals("admin") &&
+        !requestMaker.getWarehouse_id().equals(inboundDto.getWarehouse_id())
+    ){
+      response.setAll(false, "You are not allowed", null);
+      return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
+
+    //validation
+    String message = validator.checkCreate(inboundDto);
+    if (!message.isEmpty()){
+      response.setAll(false, message, null);
+      return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    //after validation, create and save to DB
+
+    //NEW TRANSACTIOn
+    InboundTransaction newTransaction = new InboundTransaction();
+    newTransaction.setId(null); //Create new, not update
+    newTransaction.setWarehouse_id(inboundDto.getWarehouse_id());
+    newTransaction.setDate(inboundDto.getDate());
+    newTransaction.setMaker_id(inboundDto.getMaker_id());
+    newTransaction.setStatus("pending");  //default when create
+    if (inboundDto.getSource() == null){
+      newTransaction.setExternal_source(inboundDto.getExternal_source());
+    } else{
+      newTransaction.setSource(inboundDto.getSource());
+    }
+
+    InboundTransaction savedTransaction = service.save(newTransaction);
+
+
+
+    //NEW TRANSACTION'S DETAILS
+
+    for (InboundDetailDTO detail : inboundDto.getDetails()){
+      Item itemToSave = itemService.getByProductAndDate(detail.getProduct_id(), detail.getExpire_date());
+      if (itemToSave == null){
+        Item newItem = new Item(null, detail.getProduct_id(), detail.getExpire_date(), false);
+        itemToSave = itemService.save(newItem);
+      }
+
+      InboundTransactionDetail detailToSave = new InboundTransactionDetail();
+      detailToSave.setTransaction_id(savedTransaction.getId());
+      detailToSave.setItem_id(itemToSave.getId());
+      detailToSave.setQuantity(detail.getQuantity());
+      detailToSave.setZone_id(detail.getZone_id());
+      inboundTransactionDetailService.save(detailToSave);
+    }
+
+    return new ResponseEntity<>(inboundDto.toString(), HttpStatus.OK);
+  }
 
   @GetMapping("")
   public ResponseEntity<?> index() {

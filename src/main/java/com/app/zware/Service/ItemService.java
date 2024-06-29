@@ -2,6 +2,7 @@ package com.app.zware.Service;
 
 import com.app.zware.Entities.Item;
 import com.app.zware.Repositories.ItemRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,10 @@ public class ItemService {
   public Item createItem(Item request) {
     request.setIsdeleted(false);
     return itemRepository.save(request);
+  }
+
+  public Item save(Item itemToSave){
+    return itemRepository.save(itemToSave);
   }
 
   public Item getItemById(Integer id) {
@@ -61,6 +66,10 @@ public class ItemService {
 
   public Item update(Item item) {
     return itemRepository.save(item);
+  }
+
+  public Item getByProductAndDate(Integer productId, LocalDate date){
+    return itemRepository.findByProductIdAndExpiredDate(productId, date);
   }
 
 }

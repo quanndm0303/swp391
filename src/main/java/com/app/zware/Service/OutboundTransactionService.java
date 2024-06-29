@@ -57,4 +57,8 @@ public class OutboundTransactionService {
     return outboundTransaction;
   }
 
+  public boolean existById(Integer id){
+    return outboundTransactionRepository.existsByIdAndIsDeletedFalse(id);
+  }
+
 }
