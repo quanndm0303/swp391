@@ -132,6 +132,6 @@ public class WarehouseItemsService {
 
     System.out.println(detailList);
 
-    return null;
+    return detailList;
   }
 }

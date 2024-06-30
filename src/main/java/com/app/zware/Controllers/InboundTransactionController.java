@@ -3,6 +3,7 @@ package com.app.zware.Controllers;
 import com.app.zware.Entities.InboundTransaction;
 import com.app.zware.Entities.InboundTransactionDetail;
 import com.app.zware.Entities.Item;
+import com.app.zware.Entities.OutboundTransactionDetail;
 import com.app.zware.Entities.User;
 import com.app.zware.Entities.WarehouseItems;
 import com.app.zware.HttpEntities.CustomResponse;
@@ -112,9 +113,18 @@ public class InboundTransactionController {
       }
     } else{
       for (InboundDetailDTO detail : inboundDto.getDetails()){
-        warehouseItemsService.createTransactionDetailsByProductAndQuantityAndWarehouse(
-            detail.getProduct_id(), detail.getQuantity(), inboundDto.getSource()
-        );
+        List<OutboundTransactionDetail> generatedDetailList =
+            warehouseItemsService.createTransactionDetailsByProductAndQuantityAndWarehouse(
+                detail.getProduct_id(), detail.getQuantity(), inboundDto.getSource()
+            );
+        for (OutboundTransactionDetail generatedDetail : generatedDetailList){
+          InboundTransactionDetail detailToSave = new InboundTransactionDetail();
+          detailToSave.setTransaction_id(savedTransaction.getId());
+          detailToSave.setItem_id(generatedDetail.getItem_id());
+          detailToSave.setZone_id(generatedDetail.getZone_id());
+          detailToSave.setQuantity(generatedDetail.getQuantity());
+          inboundTransactionDetailService.save(detailToSave);
+        }
       }
     }
 
