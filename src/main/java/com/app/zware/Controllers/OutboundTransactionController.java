@@ -102,8 +102,8 @@ public class OutboundTransactionController {
       System.out.println(detail);
     }
 
-
-    return ResponseEntity.ok("hello");
+      customResponse.setAll(true, "Create outbound transaction succeess", null);
+    return ResponseEntity.ok(customResponse);
   }
 
   @GetMapping("")
