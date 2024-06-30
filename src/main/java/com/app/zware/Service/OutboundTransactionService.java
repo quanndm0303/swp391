@@ -28,6 +28,10 @@ public class OutboundTransactionService {
     return outboundTransactionRepository.save(request);
   }
 
+  public OutboundTransaction save(OutboundTransaction transaction){
+    return outboundTransactionRepository.save(transaction);
+  }
+
   public void deleteOutboundTransaction(Integer id) {
     OutboundTransaction outboundTransaction = getOutboundTransactionById(id);
     outboundTransaction.setIsdeleted(true);

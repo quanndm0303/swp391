@@ -58,15 +58,15 @@ public class InboundTransactionController {
       @RequestBody InboundTransactionDTO inboundDto,
       HttpServletRequest request)
   {
-    CustomResponse response = new CustomResponse();
+    CustomResponse customResponse = new CustomResponse();
 
     //authorization
     User requestMaker = userService.getRequestMaker(request);
     if (!requestMaker.getRole().equals("admin") &&
         !requestMaker.getWarehouse_id().equals(inboundDto.getWarehouse_id())
     ){
-      response.setAll(false, "You are not allowed", null);
-      return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false, "You are not allowed", null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -74,15 +74,14 @@ public class InboundTransactionController {
     //validation
     String message = validator.checkCreate(inboundDto);
     if (!message.isEmpty()){
-      response.setAll(false, message, null);
-      return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+      customResponse.setAll(false, message, null);
+      return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
     }
 
     //after validation, create and save to DB
 
     //NEW TRANSACTIOn
     InboundTransaction newTransaction = new InboundTransaction();
-    newTransaction.setId(null); //Create new, not update
     newTransaction.setWarehouse_id(inboundDto.getWarehouse_id());
     newTransaction.setDate(LocalDate.now());
     newTransaction.setMaker_id(requestMaker.getId());
@@ -112,7 +111,10 @@ public class InboundTransactionController {
         inboundTransactionDetailService.save(detailToSave);
       }
     } else{
+//      detail: cần lấy sản phầm gì, số lượng bao nhiêu, để vào zone nào
       for (InboundDetailDTO detail : inboundDto.getDetails()){
+
+        //Tự động lấy hàng cho đủ số lượng, theo đúng thứ tự ưu tiên
         List<OutboundTransactionDetail> generatedDetailList =
             warehouseItemsService.createTransactionDetailsByProductAndQuantityAndWarehouse(
                 detail.getProduct_id(), detail.getQuantity(), inboundDto.getSource()
@@ -129,7 +131,8 @@ public class InboundTransactionController {
     }
 
 
-    return new ResponseEntity<>(inboundDto.toString(), HttpStatus.OK);
+    customResponse.setAll(true, "Create inbound transaction success", null);
+    return ResponseEntity.ok(customResponse);
   }
 
   @GetMapping("")
