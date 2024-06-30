@@ -58,10 +58,13 @@ public interface WarehouseItemsRepository extends JpaRepository<WarehouseItems, 
     List<WarehouseItems> findByItemId(Integer id);
 
     @Query(value = "select wi.* from \n"
-        + "WarehouseItems wi\n"
-        + "JOIN Items i on i.id = wi.item_id\n"
-        + "Join Products p on p.id = i.product_id\n"
-        + "Join WarehouseZones wz on wz.id = wi.zone_id\n"
-        + "where p.id = ?1 and wz.warehouse_id = ?2", nativeQuery = true)
-    List<WarehouseItems> getWarehouseItemsByProductIdAndWarehouseId(Integer productId, Integer warehouseId);
+        + "WarehouseItems wi \n"
+        + "JOIN Items i on i.id = wi.item_id \n"
+        + "Join Products p on p.id = i.product_id \n"
+        + "Join WarehouseZones wz on wz.id = wi.zone_id \n"
+        + "where wz.warehouse_id = ?2 and i.product_id=?1\n"
+        + "ORDER BY i.expire_date, wi.quantity DESC;", nativeQuery = true)
+    List<WarehouseItems> findByProductAndWarehouse(Integer productId, Integer warehouseId);
+
+
 }

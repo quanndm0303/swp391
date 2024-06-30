@@ -12,9 +12,12 @@ import com.app.zware.Service.InboundTransactionDetailService;
 import com.app.zware.Service.InboundTransactionService;
 import com.app.zware.Service.ItemService;
 import com.app.zware.Service.UserService;
+import com.app.zware.Service.WarehouseItemsService;
 import com.app.zware.Validation.InboundTransactionValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +48,9 @@ public class InboundTransactionController {
 
   @Autowired
   InboundTransactionDetailService inboundTransactionDetailService;
+
+  @Autowired
+  WarehouseItemsService warehouseItemsService;
 
   @PostMapping("/create")
   public ResponseEntity<?> createInboundTransaction(
@@ -91,21 +97,27 @@ public class InboundTransactionController {
 
 
     //NEW TRANSACTION'S DETAILS
+    //If source is external
+    if (inboundDto.getSource() == null){
+      for (InboundDetailDTO detail : inboundDto.getDetails()){
+        Item itemToSave =
+            itemService.getOrCreateByProductAndDate(detail.getProduct_id(), detail.getExpire_date());
 
-    for (InboundDetailDTO detail : inboundDto.getDetails()){
-      Item itemToSave = itemService.getByProductAndDate(detail.getProduct_id(), detail.getExpire_date());
-      if (itemToSave == null){
-        Item newItem = new Item(null, detail.getProduct_id(), detail.getExpire_date(), false);
-        itemToSave = itemService.save(newItem);
+        InboundTransactionDetail detailToSave = new InboundTransactionDetail();
+        detailToSave.setTransaction_id(savedTransaction.getId());
+        detailToSave.setItem_id(itemToSave.getId());
+        detailToSave.setZone_id(detail.getZone_id());
+        detailToSave.setQuantity(detail.getQuantity());
+        inboundTransactionDetailService.save(detailToSave);
       }
-
-      InboundTransactionDetail detailToSave = new InboundTransactionDetail();
-      detailToSave.setTransaction_id(savedTransaction.getId());
-      detailToSave.setItem_id(itemToSave.getId());
-      detailToSave.setQuantity(detail.getQuantity());
-      detailToSave.setZone_id(detail.getZone_id());
-      inboundTransactionDetailService.save(detailToSave);
+    } else{
+      for (InboundDetailDTO detail : inboundDto.getDetails()){
+        warehouseItemsService.createTransactionDetailsByProductAndQuantityAndWarehouse(
+            detail.getProduct_id(), detail.getQuantity(), inboundDto.getSource()
+        );
+      }
     }
+
 
     return new ResponseEntity<>(inboundDto.toString(), HttpStatus.OK);
   }
